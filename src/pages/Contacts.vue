@@ -94,7 +94,7 @@ async function removeContact(relationId) {
 
 <template>
   <div class="max-w-2xl mx-auto p-4">
-    <AppH1>Contactos de confianza</AppH1>
+    <AppH1>Contactos</AppH1>
 
     <div class="mb-4">
       <input v-model="filter" placeholder="Buscar por nombre o apellido..." class="w-full border rounded px-3 py-2" />
@@ -111,7 +111,7 @@ async function removeContact(relationId) {
 
     <div v-else>
       <div v-if="trustedContacts.length" class="mb-6">
-        <h2 class="text-lg font-medium mb-2">Tus contactos</h2>
+        <h2 class="text-lg font-medium mb-2">Tus contactos de confianza</h2>
         <div v-for="c in trustedContacts" :key="c.id"
           class="flex items-center justify-between bg-blue-50 p-3 rounded-xl shadow-sm border border-blue-100 mb-2">
           <div class="flex items-center gap-3">

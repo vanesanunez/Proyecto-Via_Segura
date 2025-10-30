@@ -1,58 +1,28 @@
-// import supabase from './supabase';
-
-// // Suscribirse al canal de broadcast de un usuario específico
-// export function subscribeToSharedRoute(userId, callback) {
-//   const channelName = `shared_routes:user_${userId}`;
-//   const channel = supabase.channel(channelName);
-
-//   channel.on('broadcast', { event: 'new_position' }, payload => {
-//     callback(payload); // { lat, lng }
-//   });
-
-//   channel.subscribe();
-
-//   return channel;
-// }
-
-// // Enviar posición al canal
-// export function broadcastPosition(channel, lat, lng) {
-//   if (!channel) return;
-//   channel.send({
-//     type: 'broadcast',
-//     event: 'new_position',
-//     payload: { lat, lng },
-//   });
-// }
-
-// // Finalizar recorrido y desuscribirse
-// export function unsubscribeChannel(channel) {
-//   if (!channel) return;
-//   channel.unsubscribe();
-// }
-
 import supabase from './supabase';
 
 let currentChannel = null;
 
-// Suscribirse al canal de broadcast de un usuario específico
+// Suscribirse al canal de broadcast de un usuario específico (el que recibe el recorrido)
 export function subscribeToSharedRoute(userId, callback) {
+  if (!userId) return null;
+
   const channelName = `shared_routes:user_${userId}`;
   const channel = supabase.channel(channelName);
 
+  // Escuchar eventos broadcast de nuevas posiciones
   channel.on('broadcast', { event: 'new_position' }, payload => {
     callback(payload); // { lat, lng }
   });
 
   channel.subscribe();
-
   currentChannel = channel;
   return channel;
 }
 
-// Enviar posición al canal
-export function broadcastPosition(channel, lat, lng) {
-  if (!channel) return;
-  channel.send({
+// Enviar posición al canal (para el que comparte)
+export function broadcastPosition(lat, lng) {
+  if (!currentChannel) return;
+  currentChannel.send({
     type: 'broadcast',
     event: 'new_position',
     payload: { lat, lng },
@@ -61,9 +31,9 @@ export function broadcastPosition(channel, lat, lng) {
 
 // Iniciar recorrido compartido
 export async function shareRoute(userId, trustedUserId, start, dest) {
-  if (!userId || !trustedUserId) return;
+  if (!userId || !trustedUserId || !start || !dest) return;
 
-  // Creamos un canal broadcast
+  // Creamos un canal broadcast hacia el contacto de confianza
   const channelName = `shared_routes:user_${trustedUserId}`;
   const channel = supabase.channel(channelName);
 
@@ -74,8 +44,11 @@ export async function shareRoute(userId, trustedUserId, start, dest) {
     payload: { lat: start.lat, lng: start.lng },
   });
 
-  await channel.subscribe();
+  channel.subscribe();
   currentChannel = channel;
+
+  // Opcional: si querés enviar la posición de destino también
+  broadcastPosition(dest.lat, dest.lng);
 }
 
 // Finalizar recorrido y desuscribirse

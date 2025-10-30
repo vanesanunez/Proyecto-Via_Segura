@@ -5,6 +5,7 @@ import { nominatimSearch, nominatimReverse, composeAddress } from "../services/n
 import supabase from "../services/supabase";
 import { subscribeToSharedRoute, shareRoute, stopSharing } from "../services/sharedRoutes";
 import { getTrustedContacts } from "../services/contacts";
+import AppH1 from '../components/AppH1.vue';
 
 // FIX iconos con Vite
 import icon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -51,7 +52,7 @@ onMounted(async () => {
   L.control.zoom({ position: "topright" }).addTo(map);
 });
 
-// 🧭 Función para marcar inicio o destino
+// Marcar inicio o destino
 function setMarker(lat, lng, type) {
   if (type === "start") {
     if (!markerStart) {
@@ -155,10 +156,12 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="max-w-2xl mx-auto p-4">
-    <h1 class="text-xl font-semibold mb-4">Compartir recorrido</h1>
+    <AppH1>Recorrido seguro</AppH1>
+
+    <div ref="mapEl" class="mt-4 rounded-xl border" style="height: 300px;"></div>
 
     <div class="mb-4">
-      <label class="block mb-1 font-medium">Contactos de confianza:</label>
+      <label class="block mt-4 font-medium">Contactos de confianza:</label>
       <select v-model="selectedContact" class="w-full border rounded px-3 py-2">
         <option :value="null" disabled>Seleccioná un contacto...</option>
         <option v-for="c in trustedContacts" :key="c.id" :value="c">{{ c.name }} {{ c.lastname }}</option>
@@ -186,7 +189,7 @@ onBeforeUnmount(() => {
       <button v-if="routeActive" @click="finishSharing" class="px-4 py-2 rounded bg-red-500 text-white">Finalizar recorrido</button>
     </div>
 
-    <div ref="mapEl" class="mt-4 rounded-xl border" style="height: 300px;"></div>
+    
   </div>
 </template>
 

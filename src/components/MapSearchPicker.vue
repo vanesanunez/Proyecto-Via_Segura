@@ -33,7 +33,7 @@ let map, marker;
 let debounceTimer = null;
 let currentAbort = null;
 
-// 🧭 Coloca o mueve el marcador en el mapa
+// Coloca o mueve el marcador en el mapa
 function setMarker(lat, lng, notify = true) {
   if (!marker) {
     marker = L.marker([lat, lng], { draggable: true }).addTo(map);
@@ -53,14 +53,14 @@ function setMarker(lat, lng, notify = true) {
   if (notify) emit("update:modelValue", { lat, lng });
 }
 
-// 📍 Click en el mapa = nuevo marcador
+// Click en el mapa = nuevo marcador
 function onMapClick(e) {
   const { lat, lng } = e.latlng;
   setMarker(lat, lng);
   updateAddressFrom(lat, lng);
 }
 
-// 📍 Obtener dirección desde coordenadas
+// Obtener dirección desde coordenadas
 async function updateAddressFrom(lat, lng) {
   try {
     const rev = await nominatimReverse(lat, lng);
@@ -70,7 +70,7 @@ async function updateAddressFrom(lat, lng) {
   }
 }
 
-// 🧠 Debounce: buscar mientras se escribe
+// Debounce: buscar mientras se escribe
 function onInput() {
   clearTimeout(debounceTimer);
   if (!search.value || search.value.length < 3) {
@@ -81,7 +81,7 @@ function onInput() {
   debounceTimer = setTimeout(() => doSearch(), 400);
 }
 
-// 🔎 Búsqueda en Nominatim con abort controller
+// Búsqueda en Nominatim con abort controller
 async function doSearch() {
   try {
     if (currentAbort) currentAbort.abort(); // cancelar solicitud anterior
@@ -132,7 +132,7 @@ function dist(lat1, lon1, lat2, lon2) {
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
-// 🖱️ Seleccionar una sugerencia
+//Seleccionar una sugerencia
 function pickSuggestion(item) {
   results.value = [];
   search.value = item.display_name;
