@@ -29,10 +29,11 @@ const emit = defineEmits(["update:modelValue", "resolved-address"]);
 const mapEl = ref(null);
 const search = ref("");
 const results = ref([]);
-let map,
-  marker,
-  debounceTimer = null;
+let map, marker;
+let debounceTimer = null;
+let currentAbort = null;
 
+// 🧭 Coloca o mueve el marcador en el mapa
 function setMarker(lat, lng, notify = true) {
   if (!marker) {
     marker = L.marker([lat, lng], { draggable: true }).addTo(map);
@@ -41,10 +42,7 @@ function setMarker(lat, lng, notify = true) {
       emit("update:modelValue", { lat, lng });
       try {
         const rev = await nominatimReverse(lat, lng);
-        emit(
-          "resolved-address",
-          composeAddress(rev.address) || rev.display_name
-        );
+        emit("resolved-address", composeAddress(rev.address) || rev.display_name);
       } catch (e) {
         console.error(e);
       }
@@ -55,12 +53,14 @@ function setMarker(lat, lng, notify = true) {
   if (notify) emit("update:modelValue", { lat, lng });
 }
 
+// 📍 Click en el mapa = nuevo marcador
 function onMapClick(e) {
   const { lat, lng } = e.latlng;
   setMarker(lat, lng);
   updateAddressFrom(lat, lng);
 }
 
+// 📍 Obtener dirección desde coordenadas
 async function updateAddressFrom(lat, lng) {
   try {
     const rev = await nominatimReverse(lat, lng);
@@ -70,50 +70,57 @@ async function updateAddressFrom(lat, lng) {
   }
 }
 
+// 🧠 Debounce: buscar mientras se escribe
 function onInput() {
   clearTimeout(debounceTimer);
   if (!search.value || search.value.length < 3) {
     results.value = [];
     return;
   }
-  debounceTimer = setTimeout(async () => {
-    try {
-      // Pedimos en toda AR y después filtramos AMBA (CABA + PBA)
-      const data = await nominatimSearch(search.value, {
-        countrycodes: "ar",
-        limit: 10,
-        lang: "es",
-        layer: "address",
-        dedupe: 0,
-      });
 
-      // Filtrar sólo CABA o Provincia de Buenos Aires
-      const amba = data.filter((r) => {
-        const s = r.display_name?.toLowerCase() || "";
-        return (
-          s.includes("buenos aires") ||
-          s.includes("ciudad autónoma de buenos aires") ||
-          s.includes("caba")
-        );
-      });
-
-      // Ordenar por cercanía al centro del mapa (para que Wilde/Avellaneda salgan arriba si estás por ahí)
-      const c = map.getCenter();
-      amba.sort((a, b) => {
-        const da = dist(c.lat, c.lng, parseFloat(a.lat), parseFloat(a.lon));
-        const db = dist(c.lat, c.lng, parseFloat(b.lat), parseFloat(b.lon));
-        return da - db;
-      });
-
-      results.value = amba;
-    } catch (e) {
-      console.error(e);
-      results.value = [];
-    }
-  }, 400);
+  debounceTimer = setTimeout(() => doSearch(), 400);
 }
 
-// helper distancia (haversine aprox)
+// 🔎 Búsqueda en Nominatim con abort controller
+async function doSearch() {
+  try {
+    if (currentAbort) currentAbort.abort(); // cancelar solicitud anterior
+    currentAbort = new AbortController();
+
+    const data = await nominatimSearch(search.value, {
+      countrycodes: "ar",
+      limit: 10,
+      lang: "es",
+      layer: "address",
+      dedupe: 0,
+      signal: currentAbort.signal,
+    });
+
+    // Filtrar solo AMBA (CABA + PBA)
+    const amba = data.filter((r) => {
+      const s = r.display_name?.toLowerCase() || "";
+      return (
+        s.includes("buenos aires") ||
+        s.includes("ciudad autónoma de buenos aires") ||
+        s.includes("caba")
+      );
+    });
+
+    // Ordenar por cercanía al centro del mapa
+    const c = map.getCenter();
+    amba.sort((a, b) => {
+      const da = dist(c.lat, c.lng, parseFloat(a.lat), parseFloat(a.lon));
+      const db = dist(c.lat, c.lng, parseFloat(b.lat), parseFloat(b.lon));
+      return da - db;
+    });
+
+    results.value = amba;
+  } catch (e) {
+    if (e.name !== "AbortError") console.error(e);
+  }
+}
+
+// helper distancia (haversine)
 function dist(lat1, lon1, lat2, lon2) {
   const toRad = (d) => (d * Math.PI) / 180;
   const R = 6371;
@@ -125,6 +132,7 @@ function dist(lat1, lon1, lat2, lon2) {
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+// 🖱️ Seleccionar una sugerencia
 function pickSuggestion(item) {
   results.value = [];
   search.value = item.display_name;
@@ -136,40 +144,10 @@ function pickSuggestion(item) {
   emit("resolved-address", texto);
 }
 
+// ⌨️ Enter para buscar manualmente
 async function searchNow() {
   if (!search.value || search.value.length < 3) return;
-  try {
-    const data = await nominatimSearch(search.value, {
-      countrycodes: "ar",
-      limit: 10,
-      lang: "es",
-      layer: "address",
-      dedupe: 0,
-    });
-
-    const amba = data.filter((r) => {
-      const s = r.display_name?.toLowerCase() || "";
-      return (
-        s.includes("buenos aires") ||
-        s.includes("ciudad autónoma de buenos aires") ||
-        s.includes("caba")
-      );
-    });
-
-    const c = map.getCenter();
-    amba.sort((a, b) => {
-      const da = dist(c.lat, c.lng, parseFloat(a.lat), parseFloat(a.lon));
-      const db = dist(c.lat, c.lng, parseFloat(b.lat), parseFloat(b.lon));
-      return da - db;
-    });
-
-    results.value = amba;
-
-    //Si querés que Enter MUEVA el pin igual, descomentá:
-    // if (amba.length) pickSuggestion(amba[0])
-  } catch (e) {
-    console.error(e);
-  }
+  await doSearch();
 }
 
 onMounted(() => {
@@ -192,16 +170,15 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   clearTimeout(debounceTimer);
+  currentAbort?.abort();
   map?.off();
   map?.remove();
 });
 </script>
 
 <template>
-  <!-- contenedor raíz: relativo para que el dropdown se posicione bien -->
   <div class="relative rounded-2xl border border-gray-200 bg-white">
-
-    <!-- BUSCADOR (siempre por encima del mapa) -->
+    <!-- BUSCADOR -->
     <div class="p-2 relative z-20">
       <div class="relative">
         <input
@@ -212,10 +189,10 @@ onBeforeUnmount(() => {
           placeholder="¿Dónde viste el problema?"
         />
 
-        <!-- DROPDOWN DE SUGERENCIAS: por encima del mapa -->
+        <!-- SUGERENCIAS -->
         <ul
           v-if="results.length"
-          class="absolute top-full left-0 right-0 z-[1000] mt-2 max-h-64 overflow-auto rounded-xl border bg-white shadow-xl ring-1 ring-black/10"
+          class="absolute top-full left-0 right-0 z-1000 mt-2 max-h-64 overflow-auto rounded-xl border bg-white shadow-xl ring-1 ring-black/10"
         >
           <li
             v-for="r in results"
@@ -225,11 +202,16 @@ onBeforeUnmount(() => {
           >
             <div class="font-medium">
               {{ r.address.road || r.name || r.display_name.split(',')[0] }}
-              <span v-if="r.address.house_number"> {{ r.address.house_number }}</span>
+              <span v-if="r.address.house_number">
+                {{ r.address.house_number }}
+              </span>
             </div>
             <div class="text-gray-500 text-xs">
               {{ r.address.neighbourhood || r.address.suburb || r.address.city_district || '' }}
-              <span v-if="(r.address.neighbourhood || r.address.suburb || r.address.city_district)">, </span>
+              <span
+                v-if="(r.address.neighbourhood || r.address.suburb || r.address.city_district)"
+                >, </span
+              >
               {{ r.address.city || r.address.town || r.address.village || r.address.municipality || r.address.state }}
             </div>
           </li>
@@ -237,7 +219,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <!-- MAPA: con altura fija y z-0 para NO tapar al dropdown -->
+    <!-- MAPA -->
     <div ref="mapEl" :style="{ height }" class="relative z-0"></div>
   </div>
 </template>

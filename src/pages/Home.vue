@@ -6,37 +6,20 @@ import ReportCarousel from "../components/ReportCarousel.vue";
 import BottomNav from "../components/BottomNav.vue";
 import InfoCard from '../components/InfoCard.vue';
 import MainLoader from '../components/MainLoader.vue';
-import AppHeader from '../components/AppHeader.vue';
-
-
-const onSearch = (q) => {
-  if (!q) return;
-
-  // router.push({ name: 'Reports', query: { q } })
-  console.log("buscar:", q);
-};
 
 export default {
   name: "Home",
-  components: { AppH1, SearchBar, ActionCard, ReportCarousel, BottomNav, InfoCard, MainLoader, AppHeader },
+  components: { AppH1, SearchBar, ActionCard, ReportCarousel, BottomNav, InfoCard, MainLoader },
 };
 </script>
 
 <template>
   <AppH1 class="hidden">¡Bienvenidos a Vía Segura!</AppH1>
-  <!-- 
-  <div v-if="loading" class="flex justify-center items-center h-full">
-    <MainLoader />
-    </div> -->
 
-  <div class="min-h-screen pb-28">
-    <!-- pb para que no tape bottom nav -->
-    <AppHeader />
-
+  <div>
+  
     <main class="max-w-md mx-auto px-4">
-      <!-- <SearchBar @search="onSearch" /> -->
-
-
+     
       <section class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
         <ActionCard title="Hacer un reporte" to="/report/nuevo" accent="blue">
           <template #icon>
