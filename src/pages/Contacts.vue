@@ -1,4 +1,3 @@
-
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { getAllUsers, getTrustedContacts, addTrustedContact, removeTrustedContact } from '../services/contacts';
@@ -98,33 +97,31 @@ async function removeContact(relationId) {
     <AppH1>Contactos de confianza</AppH1>
 
     <div class="mb-4">
-      <input
-        v-model="filter"
-        placeholder="Buscar por nombre o apellido..."
-        class="w-full border rounded px-3 py-2"
-      />
+      <input v-model="filter" placeholder="Buscar por nombre o apellido..." class="w-full border rounded px-3 py-2" />
     </div>
 
     <div v-if="loading" class="text-gray-500 text-center py-6">
       <div class="flex justify-center items-center h-full">
-                <MainLoader />
-            </div>
+        <MainLoader />
+      </div>
       Cargando contactos...
-      
+
     </div>
-    
+
 
     <div v-else>
       <div v-if="trustedContacts.length" class="mb-6">
         <h2 class="text-lg font-medium mb-2">Tus contactos</h2>
-        <div v-for="c in trustedContacts" :key="c.id" class="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm border border-gray-100 mb-2">
+        <div v-for="c in trustedContacts" :key="c.id"
+          class="flex items-center justify-between bg-blue-50 p-3 rounded-xl shadow-sm border border-blue-100 mb-2">
           <div class="flex items-center gap-3">
             <div>
-              <div class="font-medium">{{ c.name }},  {{ c.lastname }}</div>
-              
+              <div class="font-medium">{{ c.name }}, {{ c.lastname }}</div>
+
             </div>
           </div>
-          <button @click="removeContact(c.trusted_contact_id)" class="px-3 py-1.5 rounded-full text-sm font-medium bg-red-100 text-red-600 hover:bg-red-200">
+          <button @click="removeContact(c.trusted_contact_id)"
+            class="px-3 py-1.5 rounded-full text-sm font-medium bg-red-100 text-red-600 hover:bg-red-200">
             Eliminar
           </button>
         </div>
@@ -133,26 +130,24 @@ async function removeContact(relationId) {
       <div>
         <h2 class="text-lg font-medium mb-2">Agregar nuevo contacto</h2>
         <div v-if="filteredUsers.length === 0" class="text-gray-500">No hay usuarios disponibles.</div>
-        <div v-for="u in filteredUsers" :key="u.id" class="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm border border-gray-100 mb-2">
+        <div v-for="u in filteredUsers" :key="u.id"
+          class="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm border border-gray-100 mb-2">
           <div class="flex items-center gap-3">
             <div>
-              <div class="font-medium">{{ u.name }},  {{ u.lastname }}</div>
+              <div class="font-medium">{{ u.name }}, {{ u.lastname }}</div>
               <div class="text-sm text-gray-500">{{ u.email }}</div>
             </div>
           </div>
-          
-          <button
-            @click="toggleTrust(u.id)"
-            class="px-3 py-1.5 rounded-full text-sm font-medium transition"
-            :class="isTrusted(u.id) ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'"
-          >
+
+          <button @click="toggleTrust(u.id)" class="px-3 py-1.5 rounded-full text-sm font-medium transition"
+            :class="isTrusted(u.id) ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'">
             {{ isTrusted(u.id) ? 'Eliminar' : 'Agregar' }}
           </button>
         </div>
       </div>
     </div>
   </div>
-  
+
 </template>
 
 

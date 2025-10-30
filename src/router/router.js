@@ -17,7 +17,9 @@ const routes = [
   { path: '/report/confirmado',     component: () => import('../pages/ReportConfirm.vue'),    meta:{ requiresAuth: true,},},
   { path: '/reportes',              component: () => import('../pages/ViewReports.vue'),      meta:{ requiresAuth: true,},},
   { path: '/contactos',             component: () => import('../pages/Contacts.vue'),         meta:{ requiresAuth: true,},},
-  { path: '/recorrido-seguro',      component: () => import('../pages/Routes.vue'),           meta:{ requiresAuth: true,},}
+  { path: '/recorrido-seguro',      component: () => import('../pages/Routes.vue'),           meta:{ requiresAuth: true,},},
+  { path: '/recorrido/compartir',   component: () => import('../pages/ShareRoute.vue'),       meta: { requiresAuth: true },},
+  { path: '/recorrido/recibir/:id', component: () => import('../pages/ReceiveRoute.vue'),     meta: { requiresAuth: true },}
 ];
 
 const router = createRouter({
