@@ -10,40 +10,14 @@ const routes = [
   { path: '/mi-perfil',             component: () => import('../pages/MyProfile.vue'),        meta:{ requiresAuth: true,},}, 
   { path: '/mi-perfil/editar',      component: () => import('../pages/MyProfileEdit.vue'),    meta:{ requiresAuth: true,},}, 
   { path: '/usuario/:id',           component: () => import('../pages/UserProfile.vue'),      meta:{ requiresAuth: true,},}, 
-  { path: '/usuario/:id/chat',      component: () => import('../pages/PrivateChat.vue'),      meta:{ requiresAuth: true,},}, 
-  
-    
-    
+  { path: '/usuario/:id/chat',      component: () => import('../pages/PrivateChat.vue'),      meta:{ requiresAuth: true,},},   
   // Ruta para crear nuevo reporte
-  {
-    path: '/report/nuevo',
-    name: 'NuevoReporte',
-    component: () => import('../pages/NewReport.vue'),
-  },
-
+  { path: '/report/nuevo',          component: () => import('../pages/NewReport.vue'),        meta:{ requiresAuth: true,},},
   //  Ruta de confirmación después de enviar reporte
-  {
-    path: '/report/confirmado',
-    name: 'ConfirmacionReporte',
-    component: () => import('../pages/ReportConfirm.vue'),
-  },
-
-  {
-  path: '/reportes',
-  name: 'VerReportes',
-  component: () => import('../pages/ViewReports.vue'),
-},
-
-{
-  path: '/contactos',
-  name: 'ContactosConfianza',
-  component: () => import('../pages/Contacts.vue')
-},
-{
-  path: '/recorrido-seguro',
-  name: 'Routes',
-  component: () => import('../pages/Routes.vue')
-}
+  { path: '/report/confirmado',     component: () => import('../pages/ReportConfirm.vue'),    meta:{ requiresAuth: true,},},
+  { path: '/reportes',              component: () => import('../pages/ViewReports.vue'),      meta:{ requiresAuth: true,},},
+  { path: '/contactos',             component: () => import('../pages/Contacts.vue'),         meta:{ requiresAuth: true,},},
+  { path: '/recorrido-seguro',      component: () => import('../pages/Routes.vue'),           meta:{ requiresAuth: true,},}
 ];
 
 const router = createRouter({
