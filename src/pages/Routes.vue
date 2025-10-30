@@ -20,14 +20,12 @@ L.Icon.Default.mergeOptions({
 const user = ref(null);
 const trustedContacts = ref([]);
 const selectedContact = ref(null);
-
 const mapEl = ref(null);
 const startSearch = ref("");
 const destSearch = ref("");
 const resultsStart = ref([]);
 const resultsDest = ref([]);
 const routeActive = ref(false);
-
 let map, markerStart, markerDest, routeLine;
 let debounceTimerStart = null;
 let debounceTimerDest = null;
@@ -98,26 +96,18 @@ function onInputDest() {
   debounceTimerDest = setTimeout(() => doSearch(destSearch.value, resultsDest, "dest"), 400);
 }
 
-// 🔎 Función de búsqueda corregida para refs
 async function doSearch(query, resultsArrayRef, type) {
   try {
     const abortSignal = new AbortController();
     if (type === "start") { currentAbortStart?.abort(); currentAbortStart = abortSignal; }
     else { currentAbortDest?.abort(); currentAbortDest = abortSignal; }
 
-    const data = await nominatimSearch(query, {
-      countrycodes:"ar",
-      limit:10,
-      lang:"es",
-      layer:"address",
-      dedupe:0,
-      signal: abortSignal.signal
-    });
-
-    // Actualizar array reactivo usando .value
-    resultsArrayRef.value.splice(0, resultsArrayRef.value.length, ...data);
-  } catch(e) {
-    if(e.name !== "AbortError") console.error(e);
+    const data = await nominatimSearch(query, { countrycodes: "ar", limit: 10, lang: "es", layer:"address", dedupe:0, signal: abortSignal.signal });
+    // Asegurarse que siempre sea array
+    const safeData = Array.isArray(data) ? data : [];
+    resultsArrayRef.value.splice(0, resultsArrayRef.value.length, ...safeData);
+  } catch (e) {
+    if (e.name !== "AbortError") console.error(e);
   }
 }
 
@@ -178,7 +168,7 @@ onBeforeUnmount(() => {
     <div class="mb-4">
       <label class="block mb-1 font-medium">Inicio:</label>
       <input v-model="startSearch" @input="onInputStart" placeholder="Buscar dirección de inicio" class="w-full border rounded px-3 py-2"/>
-      <ul v-if="resultsStart.value.length" class="border rounded mt-1 max-h-40 overflow-auto bg-white">
+      <ul v-if="resultsStart.value?.length" class="border rounded mt-1 max-h-40 overflow-auto bg-white">
         <li v-for="r in resultsStart.value" :key="r.place_id" @click="pickSuggestion(r,'start')" class="px-2 py-1 cursor-pointer hover:bg-blue-50">{{ r.display_name }}</li>
       </ul>
     </div>
@@ -186,7 +176,7 @@ onBeforeUnmount(() => {
     <div class="mb-4">
       <label class="block mb-1 font-medium">Destino:</label>
       <input v-model="destSearch" @input="onInputDest" placeholder="Buscar dirección de destino" class="w-full border rounded px-3 py-2"/>
-      <ul v-if="resultsDest.value.length" class="border rounded mt-1 max-h-40 overflow-auto bg-white">
+      <ul v-if="resultsDest.value?.length" class="border rounded mt-1 max-h-40 overflow-auto bg-white">
         <li v-for="r in resultsDest.value" :key="r.place_id" @click="pickSuggestion(r,'dest')" class="px-2 py-1 cursor-pointer hover:bg-blue-50">{{ r.display_name }}</li>
       </ul>
     </div>
