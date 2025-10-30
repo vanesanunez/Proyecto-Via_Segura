@@ -10,8 +10,8 @@ export default {
 
 <template>
     <AppH1>¡Buscá el recorrido más seguro!</AppH1>
-    <p>Gracias a los aportes de la comunidad, te indicamos las mejores rutas o caminos sugeridos hacia tu destino (más
+    <p>Encontrá las mejores rutas o caminos sugeridos hacia tu lugar de destino (más
         transitados, mejor iluminados, etc.)
-        También podés compartir el trayecto en tiempo real con tus contactos de confianza.
     </p>
+    <p>También podés compartir el trayecto en tiempo real con tus contactos de confianza.</p>
 </template>

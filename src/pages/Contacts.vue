@@ -3,6 +3,8 @@
 import { ref, onMounted, computed } from 'vue';
 import { getAllUsers, getTrustedContacts, addTrustedContact, removeTrustedContact } from '../services/contacts';
 import supabase from '../services/supabase';
+import MainLoader from '../components/MainLoader.vue';
+import AppH1 from '../components/AppH1.vue';
 
 const loading = ref(true);
 const allUsers = ref([]);
@@ -17,7 +19,7 @@ onMounted(async () => {
     // new supabase client returns: { data: { user } }
     user.value = res?.data?.user || null;
     if (!user.value) {
-      // si no está logueado, el guard del router debería redirigir, pero por las dudas:
+      // si no está logueado, redirigir:
       loading.value = false;
       return;
     }
@@ -37,7 +39,7 @@ async function loadData() {
       getTrustedContacts(user.value.id),
     ]);
 
-    // Todos menos yo
+    // Todos los usuarios menos el que está logueado
     allUsers.value = users.filter(u => u.id !== user.value.id);
     trustedContacts.value = contacts || [];
   } catch (e) {
@@ -54,7 +56,7 @@ const filteredUsers = computed(() => {
     .filter(u => {
       if (!q) return true;
 
-      // concatenamos name + lastname para buscar por cualquiera de los dos
+      // concateno name + lastname para buscar por cualquiera de los dos
       const fullName = `${u.name || ''} ${u.lastname || ''}`.toLowerCase();
 
       return fullName.includes(q);
@@ -93,7 +95,7 @@ async function removeContact(relationId) {
 
 <template>
   <div class="max-w-2xl mx-auto p-4">
-    <h1 class="text-xl font-semibold mb-4">Contactos de confianza</h1>
+    <AppH1>Contactos de confianza</AppH1>
 
     <div class="mb-4">
       <input
@@ -104,8 +106,13 @@ async function removeContact(relationId) {
     </div>
 
     <div v-if="loading" class="text-gray-500 text-center py-6">
+      <div class="flex justify-center items-center h-full">
+                <MainLoader />
+            </div>
       Cargando contactos...
+      
     </div>
+    
 
     <div v-else>
       <div v-if="trustedContacts.length" class="mb-6">
@@ -113,8 +120,8 @@ async function removeContact(relationId) {
         <div v-for="c in trustedContacts" :key="c.id" class="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm border border-gray-100 mb-2">
           <div class="flex items-center gap-3">
             <div>
-              <div class="font-medium">{{ c.name || c.lastname }}</div>
-              <div class="text-sm text-gray-500">{{ c.email }}</div>
+              <div class="font-medium">{{ c.name }},  {{ c.lastname }}</div>
+              
             </div>
           </div>
           <button @click="removeContact(c.trusted_contact_id)" class="px-3 py-1.5 rounded-full text-sm font-medium bg-red-100 text-red-600 hover:bg-red-200">
@@ -133,7 +140,7 @@ async function removeContact(relationId) {
               <div class="text-sm text-gray-500">{{ u.email }}</div>
             </div>
           </div>
-
+          
           <button
             @click="toggleTrust(u.id)"
             class="px-3 py-1.5 rounded-full text-sm font-medium transition"
@@ -145,6 +152,7 @@ async function removeContact(relationId) {
       </div>
     </div>
   </div>
+  
 </template>
 
 

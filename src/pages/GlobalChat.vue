@@ -99,7 +99,7 @@ export default {
     <AppH1>Chat general</AppH1>
 
     <div class="flex flex-col md:flex-row gap-4 items-center md:items-start justify-center md:justify-start">
-        <section ref="chatContainer" class="overflow-y-auto w-9/12 h-100 p-3 border border-blue-200 rounded">
+        <section ref="chatContainer" class="overflow-y-auto w-full h-100 p-2 border border-blue-200 rounded">
 
             <h2 class="sr-only">Lista de mensajes</h2>
 
