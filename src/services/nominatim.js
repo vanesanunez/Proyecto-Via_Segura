@@ -1,16 +1,16 @@
-const BASE = '/nominatim'; // Usar proxy configurado en vite.config.js
+const BASE = '/nominatim'; 
 
 const headers = {
   'Accept': 'application/json',
   'User-Agent': 'ViaSeguraApp/1.0 (Proyecto escolar - Escuela Da Vinci)',
 };
 
-// 🔍 Texto → coordenadas (sugerencias)
+// Texto → coordenadas (sugerencias)
 export async function nominatimSearch(
   query,
   { countrycodes = 'ar', limit = 10, lang = 'es', viewbox = null, bounded = 0, layer = 'address', dedupe = 0 } = {}
 ) {
-  const url = new URL(`${BASE}/search`, window.location.origin); // ✅ base absoluta
+  const url = new URL(`${BASE}/search`, window.location.origin); // base absoluta
   url.searchParams.set('q', query);
   url.searchParams.set('format', 'jsonv2');
   url.searchParams.set('addressdetails', '1');
@@ -30,9 +30,9 @@ export async function nominatimSearch(
   return res.json();
 }
 
-// 📍 Coordenadas → dirección
+//Coordenadas → dirección
 export async function nominatimReverse(lat, lon, { lang = 'es' } = {}) {
-  const url = new URL(`${BASE}/reverse`, window.location.origin); // ✅ base absoluta
+  const url = new URL(`${BASE}/reverse`, window.location.origin); // base absoluta
   url.searchParams.set('lat', String(lat));
   url.searchParams.set('lon', String(lon));
   url.searchParams.set('format', 'jsonv2');
@@ -44,7 +44,7 @@ export async function nominatimReverse(lat, lon, { lang = 'es' } = {}) {
   return res.json(); // { display_name, address:{...}, lat, lon }
 }
 
-// 🧩 Formato legible de dirección
+// Formato legible de dirección
 export function composeAddress(addr = {}) {
   const calle = [addr.road, addr.pedestrian, addr.footway, addr.cycleway, addr.path, addr.residential].find(Boolean);
   const altura = addr.house_number;

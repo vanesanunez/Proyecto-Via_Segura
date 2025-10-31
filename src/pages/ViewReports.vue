@@ -2,17 +2,6 @@
   <div class="max-w-md mx-auto p-4">
     <h1 class="text-2xl font-semibold text-center mb-4">Reportes</h1>
 
-    <!-- Botón de filtro -->
-  <!--  <div class="flex justify-center mb-4">
-      <button
-        @click="toggleFiltro"
-        class="bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        Filtrar por
-      </button>
-    </div>
-
-    <!-- Panel de filtros -->
     <div v-if="mostrarFiltro" class="bg-gray-100 p-4 rounded mb-4">
       <div class="space-y-2">
         <label>
@@ -77,7 +66,7 @@
 
   <router-link
     to="/"
-    class="bg-blue-600 text-white py-2 px-4 rounded block w-1/2 mx-auto block text-center mb-3 hover:bg-blue-700"
+    class="bg-blue-600 text-white py-2 px-4 rounded  w-1/2 mx-auto text-center mb-3 hover:bg-blue-700"
   >
     Volver a la página de inicio
   </router-link>

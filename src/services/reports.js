@@ -1,21 +1,3 @@
-/*import{saveReport} from '../services/reports';
-
-const enviarReporte=async() => {
-    try{
-        await saveReport({
-        categoria:categoria.value,
-        descripcion: descripcion.value,
-        ubicacion:ubicacion.value,
-        imagen:imageFile.value?.name || '' ,
-        });
-         router.push("/report/confirmado");
-
-    }catch(error){
-        alert("Hubo un error al enviar el reporte");
-    }
-};*/
-
-
 import supabase from './supabase';
 
 /**

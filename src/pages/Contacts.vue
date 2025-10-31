@@ -140,7 +140,7 @@ async function removeContact(relationId) {
           </div>
 
           <button @click="toggleTrust(u.id)" class="px-3 py-1.5 rounded-full text-sm font-medium transition"
-            :class="isTrusted(u.id) ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'">
+            :class="isTrusted(u.id) ? 'bg-red-100 text-red-500 hover:bg-red-200' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'">
             {{ isTrusted(u.id) ? 'Eliminar' : 'Agregar' }}
           </button>
         </div>
