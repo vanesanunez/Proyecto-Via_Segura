@@ -1,46 +1,39 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import L from "leaflet";
-import { nominatimSearch, nominatimReverse, composeAddress } from "../services/nominatim";
 import supabase from "../services/supabase";
-import { subscribeToSharedRoute, shareRoute, stopSharing } from "../services/sharedRoutes";
+import { subscribeToSharedRoute, broadcastPosition, stopSharing } from "../services/sharedRoutes";
 import { getTrustedContacts } from "../services/contacts";
-import AppH1 from '../components/AppH1.vue';
+import { nominatimSearch, composeAddress } from "../services/nominatim";
+import AppH1 from "../components/AppH1.vue";
 
-// FIX iconos con Vite
+// FIX iconos Leaflet para Vite
 import icon2x from "leaflet/dist/images/marker-icon-2x.png";
 import icon from "leaflet/dist/images/marker-icon.png";
 import shadow from "leaflet/dist/images/marker-shadow.png";
 delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: icon2x,
-  iconUrl: icon,
-  shadowUrl: shadow,
-});
+L.Icon.Default.mergeOptions({ iconRetinaUrl: icon2x, iconUrl: icon, shadowUrl: shadow });
 
 const user = ref(null);
 const trustedContacts = ref([]);
 const selectedContact = ref(null);
 const mapEl = ref(null);
-const startSearch = ref("");
-const destSearch = ref("");
-const resultsStart = ref([]);
-const resultsDest = ref([]);
 const routeActive = ref(false);
-let map, markerStart, markerDest, routeLine;
-let debounceTimerStart = null;
-let debounceTimerDest = null;
-let currentAbortStart = null;
-let currentAbortDest = null;
+const isWatcher = ref(false);
 
-const placeholderAvatar = 'https://placehold.co/40x40?text=👤';
+let map, myMarker, contactMarker, myPath, contactPath, watchId;
+
+// Destino
+const destinationQuery = ref("");
+const destinationResults = ref([]);
+let destinationMarker = null;
+let routeLine = null;
 
 onMounted(async () => {
   const res = await supabase.auth.getUser();
   user.value = res?.data?.user || null;
   if (!user.value) return;
 
-  // Traer contactos de confianza
   trustedContacts.value = await getTrustedContacts(user.value.id);
 
   // Inicializar mapa
@@ -52,147 +45,217 @@ onMounted(async () => {
   L.control.zoom({ position: "topright" }).addTo(map);
 });
 
-// Marcar inicio o destino
-function setMarker(lat, lng, type) {
-  if (type === "start") {
-    if (!markerStart) {
-      markerStart = L.marker([lat, lng], { draggable: true }).addTo(map);
-      markerStart.on("dragend", () => updateCoords(markerStart, "start"));
-    } else {
-      markerStart.setLatLng([lat, lng]);
-    }
-  } else {
-    if (!markerDest) {
-      markerDest = L.marker([lat, lng], { draggable: true }).addTo(map);
-      markerDest.on("dragend", () => updateCoords(markerDest, "dest"));
-    } else {
-      markerDest.setLatLng([lat, lng]);
-    }
-  }
-}
+// -------------------- Funciones --------------------
 
-// Actualizar coords y redraw de ruta
-function updateCoords(marker, type) {
-  const { lat, lng } = marker.getLatLng();
-  if (markerStart && markerDest) drawRoute();
-}
-
-// Dibujar línea entre inicio y destino
-function drawRoute() {
-  if (routeLine) map.removeLayer(routeLine);
-  const latlngs = [markerStart.getLatLng(), markerDest.getLatLng()];
-  routeLine = L.polyline(latlngs, { color: "blue" }).addTo(map);
-}
-
-// Búsqueda con nominatim para start/dest
-function onInputStart() {
-  clearTimeout(debounceTimerStart);
-  if (!startSearch.value || startSearch.value.length < 3) { resultsStart.value = []; return; }
-  debounceTimerStart = setTimeout(() => doSearch(startSearch.value, resultsStart, "start"), 400);
-}
-
-function onInputDest() {
-  clearTimeout(debounceTimerDest);
-  if (!destSearch.value || destSearch.value.length < 3) { resultsDest.value = []; return; }
-  debounceTimerDest = setTimeout(() => doSearch(destSearch.value, resultsDest, "dest"), 400);
-}
-
-async function doSearch(query, resultsArrayRef, type) {
-  try {
-    const abortSignal = new AbortController();
-    if (type === "start") { currentAbortStart?.abort(); currentAbortStart = abortSignal; }
-    else { currentAbortDest?.abort(); currentAbortDest = abortSignal; }
-
-    const data = await nominatimSearch(query, { countrycodes: "ar", limit: 10, lang: "es", layer:"address", dedupe:0, signal: abortSignal.signal });
-    // Asegurarse que siempre sea array
-    const safeData = Array.isArray(data) ? data : [];
-    resultsArrayRef.value.splice(0, resultsArrayRef.value.length, ...safeData);
-  } catch (e) {
-    if (e.name !== "AbortError") console.error(e);
-  }
-}
-
-// Seleccionar sugerencia
-function pickSuggestion(item, type) {
-  const lat = parseFloat(item.lat);
-  const lng = parseFloat(item.lon);
-  setMarker(lat, lng, type);
-  map.setView([lat, lng], 16);
-  if (markerStart && markerDest) drawRoute();
-  if (type === "start") { startSearch.value = item.display_name; resultsStart.value = []; }
-  else { destSearch.value = item.display_name; resultsDest.value = []; }
-}
-
-// Iniciar recorrido compartido
+// Iniciar recorrido propio
 async function startSharing() {
-  if (!selectedContact.value || !markerStart || !markerDest) {
-    alert("Seleccioná un contacto y marcá inicio y destino.");
+  if (!selectedContact.value) {
+    alert("Seleccioná un contacto de confianza.");
     return;
   }
-  routeActive.value = true;
 
-  // Suscribirse al canal broadcast
-  await shareRoute(user.value.id, selectedContact.value.id, markerStart.getLatLng(), markerDest.getLatLng());
+  routeActive.value = true;
+  isWatcher.value = false;
+
+  // Suscribirse al canal
+  subscribeToSharedRoute(user.value.id, selectedContact.value.id, updateContactMarker);
+
+  // Polyline recorrido propio
+  myPath = L.polyline([], { color: "#3082e3", weight: 5 }).addTo(map);
+
+  // Geolocalización
+  if ("geolocation" in navigator) {
+    watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        updateMyMarker(latitude, longitude);
+        updateMyPath(latitude, longitude);
+        broadcastPosition(user.value.id, selectedContact.value.id, { lat: latitude, lng: longitude });
+      },
+      (err) => console.error("Error en geolocalización:", err),
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
+    );
+  } else {
+    alert("La geolocalización no está disponible en tu dispositivo.");
+  }
+}
+
+// Marcador y path propio
+function updateMyMarker(lat, lng) {
+  if (!myMarker) {
+    myMarker = L.marker([lat, lng]).addTo(map).bindPopup("Tu ubicación actual");
+  } else {
+    myMarker.setLatLng([lat, lng]);
+  }
+  map.setView([lat, lng], 15);
+}
+
+function updateMyPath(lat, lng) {
+  if (myPath) myPath.addLatLng([lat, lng]);
+}
+
+// Contacto
+function updateContactMarker({ lat, lng, sender_id }) {
+  if (sender_id === user.value.id) return;
+
+  if (!contactMarker) {
+    contactMarker = L.marker([lat, lng], { icon: L.icon({ iconUrl: icon }) })
+      .addTo(map)
+      .bindPopup("Ubicación de tu contacto");
+  } else {
+    contactMarker.setLatLng([lat, lng]);
+  }
+
+  // Polyline del contacto
+  if (!contactPath) {
+    contactPath = L.polyline([[lat, lng]], { color: "#f2826d", weight: 5, dashArray: "6,4" }).addTo(map);
+  } else {
+    contactPath.addLatLng([lat, lng]);
+  }
+}
+
+// Ver recorrido de contacto
+async function watchContactRoute(contactId) {
+  isWatcher.value = true;
+  subscribeToSharedRoute(user.value.id, contactId, updateContactMarker);
 }
 
 // Finalizar recorrido
 async function finishSharing() {
   routeActive.value = false;
-  await stopSharing();
-  if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
-  if (markerStart) { map.removeLayer(markerStart); markerStart = null; }
-  if (markerDest) { map.removeLayer(markerDest); markerDest = null; }
+  stopSharing();
+
+  if (watchId) navigator.geolocation.clearWatch(watchId);
+
+  [myMarker, contactMarker, myPath, contactPath, destinationMarker, routeLine].forEach(layer => {
+    if (layer) map.removeLayer(layer);
+  });
+
+  myMarker = contactMarker = myPath = contactPath = destinationMarker = routeLine = null;
 }
 
-onBeforeUnmount(() => {
-  clearTimeout(debounceTimerStart);
-  clearTimeout(debounceTimerDest);
-  currentAbortStart?.abort();
-  currentAbortDest?.abort();
-  map?.off();
-  map?.remove();
-});
+// -------------------- Destino --------------------
+
+// Buscar dirección destino
+async function searchDestination() {
+  if (!destinationQuery.value.trim()) return;
+
+  try {
+    const results = await nominatimSearch(destinationQuery.value, {
+      countrycodes: "ar",
+      limit: 5,
+    });
+    destinationResults.value = results;
+  } catch (err) {
+    console.error("Error al buscar dirección:", err);
+  }
+}
+
+// Seleccionar resultado destino
+function selectDestination(place) {
+  const lat = parseFloat(place.lat);
+  const lon = parseFloat(place.lon);
+
+  if (destinationMarker) map.removeLayer(destinationMarker);
+  if (routeLine) map.removeLayer(routeLine);
+
+  destinationMarker = L.marker([lat, lon], {
+    icon: L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", iconSize: [32, 32] }),
+  })
+    .addTo(map)
+    .bindPopup(`<b>Destino:</b> ${composeAddress(place.address)}`)
+    .openPopup();
+
+  map.setView([lat, lon], 15);
+
+  // Línea desde ubicación propia
+  if (myMarker) {
+    const myPos = myMarker.getLatLng();
+    routeLine = L.polyline([myPos, [lat, lon]], { color: "#2a2a2a", dashArray: "6,6" }).addTo(map);
+  }
+
+  destinationResults.value = [];
+  destinationQuery.value = composeAddress(place.address);
+}
 </script>
 
 <template>
   <div class="max-w-2xl mx-auto p-4">
-    <AppH1>Recorrido seguro</AppH1>
+    <AppH1>Recorrido Seguro</AppH1>
 
-    <div ref="mapEl" class="mt-4 rounded-xl border" style="height: 300px;"></div>
+    <div ref="mapEl" class="mt-4 rounded-xl border" style="height: 400px;"></div>
 
-    <div class="mb-4">
-      <label class="block mt-4 font-medium">Contactos de confianza:</label>
+    <!-- Contactos -->
+    <div class="mb-4 mt-4">
+      <label class="block font-medium">Contactos de confianza:</label>
       <select v-model="selectedContact" class="w-full border rounded px-3 py-2">
         <option :value="null" disabled>Seleccioná un contacto...</option>
-        <option v-for="c in trustedContacts" :key="c.id" :value="c">{{ c.name }} {{ c.lastname }}</option>
+        <option v-for="c in trustedContacts" :key="c.id" :value="c">
+          {{ c.name }} {{ c.lastname }}
+        </option>
       </select>
     </div>
 
+    <!-- Destino -->
     <div class="mb-4">
-      <label class="block mb-1 font-medium">Inicio:</label>
-      <input v-model="startSearch" @input="onInputStart" placeholder="Buscar dirección de inicio" class="w-full border rounded px-3 py-2"/>
-      <ul v-if="resultsStart.value?.length" class="border rounded mt-1 max-h-40 overflow-auto bg-white">
-        <li v-for="r in resultsStart.value" :key="r.place_id" @click="pickSuggestion(r,'start')" class="px-2 py-1 cursor-pointer hover:bg-blue-50">{{ r.display_name }}</li>
+      <label class="block font-medium">Dirección de destino:</label>
+      <div class="flex gap-2">
+        <input
+          v-model="destinationQuery"
+          type="text"
+          placeholder="Ej: Av. Corrientes 1234, CABA"
+          class="flex-1 border rounded px-3 py-2"
+          @keyup.enter="searchDestination"
+        />
+        <button
+          @click="searchDestination"
+          class="px-4 py-2 rounded bg-blue-500 text-white"
+        >
+          Buscar
+        </button>
+      </div>
+
+      <ul v-if="destinationResults.length" class="bg-white border mt-2 rounded shadow max-h-40 overflow-auto">
+        <li
+          v-for="r in destinationResults"
+          :key="r.place_id"
+          class="p-2 hover:bg-blue-100 cursor-pointer"
+          @click="selectDestination(r)"
+        >
+          {{ composeAddress(r.address) }}
+        </li>
       </ul>
     </div>
 
-    <div class="mb-4">
-      <label class="block mb-1 font-medium">Destino:</label>
-      <input v-model="destSearch" @input="onInputDest" placeholder="Buscar dirección de destino" class="w-full border rounded px-3 py-2"/>
-      <ul v-if="resultsDest.value?.length" class="border rounded mt-1 max-h-40 overflow-auto bg-white">
-        <li v-for="r in resultsDest.value" :key="r.place_id" @click="pickSuggestion(r,'dest')" class="px-2 py-1 cursor-pointer hover:bg-blue-50">{{ r.display_name }}</li>
-      </ul>
+    <!-- Botones -->
+    <div class="flex gap-2 mb-2">
+      <button
+        v-if="!routeActive"
+        @click="startSharing"
+        class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700"
+      >
+        Iniciar recorrido compartido
+      </button>
+      <button
+        v-if="routeActive"
+        @click="finishSharing"
+        class="px-4 py-2 rounded bg-orange-300 text-gray hover:bg-orange-400"
+      >
+        Finalizar recorrido
+      </button>
     </div>
 
-    <div class="flex gap-2">
-      <button @click="startSharing" class="px-4 py-2 rounded bg-blue-500 text-white" :disabled="routeActive">Iniciar recorrido compartido</button>
-      <button v-if="routeActive" @click="finishSharing" class="px-4 py-2 rounded bg-red-500 text-white">Finalizar recorrido</button>
+    <div class="mt-3">
+      <button
+        @click="watchContactRoute(selectedContact?.id)"
+        class="px-4 py-2 rounded bg-white text-gray border border-blue-300 hover:bg-blue-100"
+      >
+        Ver recorrido de mi contacto
+      </button>
     </div>
-
-    
   </div>
 </template>
 
 <style scoped>
-input::placeholder { color: #9aa3a8; }
+.leaflet-container { border-radius: 0.75rem; }
 </style>
