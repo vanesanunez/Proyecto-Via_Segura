@@ -2,7 +2,7 @@
 import { ref, onMounted, } from "vue";
 import L from "leaflet";
 import supabase from "../services/supabase";
-import { subscribeToSharedRoute, broadcastPosition, stopSharing } from "../services/sharedRoutes";
+import { subscribeToSharedRoute, broadcastPosition, stopSharing } from "../services/routes";
 import { getTrustedContacts } from "../services/contacts";
 import { nominatimSearch, composeAddress } from "../services/nominatim";
 import AppH1 from "../components/AppH1.vue";
@@ -73,7 +73,7 @@ async function startSharing() {
         broadcastPosition(user.value.id, selectedContact.value.id, { lat: latitude, lng: longitude });
       },
       (err) => console.error("Error en geolocalización:", err),
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
+      { enableHighAccuracy: false, maximumAge: 10000, timeout: 10000 }
     );
   } else {
     alert("La geolocalización no está disponible en tu dispositivo.");
@@ -185,6 +185,26 @@ function selectDestination(place) {
 
     <div ref="mapEl" class="mt-4 rounded-xl border" style="height: 400px;"></div>
 
+    <!-- Destino -->
+    <div class="mb-4 mt-4">
+      <label class="block font-medium">Dirección de destino:</label>
+      <div class="flex gap-2">
+        <input v-model="destinationQuery" type="text" placeholder="Ej: Av. Corrientes 1234, CABA"
+          class="flex-1 border rounded px-3 py-2" @keyup.enter="searchDestination" />
+        <button @click="searchDestination" class="px-4 py-2 rounded bg-blue-500 text-white">
+          Buscar
+        </button>
+      </div>
+
+      <ul v-if="destinationResults.length" class="bg-white border mt-2 rounded shadow max-h-40 overflow-auto">
+        <li v-for="r in destinationResults" :key="r.place_id" class="p-2 hover:bg-blue-100 cursor-pointer"
+          @click="selectDestination(r)">
+          {{ composeAddress(r.address) }}
+        </li>
+      </ul>
+    </div>
+
+
     <!-- Contactos -->
     <div class="mb-4 mt-4">
       <label class="block font-medium">Contactos de confianza:</label>
@@ -196,60 +216,22 @@ function selectDestination(place) {
       </select>
     </div>
 
-    <!-- Destino -->
-    <div class="mb-4">
-      <label class="block font-medium">Dirección de destino:</label>
-      <div class="flex gap-2">
-        <input
-          v-model="destinationQuery"
-          type="text"
-          placeholder="Ej: Av. Corrientes 1234, CABA"
-          class="flex-1 border rounded px-3 py-2"
-          @keyup.enter="searchDestination"
-        />
-        <button
-          @click="searchDestination"
-          class="px-4 py-2 rounded bg-blue-500 text-white"
-        >
-          Buscar
-        </button>
-      </div>
-
-      <ul v-if="destinationResults.length" class="bg-white border mt-2 rounded shadow max-h-40 overflow-auto">
-        <li
-          v-for="r in destinationResults"
-          :key="r.place_id"
-          class="p-2 hover:bg-blue-100 cursor-pointer"
-          @click="selectDestination(r)"
-        >
-          {{ composeAddress(r.address) }}
-        </li>
-      </ul>
-    </div>
 
     <!-- Botones -->
     <div class="flex gap-2 mb-2">
-      <button
-        v-if="!routeActive"
-        @click="startSharing"
-        class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700"
-      >
+      <button v-if="!routeActive" @click="startSharing"
+        class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700">
         Iniciar recorrido compartido
       </button>
-      <button
-        v-if="routeActive"
-        @click="finishSharing"
-        class="px-4 py-2 rounded bg-orange-300 text-gray hover:bg-orange-400"
-      >
+      <button v-if="routeActive" @click="finishSharing"
+        class="px-4 py-2 rounded bg-orange-300 text-gray hover:bg-orange-400">
         Finalizar recorrido
       </button>
     </div>
 
     <div class="mt-3">
-      <button
-        @click="watchContactRoute(selectedContact?.id)"
-        class="px-4 py-2 rounded bg-white text-gray border border-blue-300 hover:bg-blue-100"
-      >
+      <button @click="watchContactRoute(selectedContact?.id)"
+        class="px-4 py-2 rounded bg-white text-gray border border-blue-300 hover:bg-blue-100">
         Ver recorrido de mi contacto
       </button>
     </div>
@@ -257,5 +239,7 @@ function selectDestination(place) {
 </template>
 
 <style scoped>
-.leaflet-container { border-radius: 0.75rem; }
+.leaflet-container {
+  border-radius: 0.75rem;
+}
 </style>
