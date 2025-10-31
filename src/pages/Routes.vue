@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, } from "vue";
 import L from "leaflet";
 import supabase from "../services/supabase";
 import { subscribeToSharedRoute, broadcastPosition, stopSharing } from "../services/sharedRoutes";
