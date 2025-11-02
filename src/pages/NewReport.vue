@@ -6,6 +6,7 @@ import { subscribeToUserState } from "../services/auth";
 import MapSearchPicker from  "../components/MapSearchPicker.vue";
 
 
+
 // Datos del formulario
 const categoria = ref("");
 const descripcion = ref("");
