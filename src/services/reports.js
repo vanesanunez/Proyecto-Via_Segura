@@ -79,3 +79,23 @@ export function subscribeToNewReports(callback) {
     )
     .subscribe();
 }
+
+export async function fetchReportsPage ({ page = 1, pageSize = 5} = {}) {
+  const from = ( page-1) * pageSize
+  const to = from + pageSize - 1
+
+  const {data,error } = await supabase
+  .from('reports')
+  .select('*')
+  .order('created_at',{ascending:false})
+  .order('id' , {ascending:false})
+  .range(from,to)
+
+  if (error){
+    console.error('[fetchReportsPage] Error:', error)
+    throw error
+  }
+  
+  return data || []
+}
+
