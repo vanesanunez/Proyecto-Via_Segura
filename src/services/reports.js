@@ -99,3 +99,25 @@ export async function fetchReportsPage ({ page = 1, pageSize = 5} = {}) {
   return data || []
 }
 
+
+/**
+ * Trae una página de reportes + el total (count)
+ * Orden: más nuevos primero
+ */
+export async function fetchReportsPageWithCount({ page = 1, pageSize = 5 } = {}) {
+  const from = (page - 1) * pageSize
+  const to = from + pageSize - 1
+
+  const { data, error, count } = await supabase
+    .from('reports')
+    .select('*', { count: 'exact', head: false })
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
+    .range(from, to)
+
+  if (error) {
+    console.error('[fetchReportsPageWithCount]', error)
+    throw error
+  }
+  return { data: data ?? [], count: count ?? 0 }
+}
