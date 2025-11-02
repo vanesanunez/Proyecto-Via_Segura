@@ -1,27 +1,21 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { fetchUserReportsPageWithCount } from '../services/reports'
-import { subscribeToUserState } from '../services/auth'  
+import { fetchReportsPageWithCount } from '../services/reports' // 👈 ahora TODOS
 
 const reports = ref([])
 const page = ref(1)
-const pageSize = 2                          // 👈 2 por página
+const pageSize = 2
 const total = ref(0)
-const user = ref(null)
 const loading = ref(false)
 const errorMsg = ref('')
 
-// total de páginas
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / pageSize)))
 
-// cargar una página
 async function loadPage() {
-  if (!user.value?.id) return
   loading.value = true
   errorMsg.value = ''
   try {
-    const { data, count } = await fetchUserReportsPageWithCount({
-      userId: user.value.id,               // 👈 filtra por usuario
+    const { data, count } = await fetchReportsPageWithCount({
       page: page.value,
       pageSize
     })
@@ -35,20 +29,12 @@ async function loadPage() {
   }
 }
 
-// navegación
 function goTo(p) {
   if (p < 1 || p > totalPages.value) return
   page.value = p
 }
 
-onMounted(() => {
-  subscribeToUserState((u) => {
-    user.value = u
-    page.value = 1
-    loadPage()
-  })
-})
-
+onMounted(loadPage)
 watch(page, loadPage)
 </script>
 
