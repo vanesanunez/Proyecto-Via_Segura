@@ -1,36 +1,27 @@
-import supabase from './supabase';
+
+import supabase from './supabase'
 
 /**
- * Sube una imagen al bucket y devuelve la URL publica
- * @param {File} file
- * @returns {Promise<string>} URL pública
+ * Sube una imagen al bucket y devuelve la URL pública
  */
-
-export async function uploadImage(file){
-   console.log("Subiendo al bucket 'report-images' =>", file.name); 
-    const fileName = `${Date.now()}_${file.name}`;
-      const { data, error } = await supabase.storage
-    .from('report-images') // nombre del bucket
-    .upload(fileName, file);
-
-  if (error) {
-    console.error('[uploadImage] Error al subir imagen:', error);
-    throw error;
-  }
+export async function uploadImage(file) {
+  const fileName = `${Date.now()}_${file.name}`
+  const { error } = await supabase.storage
+    .from('report-images')
+    .upload(fileName, file)
+  if (error) throw error
 
   const { data: publicData } = supabase
     .storage
     .from('report-images')
-    .getPublicUrl(fileName);
+    .getPublicUrl(fileName)
 
-  return publicData.publicUrl;
+  return publicData.publicUrl
 }
 
 /**
- * Guarda un nuevo reporte en la base de datos
- * @param  {{categoria: string, descripcion: string, ubicacion: string, imagen: string, estado: string, fecha: string, reclamaron: number}} data
+ * Guarda un nuevo reporte
  */
-
 export async function saveReport(data) {
   const { error } = await supabase
     .from('reports')
@@ -38,70 +29,38 @@ export async function saveReport(data) {
       categoria: data.categoria,
       descripcion: data.descripcion,
       ubicacion: data.ubicacion,
-      latitud:data.latitud,
+      latitud: data.latitud,
       longitud: data.longitud,
       imagen: data.imagen,
       user_id: data.user_id,
       email: data.email,
-    });
-
-  if (error) {
-    console.error('[saveReport] Error al guardar el reporte:', error);
-    throw error;
-  }
+    })
+  if (error) throw error
 }
 
 /**
- * Trae todos los reportes
+ * Trae todos los reportes (sin paginar)
  */
 export async function fetchAllReports() {
-  const { data, error } = await supabase.from('reports').select('*');
-  if (error) {
-    console.error('[fetchAllReports] Error al obtener reportes:', error);
-    throw error;
-  }
-  return data;
+  const { data, error } = await supabase.from('reports').select('*')
+  if (error) throw error
+  return data
 }
 
 /**
- * Escucha nuevos reportes en tiempo real
- * @param {Function} callback 
+ * Realtime: nuevos reportes
  */
 export function subscribeToNewReports(callback) {
   return supabase
     .channel('realtime:public:reports')
-    .on(
-      'postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'reports' },
-      (payload) => {
-        callback(payload.new);
-      }
-    )
-    .subscribe();
+    .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'reports' },
+        (payload) => callback(payload.new))
+    .subscribe()
 }
-
-export async function fetchReportsPage ({ page = 1, pageSize = 5} = {}) {
-  const from = ( page-1) * pageSize
-  const to = from + pageSize - 1
-
-  const {data,error } = await supabase
-  .from('reports')
-  .select('*')
-  .order('created_at',{ascending:false})
-  .order('id' , {ascending:false})
-  .range(from,to)
-
-  if (error){
-    console.error('[fetchReportsPage] Error:', error)
-    throw error
-  }
-  
-  return data || []
-}
-
 
 /**
- * Trae una página de reportes + el total (count)
+ * Página de reportes + total (todos los usuarios)
  * Orden: más nuevos primero
  */
 export async function fetchReportsPageWithCount({ page = 1, pageSize = 5 } = {}) {
@@ -115,9 +74,25 @@ export async function fetchReportsPageWithCount({ page = 1, pageSize = 5 } = {})
     .order('id', { ascending: false })
     .range(from, to)
 
-  if (error) {
-    console.error('[fetchReportsPageWithCount]', error)
-    throw error
-  }
+  if (error) throw error
+  return { data: data ?? [], count: count ?? 0 }
+}
+
+/**
+ * Página de reportes + total (SOLO del usuario)
+ */
+export async function fetchUserReportsPageWithCount({ userId, page = 1, pageSize = 2 } = {}) {
+  const from = (page - 1) * pageSize
+  const to = from + pageSize - 1
+
+  const { data, error, count } = await supabase
+    .from('reports')
+    .select('*', { count: 'exact', head: false })
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
+    .range(from, to)
+
+  if (error) throw error
   return { data: data ?? [], count: count ?? 0 }
 }
