@@ -61,13 +61,14 @@ export default {
   },
 
   mounted() {
-    unsubAuth = subscribeToUserState(
-      (newUserState) => (this.user = newUserState)
-    );
-  },
-  unmounted() {
-    unsubAuth();
-  },
+  unsubAuth = subscribeToUserState((newUserState) => {
+    this.user = newUserState
+    if (this.user?.id) {        
+      this.myPage = 1
+      this.loadMyReports()     
+    }
+  })
+},
 };
 </script>
 
@@ -113,13 +114,12 @@ export default {
         <div>
           <p class="text-sm text-gray-500">{{ new Date(r.created_at).toLocaleString() }}</p>
           <p class="font-semibold">{{ r.categoria }}</p>
+          <p class="text-gray-700 text-sm line-clamp-1">{{ r.email }}</p>
           <p class="text-gray-700 text-sm line-clamp-1">{{ r.descripcion }}</p>
           <p class="text-gray-500 text-xs">{{ r.ubicacion }}</p>
         </div>
       </div>
-      <RouterLink :to="`/report/${r.id}`" class="text-blue-600 hover:underline text-sm shrink-0">
-        Ver detalle
-      </RouterLink>
+     
     </li>
   </ul>
 

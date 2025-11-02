@@ -4,7 +4,7 @@ import { fetchReportsPageWithCount } from '../services/reports' // 👈 ahora TO
 
 const reports = ref([])
 const page = ref(1)
-const pageSize = 2
+const pageSize = 3
 const total = ref(0)
 const loading = ref(false)
 const errorMsg = ref('')
