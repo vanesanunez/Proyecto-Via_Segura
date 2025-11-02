@@ -9,6 +9,8 @@ export default {
       user: {
         id: null,
         email: null,
+        name: null,
+        photoURL: null,
       },
       drawer: false,
     };
@@ -72,7 +74,6 @@ export default {
       <template v-if="user.id !== null">
         <li><RouterLink to="/chat">Chat</RouterLink></li>
         <li><RouterLink to="/mi-perfil">Mi perfil</RouterLink></li>
-       
         <li>
           <form action="#" @submit.prevent="handleLogout">
             <button type="submit">Cerrar sesión</button>
@@ -86,7 +87,7 @@ export default {
       </template>
     </ul>
 
-    <!-- Overlay oscuro (cuando se abre el drawer) -->
+    <!-- Overlay oscuro -->
     <div
       v-if="drawer"
       @click="drawer = false"
@@ -97,42 +98,135 @@ export default {
     <transition name="slide">
       <aside
         v-if="drawer"
-        class="fixed top-0 left-0 h-full w-3/4 max-w-xs bg-white text-gray-800 z-50 p-6 flex flex-col shadow-lg md:hidden"
+        class="fixed top-0 left-0 h-full w-3/4 max-w-xs bg-white text-gray-800 z-50 flex flex-col shadow-lg md:hidden"
       >
-        <h2 class="text-lg font-semibold mb-4 text-[#3082e3]">Menú</h2>
-        <ul class="flex flex-col gap-4">
-          <li><RouterLink @click="drawer = false" to="/">Inicio</RouterLink></li>
+        <!-- CABECERA del Drawer -->
+        <div class="flex items-center justify-between bg-[#f7f9fc] px-6 py-4 border-b">
+          <div>
+            <p class="text-gray-600 text-sm">¡Hola,</p>
+            <p class="text-[#3082e3] font-semibold text-lg">
+              {{ user.name || 'invitado' }}!
+            </p>
+          </div>
+          <div class="w-12 h-12 rounded-full overflow-hidden bg-[#d6e8fb] flex items-center justify-center">
+            <img
+              v-if="user.photoURL"
+              :src="user.photoURL"
+              alt="Foto de perfil"
+              class="object-cover w-full h-full"
+            />
+            <svg
+              v-else
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-7 w-7 text-[#3082e3]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5.121 17.804A13.937 13.937 0 0112 15c2.485 0 4.79.607 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          </div>
+        </div>
 
-          <template v-if="user.id !== null">
-              <li><RouterLink @click="drawer = false" to="/reportes">Reportes</RouterLink></li>
-              <li><RouterLink @click="drawer = false" to="/recorrido-seguro">Recorrido seguro</RouterLink></li>
-              <li><RouterLink @click="drawer = false" to="/mi-perfil">Perfil</RouterLink></li>
-              <li><RouterLink @click="drawer = false" to="/contactos">Contactos de confianza</RouterLink></li>
-            <li><RouterLink @click="drawer = false" to="/chat">Chat general</RouterLink></li>
-            <li><RouterLink @click="drawer = false" to="">Información útil</RouterLink></li>
-            
+        <!-- Menú -->
+        <div class="p-6 overflow-y-auto">
+          <ul class="flex flex-col gap-3">
             <li>
-              <form action="#" @submit.prevent="handleLogout">
-                <button type="submit">Cerrar sesión</button>
-              </form>
+              <RouterLink
+                @click="drawer = false"
+                to="/"
+                class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+              >Inicio</RouterLink>
             </li>
-          </template>
 
-          <template v-else>
-            <li><RouterLink @click="drawer = false" to="/ingresar">Ingresar</RouterLink></li>
-            <li><RouterLink @click="drawer = false" to="/crear-cuenta">Crear cuenta</RouterLink></li>
-          </template>
-        </ul>
+            <template v-if="user.id !== null">
+              <li>
+                <RouterLink
+                  @click="drawer = false"
+                  to="/reportes"
+                  class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                >Reportes</RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  @click="drawer = false"
+                  to="/recorrido-seguro"
+                  class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                >Recorrido seguro</RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  @click="drawer = false"
+                  to="/mi-perfil"
+                  class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                >Perfil</RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  @click="drawer = false"
+                  to="/contactos"
+                  class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                >Contactos de confianza</RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  @click="drawer = false"
+                  to="/chat"
+                  class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                >Chat general</RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  @click="drawer = false"
+                  to=""
+                  class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                >Información útil</RouterLink>
+              </li>
+
+              <li>
+                <form action="#" @submit.prevent="handleLogout">
+                  <button
+                    type="submit"
+                    class="w-full text-left px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                  >
+                    Cerrar sesión
+                  </button>
+                </form>
+              </li>
+            </template>
+
+            <template v-else>
+              <li>
+                <RouterLink
+                  @click="drawer = false"
+                  to="/ingresar"
+                  class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                >Ingresar</RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  @click="drawer = false"
+                  to="/crear-cuenta"
+                  class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                >Crear cuenta</RouterLink>
+              </li>
+            </template>
+          </ul>
+        </div>
       </aside>
     </transition>
   </nav>
 
-  <!-- separador para compensar la altura del navbar fijo -->
+  <!-- Espaciador para compensar el navbar fijo -->
   <div class="h-64px"></div>
 </template>
 
 <style scoped>
-/* Transición del drawer */
 .slide-enter-active,
 .slide-leave-active {
   transition: transform 0.3s ease;
@@ -144,3 +238,5 @@ export default {
   transform: translateX(-100%);
 }
 </style>
+
+
