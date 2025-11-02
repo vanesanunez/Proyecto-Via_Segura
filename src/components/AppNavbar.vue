@@ -104,10 +104,12 @@ export default {
           <li><RouterLink @click="drawer = false" to="/">Inicio</RouterLink></li>
 
           <template v-if="user.id !== null">
-            <li><RouterLink @click="drawer = false" to="/chat">Chat</RouterLink></li>
-            <li><RouterLink @click="drawer = false" to="/mi-perfil">Mi perfil</RouterLink></li>
-            <li><RouterLink @click="drawer = false" to="/contactos">Contactos de confianza</RouterLink></li>
-            <li><RouterLink @click="drawer = false" to="/reportes">Reportes</RouterLink></li>
+              <li><RouterLink @click="drawer = false" to="/reportes">Reportes</RouterLink></li>
+              <li><RouterLink @click="drawer = false" to="/recorrido-seguro">Recorrido seguro</RouterLink></li>
+              <li><RouterLink @click="drawer = false" to="/mi-perfil">Perfil</RouterLink></li>
+              <li><RouterLink @click="drawer = false" to="/contactos">Contactos de confianza</RouterLink></li>
+            <li><RouterLink @click="drawer = false" to="/chat">Chat general</RouterLink></li>
+            <li><RouterLink @click="drawer = false" to="">Información útil</RouterLink></li>
             
             <li>
               <form action="#" @submit.prevent="handleLogout">
