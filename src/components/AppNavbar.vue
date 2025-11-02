@@ -72,6 +72,7 @@ export default {
       <template v-if="user.id !== null">
         <li><RouterLink to="/chat">Chat</RouterLink></li>
         <li><RouterLink to="/mi-perfil">Mi perfil</RouterLink></li>
+       
         <li>
           <form action="#" @submit.prevent="handleLogout">
             <button type="submit">Cerrar sesión</button>
@@ -105,6 +106,9 @@ export default {
           <template v-if="user.id !== null">
             <li><RouterLink @click="drawer = false" to="/chat">Chat</RouterLink></li>
             <li><RouterLink @click="drawer = false" to="/mi-perfil">Mi perfil</RouterLink></li>
+            <li><RouterLink @click="drawer = false" to="/contactos">Contactos de confianza</RouterLink></li>
+            <li><RouterLink @click="drawer = false" to="/reportes">Reportes</RouterLink></li>
+            
             <li>
               <form action="#" @submit.prevent="handleLogout">
                 <button type="submit">Cerrar sesión</button>
@@ -122,7 +126,7 @@ export default {
   </nav>
 
   <!-- separador para compensar la altura del navbar fijo -->
-  <div class="h-[64px]"></div>
+  <div class="h-64px"></div>
 </template>
 
 <style scoped>
