@@ -51,11 +51,6 @@ export default {
           </template>
         </ActionCard>
 
-        <ActionCard title="ver recorrido" to="/ver-compartido" accent="blue">
-          <template #icon>
-            <img src="/ruta.png" alt="ícono ruta" />
-          </template>
-        </ActionCard>
       </section>
 
 

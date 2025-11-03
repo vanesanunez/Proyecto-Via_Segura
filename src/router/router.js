@@ -22,10 +22,6 @@ const routes = [
   {
     path: '/compartir',
     component: () => import('../pages/SharePathPage.vue')
-  },
-  {
-    path: '/ver-compartido',
-    component: () => import('../pages/ViewSharedPathPage.vue')
   }
 ];
 
