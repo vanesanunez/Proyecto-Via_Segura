@@ -158,7 +158,7 @@ export default {
 
   <!-- Toast de invitación arriba -->
   <div v-if="incomingInvite && hasNotification" class="fixed top-16 right-4 bg-white rounded-lg shadow-lg p-4 z-50 w-80">
-    <p class="mb-2"> {{ incomingInvite.sender_name || 'Tu contacto de confianza' }} quiere compartir su recorrido con vos.</p>
+    <p class="mb-2"> {{ incomingInvite.sender_name || 'Vanesa Nuñez' }} quiere compartir su recorrido con vos.</p>
     <div class="flex justify-end gap-2">
       <button @click="acceptInvite" class="bg-[#3082e3] text-white px-3 py-1 rounded">Aceptar</button>
       <button @click="rejectInvite" class="bg-[#e8dfdd] text-gray px-3 py-1 rounded rounded-blue">Rechazar</button>
