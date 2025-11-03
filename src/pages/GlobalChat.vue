@@ -6,14 +6,14 @@ import { subscribeToUserState } from '../services/auth';
 import { RouterLink } from 'vue-router';
 import MainLoader from '../components/MainLoader.vue';
 import { PaperAirplaneIcon } from '@heroicons/vue/24/solid'; 
-import BottomNavigation from '../components/BottomNavigation.vue';
+
 
 
 let unsubAuth = () => { };
 
 export default {
     name: 'GlobalChat',
-    components: { AppH1, MainLoader, PaperAirplaneIcon, BottomNavigation },
+    components: { AppH1, MainLoader, PaperAirplaneIcon },
 
     data() {
         return {
@@ -117,5 +117,5 @@ export default {
             </form>
         </section>
     </div>
-    <BottomNavigation />
+
 </template>

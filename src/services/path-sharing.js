@@ -1,4 +1,3 @@
-
 // services/path-sharing.js
 import supabase from "./supabase";
 
@@ -8,7 +7,7 @@ let currentBroadcast = null;
 let globalSharingChannel = null;
 let pathChannels = {};
 
-// Suscribirse al usuario autenticado
+// === Suscripción al estado de autenticación ===
 const subscribeToAuth = async () => {
   const { data } = await supabase.auth.getUser();
   user = data.user;
@@ -18,92 +17,113 @@ const subscribeToAuth = async () => {
   });
 };
 
-// Inicializar canal global si no existe
+// === Inicializar canal global y suscribirse a invitaciones ===
 const initGlobalChannel = async () => {
-  if (!globalSharingChannel) {
-    globalSharingChannel = supabase.channel("global-path-sharing");
-    await globalSharingChannel.subscribe();
-  }
-};
+  if (globalSharingChannel) return globalSharingChannel; // evitar duplicados
 
-// Escuchar invitaciones globales (para receptores)
-export const startListeningShareInvitations = async () => {
-  await subscribeToAuth();
-  if (!user?.id) return;
+  console.log("🔗 Subscribiéndose al canal global de path-sharing...");
+  globalSharingChannel = supabase.channel("global-path-sharing");
 
-  await initGlobalChannel();
-
+  // Escucha global de invitaciones
   globalSharingChannel.on("broadcast", { event: "share-path" }, (payload) => {
-    if (payload.receiver_id === user.id) {
-      console.log("Recibiste una invitación para seguir un recorrido.");
-      window.dispatchEvent(
-        new CustomEvent("path-invitation", { detail: payload })
-      );
+    if (payload.payload.receiver_id === user?.id) {
+      console.log("📩 Invitación recibida para seguir un recorrido.");
+      // Emitimos un evento global que cualquier componente puede escuchar
+      window.dispatchEvent(new CustomEvent("path-invitation", { detail: payload.payload }));
+    } else {
+      console.log("📭 Broadcast ignorado (no coincide receiver_id):", payload.payload.receiver_id, "≠", user?.id);
     }
   });
+
+  await globalSharingChannel.subscribe((status) => {
+    console.log("📶 Estado de suscripción global:", status);
+  });
+
+  return globalSharingChannel;
 };
 
-// Escuchar recorrido compartido
+// === Escuchar invitaciones (para receptores) ===
+export const startListeningShareInvitations = async () => {
+  await subscribeToAuth();
+  await initGlobalChannel();
+  console.log("👂 Escuchando invitaciones de recorrido...");
+};
+
+// === Escuchar recorrido compartido (canal individual) ===
 const startListeningSharedPath = ({ sharer_id, path_id }) => {
   const channelKey = `${sharer_id}:path:${path_id}`;
-  if (pathChannels[channelKey]) return;
+  if (pathChannels[channelKey]) return; // ya suscripto
 
   const channel = supabase.channel(channelKey);
 
   channel.on("broadcast", { event: "coords-update" }, (payload) => {
-    window.dispatchEvent(
-      new CustomEvent("coords-update", { detail: payload })
-    );
+    window.dispatchEvent(new CustomEvent("coords-update", { detail: payload }));
   });
 
   channel.on("broadcast", { event: "path-ended" }, () => {
-    console.log("El usuario finalizó el recorrido.");
+    console.log("🛑 El usuario finalizó el recorrido.");
     window.dispatchEvent(new CustomEvent("path-ended", { detail: { sharer_id, path_id } }));
     channel.unsubscribe();
     delete pathChannels[channelKey];
   });
 
-  channel.subscribe();
+  channel.subscribe((status) => {
+    console.log(`📡 Canal de seguimiento (${channelKey}):`, status);
+  });
+
   pathChannels[channelKey] = channel;
 };
 
-// Suscribirse a una invitación aceptada por el receptor
-export const acceptSharedPath = ({ sharer_id, path_id, invitationId }) => {
-  supabase
-    .from("path_invitations")
-    .update({ status: "accepted" })
-    .eq("id", invitationId);
+// === Aceptar invitación ===
+export const acceptSharedPath = async ({ sharer_id, path_id, invitation_id }) => {
+  try {
+    await supabase
+      .from("path_invitations")
+      .update({ status: "accepted" })
+      .eq("id", invitation_id);
 
-  startListeningSharedPath({ sharer_id, path_id });
+    startListeningSharedPath({ sharer_id, path_id });
+  } catch (err) {
+    console.error("Error al aceptar invitación:", err);
+  }
 };
 
-// Rechazar invitación
-export const rejectSharedPath = (invitationId) => {
-  supabase
-    .from("path_invitations")
-    .update({ status: "rejected" })
-    .eq("id", invitationId);
+// === Rechazar invitación ===
+export const rejectSharedPath = async (invitationId) => {
+  try {
+    await supabase
+      .from("path_invitations")
+      .update({ status: "rejected" })
+      .eq("id", invitationId);
+  } catch (err) {
+    console.error("Error al rechazar invitación:", err);
+  }
 };
 
-// Iniciar recorrido
+// === Iniciar recorrido (para emisor) ===
 export const startPath = async () => {
   await subscribeToAuth();
   if (!user?.id) throw new Error("Usuario no autenticado");
 
   currentPath = crypto.randomUUID();
   currentBroadcast = supabase.channel(`${user.id}:path:${currentPath}`);
-  await currentBroadcast.subscribe();
 
+  // Escucha del canal local (para debug o control)
+  currentBroadcast.on("broadcast", { event: "path-ended" }, () => {
+    console.log("Trayecto finalizado localmente.");
+  });
+
+  await currentBroadcast.subscribe();
   await initGlobalChannel();
 
-  console.log("Trayecto iniciado", currentPath);
+  console.log("🚶 Trayecto iniciado:", currentPath);
   return currentPath;
 };
 
-// Compartir recorrido con un contacto
+// === Compartir recorrido con un contacto ===
 export const sharePathWith = async (receiverId) => {
-  if (!currentPath) return console.error("No hay recorrido iniciado");
-  if (!user?.id) return console.error("Usuario no autenticado");
+  if (!currentPath) return console.error("No hay recorrido iniciado.");
+  if (!user?.id) return console.error("Usuario no autenticado.");
 
   try {
     const { data, error } = await supabase
@@ -121,10 +141,10 @@ export const sharePathWith = async (receiverId) => {
     if (error) throw error;
 
     const invitation = data[0];
+    const globalChannel = await initGlobalChannel();
 
-    await initGlobalChannel();
-
-    globalSharingChannel.send({
+    console.log("📤 Enviando broadcast de invitación...");
+    globalChannel.send({
       type: "broadcast",
       event: "share-path",
       payload: {
@@ -135,31 +155,40 @@ export const sharePathWith = async (receiverId) => {
       },
     });
 
-    console.log("Invitación enviada al contacto:", receiverId);
+    console.log("✅ Invitación enviada al contacto:", receiverId);
   } catch (err) {
     console.error("[path-sharing.js] Error al crear invitación:", err);
   }
 };
 
-// Enviar coordenadas en tiempo real
+// === Enviar coordenadas ===
 export const updateCoords = (coords) => {
-  if (!currentBroadcast) return;
-  currentBroadcast.send({
-    type: "broadcast",
-    event: "coords-update",
-    payload: coords,
-  });
+  if (!currentBroadcast) return console.warn("No hay canal activo.");
+  try {
+    currentBroadcast.send({
+      type: "broadcast",
+      event: "coords-update",
+      payload: coords,
+    });
+  } catch (err) {
+    console.error("Error enviando coordenadas:", err);
+  }
 };
 
-// Finalizar recorrido
-export const endPath = () => {
+// === Finalizar recorrido ===
+export const endPath = async () => {
   if (!currentBroadcast) return;
-  currentBroadcast.send({
-    type: "broadcast",
-    event: "path-ended",
-    payload: { message: "Recorrido finalizado" },
-  });
-  currentBroadcast.unsubscribe();
-  currentPath = null;
-  console.log("Recorrido finalizado");
+  try {
+    currentBroadcast.send({
+      type: "broadcast",
+      event: "path-ended",
+      payload: { message: "Recorrido finalizado" },
+    });
+    await currentBroadcast.unsubscribe();
+    currentBroadcast = null;
+    currentPath = null;
+    console.log("🧭 Recorrido finalizado y canal cerrado.");
+  } catch (err) {
+    console.error("Error al finalizar recorrido:", err);
+  }
 };

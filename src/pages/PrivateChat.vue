@@ -6,11 +6,11 @@ import { subscribeToUserState } from '../services/auth';
 import { getLastPrivateChatMessages, sendPrivateChatMessage, subscribeToPrivateChatNewMessages } from '../services/private-chats';
 import { getUserProfileById } from '../services/user-profiles';
 import { PaperAirplaneIcon } from '@heroicons/vue/24/solid';
-import BottomNavigation from '../components/BottomNavigation.vue';
+
 
 export default {
     name: 'PrivateChat',
-    components: { AppH1, MainLoader, PaperAirplaneIcon, BottomNavigation  },
+    components: { AppH1, MainLoader, PaperAirplaneIcon },
     data() {
         return {
             userAuth: { id: null, email: null, name: null, lastname: null },
@@ -121,5 +121,4 @@ export default {
 
     <MainLoader v-else />
 
-    <BottomNavigation />
 </template>

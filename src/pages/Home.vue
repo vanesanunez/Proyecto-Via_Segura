@@ -40,13 +40,13 @@ export default {
           </template>
         </ActionCard>
 
-        <ActionCard title="Recorrido seguro" to="/recorrido-seguro" accent="blue">
+        <!-- <ActionCard title="Recorrido seguro" to="/recorrido-seguro" accent="blue">
           <template #icon>
             <img src="/ruta.png" alt="ícono ruta" />
           </template>
-        </ActionCard>
+        </ActionCard> -->
 
-        <ActionCard title="compartir recorrido" to="/compartir" accent="blue">
+        <ActionCard title="Recorrido seguro" to="/compartir" accent="blue">
           <template #icon>
             <img src="/ruta.png" alt="ícono ruta" />
           </template>
