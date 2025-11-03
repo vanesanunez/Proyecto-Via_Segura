@@ -76,18 +76,18 @@ export default {
 <template>
   <template v-if="!loading">
     <div class="flex gap-4 items-end">
-      <AppH1 class="text-center">Mi perfil</AppH1>
+      <AppH1>Mi perfil</AppH1>
       <RouterLink to="/mi-perfil/editar" class="mb-4 text-blue-700"
         >Editar</RouterLink
       >
     </div>
 
-    <dl>
-      <dt class="font-bold mb-2">Email</dt>
+    <dl class="m-2">
+      <dt class="font-bold mb-2">Email:</dt>
       <dd class="mb-4">{{ user.email }}</dd>
-      <dt class="font-bold mb-2">Nombre</dt>
+      <dt class="font-bold mb-2">Nombre:</dt>
       <dd class="mb-4">{{ user.name }}</dd>
-      <dt class="font-bold mb-2">Apellido</dt>
+      <dt class="font-bold mb-2">Apellido:</dt>
       <dd class="mb-4">{{ user.lastname }}</dd>
       <dt class="font-bold mb-2">DNI</dt>
       <dd class="mb-4">{{ user.dni }}</dd>
