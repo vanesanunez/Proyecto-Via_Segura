@@ -6,10 +6,11 @@ import ReportCarousel from "../components/ReportCarousel.vue";
 import BottomNav from "../components/BottomNav.vue";
 import InfoCard from '../components/InfoCard.vue';
 import MainLoader from '../components/MainLoader.vue';
+import BottomNavigation from "../components/BottomNavigation.vue";
 
 export default {
   name: "Home",
-  components: { AppH1, SearchBar, ActionCard, ReportCarousel, BottomNav, InfoCard, MainLoader },
+  components: { AppH1, SearchBar, ActionCard, ReportCarousel, BottomNav, InfoCard, MainLoader, BottomNavigation },
 };
 </script>
 
@@ -68,5 +69,7 @@ export default {
     </main>
 
     <BottomNav />
+
+    <BottomNavigation />
   </div>
 </template>

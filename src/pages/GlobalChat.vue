@@ -5,13 +5,15 @@ import { saveGlobalChatMessage, subscribeToGlobalChatNewMessages, loadLastGlobal
 import { subscribeToUserState } from '../services/auth';
 import { RouterLink } from 'vue-router';
 import MainLoader from '../components/MainLoader.vue';
+import { PaperAirplaneIcon } from '@heroicons/vue/24/solid'; 
+import BottomNavigation from '../components/BottomNavigation.vue';
 
-// Variable para guardar la función de cancelar la suscripción a la autenticación.
+
 let unsubAuth = () => { };
 
 export default {
     name: 'GlobalChat',
-    components: { AppH1, MainLoader },
+    components: { AppH1, MainLoader, PaperAirplaneIcon, BottomNavigation },
 
     data() {
         return {
@@ -47,7 +49,6 @@ export default {
         unsubAuth = subscribeToUserState(newUserData => (this.user = newUserData));
 
         try {
-            // Traer mensajes iniciales
             this.messages = await loadLastGlobalChatMessages();
             this.loadingMessages = false;
 
@@ -56,7 +57,6 @@ export default {
                 this.$refs.chatContainer.scrollTop = this.$refs.chatContainer.scrollHeight;
             }
 
-            // Suscribirse a nuevos mensajes
             subscribeToGlobalChatNewMessages(async newMessageReceived => {
                 this.messages.push(newMessageReceived);
                 await nextTick();
@@ -105,7 +105,6 @@ export default {
 
         <section class="md:w-3/12 w-full flex flex-col">
 
-
             <form @submit.prevent="sendMessage" class="flex gap-2 items-center">
 
                 <input type="text" v-model="newMessage.body" placeholder="Escribí un mensaje..."
@@ -113,13 +112,10 @@ export default {
 
                 <button type="submit"
                     class="p-2 bg-blue-600 rounded-full hover:bg-blue-500 active:bg-blue-700 text-white flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M14.752 11.168l-9.193-5.39a1 1 0 00-1.447.894v10.756a1 1 0 001.447.894l9.193-5.39a1 1 0 000-1.768z" />
-                    </svg>
+                    <PaperAirplaneIcon class="h-5 w-5 "/> 
                 </button>
             </form>
         </section>
     </div>
+    <BottomNavigation />
 </template>

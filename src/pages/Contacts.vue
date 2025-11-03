@@ -4,6 +4,7 @@ import { getAllUsers, getTrustedContacts, addTrustedContact, removeTrustedContac
 import supabase from '../services/supabase';
 import MainLoader from '../components/MainLoader.vue';
 import AppH1 from '../components/AppH1.vue';
+import BottomNavigation from '../components/BottomNavigation.vue';
 
 const loading = ref(true);
 const allUsers = ref([]);
@@ -147,7 +148,7 @@ async function removeContact(relationId) {
       </div>
     </div>
   </div>
-
+<BottomNavigation />
 </template>
 
 

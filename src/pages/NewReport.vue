@@ -69,7 +69,7 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="max-w-xl mx-auto mt-10">
+  <div class="max-w-xl mx-auto mt-4">
     <h1 class="text-2xl font-bold mb-6">Nuevo Reporte</h1>
 
     <form @submit.prevent="handleSubmit">
@@ -109,7 +109,7 @@ async function handleSubmit() {
         ></textarea>
       </div>
 
-      <div class="flex flex-col items-center mb-6 sm:mb-8">
+      <div class="flex flex-col items-center mb-4 sm:mb-4">
         <label
           for="imageUpload"
           class="cursor-pointer flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 active:scale-95 transition-all"
