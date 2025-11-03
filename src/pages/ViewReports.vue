@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
-import { fetchReportsPageWithCount } from "../services/reports"; // 👈 ahora TODOS
+import { fetchReportsPageWithCount } from "../services/reports"; 
+import ReportCard from "../components/ReportCard.vue"; 
 
 const reports = ref([]);
 const page = ref(1);
@@ -50,29 +51,13 @@ watch(page, loadPage);
       No tenés reportes todavía.
     </div>
 
-    <!-- Lista de reportes (tarjetas más grandes) -->
     <ul class="space-y-4 mb-6">
-      <li
+      <ReportCard
         v-for="r in reports"
         :key="r.id"
-        class="rounded-2xl border border-gray-100 bg-white p-5 shadow-md hover:shadow-lg hover:scale-[1.01] transition-all duration-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div class="flex items-start sm:items-center gap-4">
-          <img
-            :src="r.imagen"
-            alt=""
-            class="w-20 h-20 rounded-xl object-cover border border-gray-200"/>
-          <div class="flex-1">
-            <p class="text-xs text-gray-400">
-              {{ new Date(r.created_at).toLocaleString() }}
-            </p>
-            <h3 class="text-lg font-semibold text-gray-800">
-              {{ r.categoria }}
-            </h3>
-            <p class="text-gray-600 text-sm mt-1">{{ r.descripcion }}</p>
-            <p class="text-gray-500 text-sm mt-1 italic">{{ r.ubicacion }}</p>
-          </div>
-        </div>
-      </li>
+        :report="r"
+        :to="`/report/${r.id}`"
+      />
     </ul>
 
     <!-- Paginación Tailwind -->
@@ -84,7 +69,8 @@ watch(page, loadPage);
         :class="
           page === 1
             ? 'text-gray-300 border-gray-200'
-            : 'hover:bg-gray-100 border-gray-300'"
+            : 'hover:bg-gray-100 border-gray-300'
+        "
       >
         ‹
       </button>
@@ -120,7 +106,7 @@ watch(page, loadPage);
   </div>
   <router-link
     to="/"
-    class="bg-blue-600 text-white py-2 px-4 rounded w-1/2 mx-auto text-center mb-3 hover:bg-blue-700 mt-8 block"
+    class="bg-[#3082e3] text-white py-2 px-4 rounded w-1/2 mx-auto text-center mb-3 hover:bg-[#085baf] mt-8 block"
   >
     Volver a la página de inicio
   </router-link>

@@ -149,7 +149,7 @@ async function handleSubmit() {
 
       <button
         type="submit"
-        class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-500"
+        class="bg-[#3082e3] text-white py-2 px-4 rounded hover:bg-[#085baf]"
       >
         Enviar Reporte
       </button>
