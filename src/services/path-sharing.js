@@ -27,16 +27,16 @@ const initGlobalChannel = async () => {
   // Escucha global de invitaciones
   globalSharingChannel.on("broadcast", { event: "share-path" }, (payload) => {
     if (payload.payload.receiver_id === user?.id) {
-      console.log("📩 Invitación recibida para seguir un recorrido.");
+      console.log("Invitación recibida para seguir un recorrido.");
       // Emitimos un evento global que cualquier componente puede escuchar
       window.dispatchEvent(new CustomEvent("path-invitation", { detail: payload.payload }));
     } else {
-      console.log("📭 Broadcast ignorado (no coincide receiver_id):", payload.payload.receiver_id, "≠", user?.id);
+      console.log("Broadcast ignorado (no coincide receiver_id):", payload.payload.receiver_id, "≠", user?.id);
     }
   });
 
   await globalSharingChannel.subscribe((status) => {
-    console.log("📶 Estado de suscripción global:", status);
+    console.log("Estado de suscripción global:", status);
   });
 
   return globalSharingChannel;
@@ -46,7 +46,7 @@ const initGlobalChannel = async () => {
 export const startListeningShareInvitations = async () => {
   await subscribeToAuth();
   await initGlobalChannel();
-  console.log("👂 Escuchando invitaciones de recorrido...");
+  console.log("Escuchando invitaciones de recorrido...");
 };
 
 // === Escuchar recorrido compartido (canal individual) ===
@@ -61,14 +61,14 @@ const startListeningSharedPath = ({ sharer_id, path_id }) => {
   });
 
   channel.on("broadcast", { event: "path-ended" }, () => {
-    console.log("🛑 El usuario finalizó el recorrido.");
+    console.log("El usuario finalizó el recorrido.");
     window.dispatchEvent(new CustomEvent("path-ended", { detail: { sharer_id, path_id } }));
     channel.unsubscribe();
     delete pathChannels[channelKey];
   });
 
   channel.subscribe((status) => {
-    console.log(`📡 Canal de seguimiento (${channelKey}):`, status);
+    console.log(` Canal de seguimiento (${channelKey}):`, status);
   });
 
   pathChannels[channelKey] = channel;
@@ -143,7 +143,7 @@ export const sharePathWith = async (receiverId) => {
     const invitation = data[0];
     const globalChannel = await initGlobalChannel();
 
-    console.log("📤 Enviando broadcast de invitación...");
+    console.log("Enviando broadcast de invitación...");
     globalChannel.send({
       type: "broadcast",
       event: "share-path",
@@ -155,7 +155,7 @@ export const sharePathWith = async (receiverId) => {
       },
     });
 
-    console.log("✅ Invitación enviada al contacto:", receiverId);
+    console.log("Invitación enviada al contacto:", receiverId);
   } catch (err) {
     console.error("[path-sharing.js] Error al crear invitación:", err);
   }
@@ -187,7 +187,7 @@ export const endPath = async () => {
     await currentBroadcast.unsubscribe();
     currentBroadcast = null;
     currentPath = null;
-    console.log("🧭 Recorrido finalizado y canal cerrado.");
+    console.log(" Recorrido finalizado y canal cerrado.");
   } catch (err) {
     console.error("Error al finalizar recorrido:", err);
   }

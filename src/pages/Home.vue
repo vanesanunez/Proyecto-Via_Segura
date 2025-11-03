@@ -7,10 +7,12 @@ import BottomNav from "../components/BottomNav.vue";
 import InfoCard from '../components/InfoCard.vue';
 import MainLoader from '../components/MainLoader.vue';
 import BottomNavigation from "../components/BottomNavigation.vue";
+import ReportCard from "../components/ReportCard.vue"; 
+
 
 export default {
   name: "Home",
-  components: { AppH1, SearchBar, ActionCard, ReportCarousel, BottomNav, InfoCard, MainLoader, BottomNavigation },
+  components: { AppH1, SearchBar, ActionCard, ReportCarousel, BottomNav, InfoCard, MainLoader, BottomNavigation, ReportCard },
 };
 </script>
 
@@ -65,6 +67,7 @@ export default {
       </p>
 
       <ReportCarousel />
+ 
       <div class="h-6"></div>
     </main>
 

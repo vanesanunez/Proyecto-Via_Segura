@@ -161,7 +161,7 @@ export default {
     <p class="mb-2"> {{ incomingInvite.sender_name || 'Tu contacto de confianza' }} quiere compartir su recorrido con vos.</p>
     <div class="flex justify-end gap-2">
       <button @click="acceptInvite" class="bg-[#3082e3] text-white px-3 py-1 rounded">Aceptar</button>
-      <button @click="rejectInvite" class="bg-[#f2826d] text-white px-3 py-1 rounded">Rechazar</button>
+      <button @click="rejectInvite" class="bg-[#e8dfdd] text-gray px-3 py-1 rounded rounded-blue">Rechazar</button>
     </div>
   </div>
 </template>
