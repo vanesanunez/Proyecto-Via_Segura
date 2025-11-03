@@ -3,15 +3,13 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { uploadImage, saveReport } from "../services/reports";
 import { subscribeToUserState } from "../services/auth";
-import MapSearchPicker from  "../components/MapSearchPicker.vue";
-
-
+import MapSearchPicker from "../components/MapSearchPicker.vue";
 
 // Datos del formulario
 const categoria = ref("");
 const descripcion = ref("");
 const ubicacion = ref("");
-const coords =ref(null);
+const coords = ref(null);
 const imagen = ref(null);
 const errorMessage = ref("");
 const router = useRouter();
@@ -56,7 +54,7 @@ async function handleSubmit() {
       descripcion: descripcion.value,
       ubicacion: ubicacion.value,
       latitud: coords.value.lat,
-      longitud:coords.value.lng,
+      longitud: coords.value.lng,
       imagen: imageUrl,
       user_id: user.value.id,
       email: user.value.email,
@@ -75,8 +73,7 @@ async function handleSubmit() {
     <h1 class="text-2xl font-bold mb-6">Nuevo Reporte</h1>
 
     <form @submit.prevent="handleSubmit">
-
-       <!-- MAPA + Buscador -->
+      <!-- MAPA + Buscador -->
       <div class="mb-4">
         <label class="block mb-1 font-semibold">Ubicación</label>
         <MapSearchPicker
@@ -88,8 +85,6 @@ async function handleSubmit() {
           Punto: {{ coords.lat?.toFixed(5) }}, {{ coords.lng?.toFixed(5) }}
         </div>
       </div>
-
-      
 
       <div class="mb-4">
         <label class="block mb-2">
@@ -114,13 +109,38 @@ async function handleSubmit() {
         ></textarea>
       </div>
 
-      
+      <div class="flex flex-col items-center mb-6 sm:mb-8">
+        <label
+          for="imageUpload"
+          class="cursor-pointer flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 active:scale-95 transition-all"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4-4m0 0l-4 4m4-4v12"
+            />
+          </svg>
+          <span>Subir imagen</span>
+        </label>
+        <input
+          id="imageUpload"
+          type="file"
+          accept="image/*"
+          class="hidden"
+          @change="onFileChange"
+        />
 
-     
-
-      <div class="mb-4">
-        <label class="block mb-1">Imagen</label>
-        <input type="file" @change="onFileChange" />
+        <p v-if="selectedFileName" class="mt-2 text-sm text-gray-600">
+          📎 {{ selectedFileName }}
+        </p>
       </div>
 
       <div v-if="errorMessage" class="text-red-600 mb-4">

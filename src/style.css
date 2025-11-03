@@ -1,9 +1,13 @@
 @import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 
 .colorinst {
     background: #0a77e5;
     color: #f7f9fc;
+}
+body {
+  font-family: 'Inter', sans-serif;
 }
 /* html, body, #app {
     height: 100%;
