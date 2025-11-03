@@ -44,6 +44,18 @@ export default {
             <img src="/ruta.png" alt="ícono ruta" />
           </template>
         </ActionCard>
+
+        <ActionCard title="compartir recorrido" to="/compartir" accent="blue">
+          <template #icon>
+            <img src="/ruta.png" alt="ícono ruta" />
+          </template>
+        </ActionCard>
+
+        <ActionCard title="ver recorrido" to="/ver-compartido" accent="blue">
+          <template #icon>
+            <img src="/ruta.png" alt="ícono ruta" />
+          </template>
+        </ActionCard>
       </section>
 
 

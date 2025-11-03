@@ -33,7 +33,7 @@ export default {
 
 <template>
   <nav
-    class="fixed top-0 left-0 w-full flex items-center justify-between p-4 bg-[#3082e3] text-white shadow-md z-50"
+    class="fixed top-0 left-0 w-full flex items-center justify-between p-4 bg-[#3082e3] text-white shadow-md z-50 "
   >
     <!-- Sección izquierda: botón + logo -->
     <div class="flex items-center gap-3">
@@ -223,7 +223,7 @@ export default {
   </nav>
 
   <!-- Espaciador para compensar el navbar fijo -->
-  <div class="h-64px"></div>
+  <div class="h-16px"></div>
 </template>
 
 <style scoped>

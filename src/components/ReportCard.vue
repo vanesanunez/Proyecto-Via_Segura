@@ -15,7 +15,7 @@ const props = defineProps({
       <img
         :src="report.imagen"
         alt="Imagen del reporte"
-        class="w-12 h-12 md:w-14 md:h-14 rounded-lg object-cover bg-gray-100 flex-shrink-0"
+        class="w-12 h-12 md:w-14 md:h-14 rounded-lg object-cover bg-gray-100 shrink-0"
       />
 
       <div class="min-w-0 flex-1">

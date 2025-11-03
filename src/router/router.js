@@ -18,6 +18,15 @@ const routes = [
   { path: '/reportes',              component: () => import('../pages/ViewReports.vue'),      meta:{ requiresAuth: true,},},
   { path: '/contactos',             component: () => import('../pages/Contacts.vue'),         meta:{ requiresAuth: true,},},
   { path: '/recorrido-seguro',      component: () => import('../pages/Routes.vue'),           meta:{ requiresAuth: true,},},
+
+  {
+    path: '/compartir',
+    component: () => import('../pages/SharePathPage.vue')
+  },
+  {
+    path: '/ver-compartido',
+    component: () => import('../pages/ViewSharedPathPage.vue')
+  }
 ];
 
 const router = createRouter({
