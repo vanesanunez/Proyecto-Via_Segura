@@ -19,7 +19,13 @@ const routes = [
   { path: '/contactos',                 component: () => import('../pages/Contacts.vue'),         meta:{ requiresAuth: true,},},
   { path: '/recorrido-seguro',          component: () => import('../pages/Routes.vue'),           meta:{ requiresAuth: true,},},
   { path: '/compartir',                 component: () => import('../pages/SharePathPage.vue'),    meta:{ requiresAuth: true,},},
-  { path: '/ver-recorrido/:pathId',     component: () => import('../pages/SharePathPage.vue'),    meta:{ requiresAuth: true,},},
+  { 
+    path: '/ver-recorrido/:pathId',
+    name: 'ViewSharedPath',
+    component: () => import('../pages/ViewSharedPathPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  // { path: '/ver-recorrido/:pathId',     component: () => import('../pages/ViewSharedPathPage.vue'),    meta:{ requiresAuth: true,},},
 ];
 
 const router = createRouter({

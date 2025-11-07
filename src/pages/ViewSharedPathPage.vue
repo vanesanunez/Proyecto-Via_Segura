@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { useAuth } from "@/composables/useAuth";
 import { supabase } from "@/supabaseClient";
@@ -132,4 +132,117 @@ button:hover {
     transform: translateY(0);
   }
 }
-</style>
+</style> -->
+
+<!-- views/ViewSharedPathPage.vue -->
+<template>
+  <div class="max-w-3xl mx-auto p-4">
+    <AppH1>Seguir recorrido</AppH1>
+    <div ref="mapEl" class="mt-4 rounded-xl border" style="height: 500px;"></div>
+    <div class="mt-4">
+      <button @click="stopFollowing" class="px-4 py-2 rounded bg-gray-200">Dejar de seguir</button>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, onMounted, onUnmounted } from "vue";
+import L from "leaflet";
+import AppH1 from "../components/AppH1.vue";
+import { startListeningSharedPath, stopListeningSharedPath } from "../services/path-sharing";
+
+import icon2x from "leaflet/dist/images/marker-icon-2x.png";
+import icon from "leaflet/dist/images/marker-icon.png";
+import shadow from "leaflet/dist/images/marker-shadow.png";
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: icon2x,
+  iconUrl: icon,
+  shadowUrl: shadow,
+});
+
+export default {
+  name: "ViewSharedPathPage",
+  components: { AppH1 },
+  setup(_, { root }) {
+    const mapEl = ref(null);
+    let map, trackedMarker, trackedPolyline;
+    let unsubscribeShared = null;
+
+    // Leemos params: path_id como param o query; sharer_id por query o param
+    const route = root.$route;
+    const path_id = route.params.path_id || route.query.path_id;
+    const sharer_id = route.query.sharer_id || route.params.sharer_id;
+
+    onMounted(() => {
+      map = L.map(mapEl.value, { zoomControl: false }).setView([-34.6037, -58.3816], 13);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
+
+      // Suscribir al canal compartido y actualizar mapa en tiempo real
+      if (sharer_id && path_id) {
+        unsubscribeShared = startListeningSharedPath(
+          { sharer_id, path_id },
+          (coords) => {
+            // coords: { lat, lng } esperado
+            if (!coords) return;
+            const lat = coords.lat ?? coords.latitude;
+            const lng = coords.lng ?? coords.longitude ?? coords.lon;
+
+            if (lat == null || lng == null) return;
+
+            // marcador y polyline
+            if (!trackedMarker) {
+              trackedMarker = L.marker([lat, lng]).addTo(map).bindPopup("Usuario seguido");
+            } else {
+              trackedMarker.setLatLng([lat, lng]);
+            }
+
+            if (!trackedPolyline) {
+              trackedPolyline = L.polyline([[lat, lng]], { color: "#3082e3", weight: 5 }).addTo(map);
+            } else {
+              trackedPolyline.addLatLng([lat, lng]);
+            }
+
+            map.flyTo([lat, lng], 15);
+          },
+          (endedPayload) => {
+            // cuando el emisor finaliza, cerramos la suscripción y avisamos
+            stopFollowing();
+            // opcional: mostrar notificación
+            console.log("Recorrido finalizado por el emisor", endedPayload);
+          }
+        );
+      } else {
+        console.warn("[ViewSharedPathPage] faltan sharer_id o path_id en la ruta");
+      }
+    });
+
+    onUnmounted(() => {
+      if (unsubscribeShared) unsubscribeShared();
+      // limpiar capas
+      [trackedMarker, trackedPolyline].forEach((l) => {
+        if (l && map) map.removeLayer(l);
+      });
+    });
+
+    function stopFollowing() {
+      if (unsubscribeShared) {
+        unsubscribeShared();
+        unsubscribeShared = null;
+      } else {
+        // por si fue registrado en pathChannels
+        if (sharer_id && path_id) stopListeningSharedPath({ sharer_id, path_id });
+      }
+      // no hacemos navegación automática (lo maneja quien quiera)
+    }
+
+    return {
+      mapEl,
+      stopFollowing,
+    };
+  },
+};
+</script>
