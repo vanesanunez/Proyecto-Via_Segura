@@ -252,7 +252,7 @@ export default {
     const isSharing = ref(false); // true si está compartiendo (envía coords)
 
     onMounted(async () => {
-      // inicializar mapa (como ya lo tenés)
+      // inicializar mapa 
       map = L.map(mapEl.value, { zoomControl: false }).setView([-34.6037, -58.3816], 13);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
@@ -275,7 +275,7 @@ export default {
       });
     });
 
-    // ===== Métodos para empezar rutas =====
+    // *** Métodos para empezar rutas 
     // Iniciar y compartir (emisor)
     async function startSharing() {
       if (!selectedContact.value) {
@@ -364,7 +364,7 @@ export default {
       myMarker = myPath = destinationMarker = routeLine = null;
     }
 
-    // ===== Búsqueda de destino (igual que tenías) =====
+    // *** Búsqueda de destino
     async function searchDestination() {
       if (!destinationQuery.value.trim()) return;
       const results = await nominatimSearch(destinationQuery.value, {

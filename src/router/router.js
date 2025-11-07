@@ -21,7 +21,6 @@ const routes = [
   { path: '/compartir',                 component: () => import('../pages/SharePathPage.vue'),    meta:{ requiresAuth: true,},},
   { 
     path: '/ver-recorrido/:pathId',
-    name: 'ViewSharedPath',
     component: () => import('../pages/ViewSharedPathPage.vue'),
     meta: { requiresAuth: true },
   },

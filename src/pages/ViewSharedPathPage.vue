@@ -135,6 +135,9 @@ button:hover {
 </style> -->
 
 <!-- views/ViewSharedPathPage.vue -->
+
+
+
 <template>
   <div class="max-w-3xl mx-auto p-4">
     <AppH1>Seguir recorrido</AppH1>
@@ -211,7 +214,7 @@ export default {
           (endedPayload) => {
             // cuando el emisor finaliza, cerramos la suscripción y avisamos
             stopFollowing();
-            // opcional: mostrar notificación
+           
             console.log("Recorrido finalizado por el emisor", endedPayload);
           }
         );
@@ -233,10 +236,10 @@ export default {
         unsubscribeShared();
         unsubscribeShared = null;
       } else {
-        // por si fue registrado en pathChannels
+        
         if (sharer_id && path_id) stopListeningSharedPath({ sharer_id, path_id });
       }
-      // no hacemos navegación automática (lo maneja quien quiera)
+      
     }
 
     return {

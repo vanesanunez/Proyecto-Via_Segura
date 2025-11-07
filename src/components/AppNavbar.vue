@@ -314,7 +314,7 @@ export default {
       </template>
     </ul>
 
-    <!-- Drawer (igual que tenías) -->
+    <!-- Drawer  -->
     <div v-if="drawer" @click="drawer = false" class="fixed inset-0 bg-black/40 z-40 md:hidden"></div>
 
     <transition name="slide">
@@ -355,6 +355,7 @@ export default {
         </div>
       </aside>
     </transition>
+    
 
     <!-- Toast de invitación -->
     <div v-if="incomingInvite && hasNotification" class="fixed top-16 right-4 bg-white rounded-lg shadow-lg p-4 z-50 w-80">
@@ -365,6 +366,7 @@ export default {
       </div>
     </div>
   </nav>
+  <div class="h-16px"></div>
 </template>
 
 <style scoped>
