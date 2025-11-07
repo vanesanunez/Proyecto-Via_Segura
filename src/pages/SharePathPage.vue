@@ -206,63 +206,7 @@ function selectDestination(place) {
   </div>
 </template> -->
 
-<!-- views/SharePathPage.vue -->
-<template>
-  <div class="max-w-2xl mx-auto p-4">
-    <AppH1>Compartir Recorrido</AppH1>
 
-    <div ref="mapEl" class="mt-4 rounded-xl border" style="height: 400px;"></div>
-
-    <div class="mb-4 mt-4">
-      <label class="block font-medium">Dirección de destino:</label>
-      <div class="flex gap-2">
-        <input
-          v-model="destinationQuery"
-          type="text"
-          class="flex-1 border rounded px-3 py-2"
-          @keyup.enter="searchDestination"
-          placeholder="Ej: Av. Corrientes 1234"
-        />
-        <button @click="searchDestination" class="px-4 py-2 rounded bg-blue-500 text-white">Buscar</button>
-      </div>
-
-      <ul v-if="destinationResults.length" class="bg-white border mt-2 rounded shadow max-h-40 overflow-auto">
-        <li
-          v-for="r in destinationResults"
-          :key="r.place_id"
-          class="p-2 hover:bg-blue-100 cursor-pointer"
-          @click="selectDestination(r)"
-        >
-          {{ composeAddress(r.address) }}
-        </li>
-      </ul>
-    </div>
-
-    <div class="mb-4 mt-4">
-      <label class="block font-medium">Contactos de confianza:</label>
-      <select v-model="selectedContact" class="w-full border rounded px-3 py-2">
-        <option :value="null" disabled>Seleccioná un contacto...</option>
-        <option v-for="c in trustedContacts" :key="c.id" :value="c">
-          {{ c.name }} {{ c.lastname }}
-        </option>
-      </select>
-    </div>
-
-    <div class="flex gap-2 mb-2">
-      <button v-if="!routeActive" @click="startSharing" class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700">
-        Iniciar recorrido compartido
-      </button>
-
-      <button v-if="!routeActive" @click="startLocal" class="px-4 py-2 rounded bg-gray-500 text-white hover:bg-gray-700">
-        Iniciar recorrido sin compartir
-      </button>
-
-      <button v-if="routeActive" @click="finishSharing" class="px-4 py-2 rounded bg-orange-400 text-white">
-        Finalizar recorrido
-      </button>
-    </div>
-  </div>
-</template>
 
 <script>
 import { ref, onMounted, onUnmounted } from "vue";
@@ -478,5 +422,62 @@ export default {
 };
 </script>
 
+
+<template>
+  <div class="max-w-2xl mx-auto p-4">
+    <AppH1>Compartir Recorrido</AppH1>
+
+    <div ref="mapEl" class="mt-4 rounded-xl border" style="height: 400px;"></div>
+
+    <div class="mb-4 mt-4">
+      <label class="block font-medium">Dirección de destino:</label>
+      <div class="flex gap-2">
+        <input
+          v-model="destinationQuery"
+          type="text"
+          class="flex-1 border rounded px-3 py-2"
+          @keyup.enter="searchDestination"
+          placeholder="Ej: Av. Corrientes 1234"
+        />
+        <button @click="searchDestination" class="px-4 py-2 rounded bg-blue-500 text-white">Buscar</button>
+      </div>
+
+      <ul v-if="destinationResults.length" class="bg-white border mt-2 rounded shadow max-h-40 overflow-auto">
+        <li
+          v-for="r in destinationResults"
+          :key="r.place_id"
+          class="p-2 hover:bg-blue-100 cursor-pointer"
+          @click="selectDestination(r)"
+        >
+          {{ composeAddress(r.address) }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="mb-4 mt-4">
+      <label class="block font-medium">Contactos de confianza:</label>
+      <select v-model="selectedContact" class="w-full border rounded px-3 py-2">
+        <option :value="null" disabled>Seleccioná un contacto...</option>
+        <option v-for="c in trustedContacts" :key="c.id" :value="c">
+          {{ c.name }} {{ c.lastname }}
+        </option>
+      </select>
+    </div>
+
+    <div class="flex gap-2 mb-2">
+      <button v-if="!routeActive" @click="startSharing" class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700">
+        Iniciar recorrido compartido
+      </button>
+
+      <button v-if="!routeActive" @click="startLocal" class="px-4 py-2 rounded border border-blue-500 bg-white text-gray hover:bg-gray-700">
+        Iniciar recorrido sin compartir
+      </button>
+
+      <button v-if="routeActive" @click="finishSharing" class="px-4 py-2 rounded bg-orange-400 text-white">
+        Finalizar recorrido
+      </button>
+    </div>
+  </div>
+</template>
 
 
