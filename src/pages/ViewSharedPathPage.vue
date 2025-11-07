@@ -55,7 +55,7 @@ const rejectInvite = () => {
 
     <div v-if="incomingInvite" class="invite-toast">
       <p>
-        🚶 {{ incomingInvite.sender_name || "Alguien" }}
+        {{ incomingInvite.sender_name || "Alguien" }}
         quiere compartir su recorrido contigo.
       </p>
       <div class="buttons">

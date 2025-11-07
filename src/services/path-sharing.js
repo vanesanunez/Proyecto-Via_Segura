@@ -1,4 +1,3 @@
-// services/path-sharing.js
 import supabase from "./supabase";
 
 let user = null;
@@ -21,7 +20,7 @@ const subscribeToAuth = async () => {
 const initGlobalChannel = async () => {
   if (globalSharingChannel) return globalSharingChannel; // evitar duplicados
 
-  console.log("🔗 Subscribiéndose al canal global de path-sharing...");
+  console.log("Subscribiéndose al canal global de path-sharing...");
   globalSharingChannel = supabase.channel("global-path-sharing");
 
   // Escucha global de invitaciones
@@ -116,7 +115,7 @@ export const startPath = async () => {
   await currentBroadcast.subscribe();
   await initGlobalChannel();
 
-  console.log("🚶 Trayecto iniciado:", currentPath);
+  console.log("Trayecto iniciado:", currentPath);
   return currentPath;
 };
 
