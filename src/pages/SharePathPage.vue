@@ -209,4 +209,3 @@ function selectDestination(place) {
 
 
 
-

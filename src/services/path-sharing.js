@@ -6,7 +6,7 @@ let currentBroadcast = null;
 let globalSharingChannel = null;
 let pathChannels = {};
 
-// === Suscripción al estado de autenticación ===
+// Suscripción al estado de autenticación
 const subscribeToAuth = async () => {
   const { data } = await supabase.auth.getUser();
   user = data.user;
@@ -16,7 +16,7 @@ const subscribeToAuth = async () => {
   });
 };
 
-// === Inicializar canal global y suscribirse a invitaciones ===
+// Inicializar canal global y suscribirse a invitaciones
 const initGlobalChannel = async () => {
   if (globalSharingChannel) return globalSharingChannel; // evitar duplicados
 
@@ -191,3 +191,4 @@ export const endPath = async () => {
     console.error("Error al finalizar recorrido:", err);
   }
 };
+
