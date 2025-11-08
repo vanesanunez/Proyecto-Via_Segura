@@ -337,7 +337,7 @@ export default {
             <li><RouterLink @click="drawer = false" to="/" class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition">Inicio</RouterLink></li>
             <template v-if="user.id !== null">
               <li><RouterLink @click="drawer = false" to="/reportes" class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition">Reportes</RouterLink></li>
-              <li><RouterLink @click="drawer = false" to="/recorrido-seguro" class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition">Recorrido seguro</RouterLink></li>
+              <li><RouterLink @click="drawer = false" to="/compartir" class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition">Recorrido seguro</RouterLink></li>
               <li><RouterLink @click="drawer = false" to="/mi-perfil" class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition">Perfil</RouterLink></li>
               <li><RouterLink @click="drawer = false" to="/contactos" class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition">Contactos de confianza</RouterLink></li>
               <li><RouterLink @click="drawer = false" to="/chat" class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition">Chat general</RouterLink></li>
@@ -358,8 +358,8 @@ export default {
     
 
     <!-- Toast de invitación -->
-    <div v-if="incomingInvite && hasNotification" class="fixed top-16 right-4 bg-white rounded-lg shadow-lg p-4 z-50 w-80">
-      <p class="mb-2"> {{ incomingInvite.sender_name || 'Alguien' }} quiere compartir su recorrido con vos.</p>
+    <div v-if="incomingInvite && hasNotification" class="fixed top-16 right-4 bg-white text-gray-700 rounded-lg shadow-lg p-4 z-50 w-80">
+      <p class="mb-2 text-gray-700"> {{ incomingInvite.sender_name || 'Alguien' }} quiere compartir su recorrido con vos.</p>
       <div class="flex justify-end gap-2">
         <button @click="acceptInvite" class="bg-[#3082e3] text-white px-3 py-1 rounded">Aceptar</button>
         <button @click="rejectInvite" class="bg-[#e8dfdd] text-gray px-3 py-1 rounded">Rechazar</button>

@@ -459,7 +459,7 @@ export async function endPath() {
       currentBroadcast = null;
     }
     currentPath = null;
-    console.log("[path-sharing] path ended");
+    console.log("[path-sharing] path ended - canal cerrado");
   } catch (err) {
     console.error("[path-sharing] endPath error:", err);
   }
