@@ -34,6 +34,8 @@ export async function saveReport(data) {
       imagen: data.imagen,
       user_id: data.user_id,
       email: data.email,
+      estado:pendiente,
+      apoyos:0,
     })
   if (error) throw error
 }
@@ -96,3 +98,65 @@ export async function fetchUserReportsPageWithCount({ userId, page = 1, pageSize
   if (error) throw error
   return { data: data ?? [], count: count ?? 0 }
 }
+
+//Busca reportes parecidos por categoria + texto de la ubicación
+export async function searchSimilarReports({ categoria, ubicacion }) {
+  // si no hay datos suficientes, directamente no busco
+  if (!categoria || !ubicacion || ubicacion.length < 3) {
+    return [];
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("reports")
+      .select("*")
+      .eq("categoria", categoria)
+      .ilike("ubicacion", `%${ubicacion}%`) 
+      .order("created_at", { ascending: false })
+      .limit(5); 
+
+    if (error) {
+      console.error("Error buscando reportes similares:", error);
+      return [];
+    }
+
+    return data || [];
+  } catch (e) {
+    console.error("Fallo inesperado buscando similares:", e);
+    return [];
+  }
+}
+
+// Suma 1 apoyo al reporte indicado
+export async function joinReport(reportId) {
+  try {
+    // 1) leo cuántos apoyos tiene ahora
+    const { data: actual, error: readError } = await supabase
+      .from("reports")
+      .select("apoyos")
+      .eq("id", reportId)
+      .single();
+
+    if (readError) {
+      console.error("Error leyendo apoyos actuales:", readError);
+      throw readError;
+    }
+
+    const apoyosActuales = actual?.apoyos ?? 0;
+
+    // 2) actualizo con +1
+    const { error: updateError } = await supabase
+      .from("reports")
+      .update({ apoyos: apoyosActuales + 1 })
+      .eq("id", reportId);
+
+    if (updateError) {
+      console.error("Error actualizando apoyos:", updateError);
+      throw updateError;
+    }
+  } catch (e) {
+    console.error("Fallo inesperado sumando apoyo:", e);
+    throw e;
+  }
+}
+
