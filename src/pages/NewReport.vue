@@ -1,11 +1,17 @@
 <script setup>
-import { ref,computed} from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { uploadImage, saveReport,  searchSimilarReports, joinReport} from "../services/reports";
+import {
+  uploadImage,
+  saveReport,
+  searchSimilarReports,
+  joinReport,
+} from "../services/reports";
 import { subscribeToUserState } from "../services/auth";
 import MapSearchPicker from "../components/MapSearchPicker.vue";
+import { XMarkIcon, CheckCircleIcon } from "@heroicons/vue/24/solid";
 
-// Datos del formulario
+// --- Datos del formulario ---
 const categoria = ref("");
 const descripcion = ref("");
 const ubicacion = ref("");
@@ -14,42 +20,36 @@ const imagen = ref(null);
 const errorMessage = ref("");
 const router = useRouter();
 
-// nombre del archivo para mostrar en el texto 
+// nombre del archivo para mostrar
 const selectedFileName = computed(() =>
   imagen.value ? imagen.value.name : ""
 );
 
-// NUEVO: estado para "reportes similares" 
+// --- Estados ---
 const similares = ref([]);
-const viendoSimilares = ref(false);
 const buscandoSimilares = ref(false);
 const errorSimilares = ref("");
+const showSuccessSheet = ref(false);
+const showBottomSheet = ref(false);
 
-
-// Datos del usuario
-const user = ref({
-  id: null,
-  email: null,
-});
+// --- Datos del usuario ---
+const user = ref({ id: null, email: null });
 
 subscribeToUserState((newUserData) => {
   user.value = newUserData;
 });
 
+// Manejo de archivos
 function onFileChange(e) {
   const file = e.target.files[0];
-  if (file) {
-    imagen.value = file;
-  } else {
-    imagen.value = null;
-  }
+  imagen.value = file || null;
 }
 
-// Buscar reportes parecidos por categoría + ubicación
-async function  findSimilarReports() {
-  viendoSimilares.value = false;
+// Buscar reportes existentes
+async function findSimilarReports() {
   errorSimilares.value = "";
   similares.value = [];
+  showBottomSheet.value = false;
   buscandoSimilares.value = true;
 
   try {
@@ -59,43 +59,54 @@ async function  findSimilarReports() {
     });
 
     similares.value = lista;
-    // solo muestro el bloque si encontré algo
-    viendoSimilares.value = lista.length > 0;
+
+    if (lista.length > 0) {
+      showBottomSheet.value = true;
+    } else {
+      errorSimilares.value =
+        "No encontramos reportes similares. Podés crear uno nuevo";
+    }
   } catch (e) {
-    console.error(e);
-    errorSimilares.value = "No se pudieron buscar reportes similares.";
+    console.error("[findSimilarReports]", e);
+    errorSimilares.value =
+      "No se pudieron buscar reportes similares. Intentalo de nuevo.";
   } finally {
     buscandoSimilares.value = false;
   }
 }
 
-// "Sumarme" a un reporte existente (sumar 1 a apoyos)
-async function  joinExistingReport(reporte) {
+async function joinExistingReport(reporte) {
   try {
     await joinReport(reporte.id);
-    alert("Te sumaste al reclamo de ese reporte.");
-    // opcional: actualizar la lista en pantalla sumando 1
+
+    showBottomSheet.value = false; // cierro lista
+    showSuccessSheet.value = true; // abro modal centrado
+
     const item = similares.value.find((r) => r.id === reporte.id);
-    if (item) {
-      item.apoyos = (item.apoyos || 0) + 1;
-    }
+    if (item) item.apoyos = (item.apoyos || 0) + 1;
   } catch (e) {
-    console.error(e);
-    alert("No se pudo sumar al reclamo. Intentalo de nuevo.");
+    console.error("[joinExistingReport]", e);
+    errorSimilares.value = "No se pudo sumar al reclamo.";
   }
 }
 
-// Manejador de envío (crear reporte nuevo)
 async function handleSubmit() {
   try {
+    if (similares.value.length > 0) {
+      errorMessage.value =
+        "Ya existen reportes similares. Podés sumarte a uno.";
+      return;
+    }
+
     if (
       !categoria.value ||
       !descripcion.value ||
       !ubicacion.value ||
-      !imagen.value
+      !imagen.value ||
+      !coords.value
     ) {
       errorMessage.value =
-        "Por favor completá todos los campos y subí una imagen.";
+        "Completá todos los campos y elegí un punto en el mapa.";
       return;
     }
 
@@ -112,22 +123,40 @@ async function handleSubmit() {
       email: user.value.email,
     });
 
-    // Redirigir al confirmar
     router.push("/report/confirmado");
   } catch (error) {
-  console.error("[NewReport.vue handleSubmit] Error al enviar reporte:", error);
-    errorMessage.value = "No se pudo enviar el reporte. Intentalo de nuevo.";
+    console.error("[handleSubmit]", error);
+    errorMessage.value = "No se pudo enviar el reporte.";
   }
+}
+
+const hasSimilarReports = computed(() => similares.value.length > 0);
+
+function startNewReport() {
+  // cierro el modal
+  showSuccessSheet.value = false;
+
+  // limpio posibles similares y errores
+  similares.value = [];
+  errorSimilares.value = "";
+  errorMessage.value = "";
+
+  // limpio el formulario
+  categoria.value = "";
+  descripcion.value = "";
+  ubicacion.value = "";
+  coords.value = null;
+  imagen.value = null;
 }
 </script>
 
 <template>
-  <div class="max-w-xl mx-auto mt-4">
+  <div class="max-w-xl mx-auto mt-4 pb-24">
     <h1 class="text-2xl font-bold mb-6">Nuevo Reporte</h1>
 
-    <form @submit.prevent="handleSubmit">
-      <!-- MAPA + Buscador -->
-      <div class="mb-4">
+    <form @submit.prevent="handleSubmit" class="space-y-4">
+      <!-- MAPA -->
+      <div>
         <label class="block mb-1 font-semibold">Ubicación</label>
         <MapSearchPicker
           v-model="coords"
@@ -139,105 +168,63 @@ async function handleSubmit() {
         </div>
       </div>
 
-      <div class="mb-4">
-        <label class="block mb-2">
-          Categoría del problema
-          <select
-            v-model="categoria"
-            class="w-full mt-1 border rounded px-2 py-1"
-          >
-            <option disabled value="">Elegí una categoría</option>
-            <option>Iluminación</option>
-            <option>Infraestructura</option>
-            <option>Seguridad</option>
-          </select>
-        </label>
+      <!-- CATEGORÍA -->
+      <div>
+        <label class="block mb-2 font-semibold">Categoría del problema</label>
+        <select
+          v-model="categoria"
+          class="w-full mt-1 border rounded px-2 py-2"
+        >
+          <option disabled value="">Elegí una categoría</option>
+          <option>Iluminación</option>
+          <option>Infraestructura</option>
+          <option>Seguridad</option>
+        </select>
       </div>
 
-      <div class="mb-4">
-        <button
-          type="button"
-          @click="findSimilarReports"
-          class="text-sm px-3 py-2 rounded border border-blue-600 text-blue-600 hover:bg-blue-50"
-        >
-          Buscar reportes similares
-        </button>
-
-        <div v-if="buscandoSimilares" class="text-sm text-gray-500 mt-2">
-          Buscando reportes similares...
+      <!-- BUSCAR SIMILARES -->
+      <div class="border rounded-lg p-3 bg-gray-50">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-sm text-gray-700">
+            Antes de crear un reporte nuevo, verificá si ya existe:
+          </p>
+          <button
+            type="button"
+            @click="findSimilarReports"
+            class="text-xs px-3 py-1.5 rounded-full border border-[#3082e3] text-[#3082e3] hover:bg-blue-50"
+          >
+            Buscar similares
+          </button>
         </div>
 
-        <div v-if="errorSimilares" class="text-sm text-red-600 mt-2">
+        <div v-if="buscandoSimilares" class="text-xs text-gray-500">
+          Buscando...
+        </div>
+        <div v-if="errorSimilares" class="text-xs text-gray-600">
           {{ errorSimilares }}
         </div>
-
-        <div
-          v-if="viendoSimilares"
-          class="mt-3 p-3 border rounded bg-gray-50 text-sm"
-        >
-          <p class="font-medium mb-2">Encontramos reportes similares:</p>
-
-          <ul class="space-y-2">
-            <li
-              v-for="r in similares"
-              :key="r.id"
-              class="flex justify-between items-center gap-3"
-            >
-              <div>
-                <p class="font-semibold">{{ r.categoria }}</p>
-                <p class="text-gray-700">{{ r.ubicacion }}</p>
-                <p class="text-xs text-gray-500">
-                  Apoyos: {{ r.apoyos ?? 0 }} · Fecha:
-                  {{ new Date(r.created_at).toLocaleDateString() }}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                @click=" joinExistingReport(r)"
-                class="px-2 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"
-              >
-                Sumarme
-              </button>
-            </li>
-          </ul>
-
-          <p class="text-xs text-gray-500 mt-2">
-            Si ninguno coincide con lo que querés reportar, podés continuar con
-            el formulario y crear un reporte nuevo.
-          </p>
-        </div>
       </div>
 
-      <div class="mb-4">
-        <label class="block mb-1">Descripción</label>
+      <!-- DESCRIPCIÓN -->
+      <div>
+        <label class="block mb-1 font-semibold">Descripción</label>
         <textarea
           v-model="descripcion"
-          class="w-full p-2 border border-gray-300 rounded"
+          :disabled="hasSimilarReports"
+          class="w-full p-2 border border-gray-300 rounded min-h-[90px] disabled:bg-gray-100 disabled:text-gray-500"
+          placeholder="Contá qué pasó..."
         ></textarea>
       </div>
 
-      <div class="flex flex-col items-center mb-4 sm:mb-4">
+      <!-- IMAGEN -->
+      <div class="flex flex-col items-center">
         <label
           for="imageUpload"
-          class="cursor-pointer flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 active:scale-95 transition-all"
+          class="cursor-pointer flex items-center gap-2 bg-[#3082e3] text-white px-5 py-2 rounded-lg shadow-md hover:bg-[#085baf] active:scale-95 transition-all"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4-4m0 0l-4 4m4-4v12"
-            />
-          </svg>
           <span>Subir imagen</span>
         </label>
+
         <input
           id="imageUpload"
           type="file"
@@ -251,16 +238,124 @@ async function handleSubmit() {
         </p>
       </div>
 
-      <div v-if="errorMessage" class="text-red-600 mb-4">
+      <!-- ERROR GENERAL -->
+      <div v-if="errorMessage" class="text-red-600 text-sm">
         {{ errorMessage }}
       </div>
 
+      <!-- BOTÓN ENVIAR -->
       <button
         type="submit"
-        class="bg-[#3082e3] text-white py-2 px-4 rounded hover:bg-[#085baf]"
+        :disabled="hasSimilarReports"
+        class="w-full bg-[#3082e3] text-white py-2 px-4 rounded hover:bg-[#085baf] disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
         Enviar Reporte
       </button>
     </form>
+
+    <!-- MODAL ÉXITO -->
+    <div
+      v-if="showSuccessSheet"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    >
+      <div class="bg-white rounded-2xl w-11/12 max-w-sm p-6 shadow-xl relative">
+        <button
+          @click="showSuccessSheet = false"
+          class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+        >
+          <XMarkIcon class="h-5 w-5" />
+        </button>
+
+        <h2 class="text-xl font-semibold text-gray-800 mb-3">
+          ¡Te sumaste al reclamo!
+        </h2>
+
+        <p class="text-base text-gray-700 leading-relaxed mb-5">
+          Gracias por contribuir a la seguridad de tu zona.
+        </p>
+
+        <div class="space-y-3">
+          <button
+            @click="router.push('/')"
+            class="w-full bg-[#3082e3] text-white py-2.5 rounded-lg font-medium hover:bg-[#085baf]"
+          >
+            Ir al inicio
+          </button>
+
+          <button
+            type="button"
+            @click="startNewReport"
+            class="w-full bg-gray-100 py-2.5 rounded-lg font-medium text-gray-700 hover:bg-gray-200"
+          >
+            Hacer un nuevo reporte
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM SHEET SIMILARES -->
+    <div
+      v-if="showBottomSheet"
+      class="fixed inset-0 bg-black/40 z-40"
+      @click="showBottomSheet = false"
+    ></div>
+
+    <div
+      v-if="showBottomSheet"
+      class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-xl z-50 p-4 pb-8 animate-slide-up"
+    >
+      <div class="flex justify-center mb-2">
+        <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+      </div>
+
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-lg font-semibold text-gray-800">Reportes similares</h2>
+
+        <button @click="showBottomSheet = false" class="text-gray-500">
+          <XMarkIcon class="h-6 w-6" />
+        </button>
+      </div>
+
+      <p class="text-sm text-gray-700 mb-3 leading-normal">
+        Ya existen reportes parecidos. Podés sumarte a uno.
+      </p>
+
+      <ul class="space-y-3 max-h-64 overflow-y-auto">
+        <li
+          v-for="r in similares"
+          :key="r.id"
+          class="p-3 border rounded-lg shadow-sm bg-gray-50"
+        >
+          <p class="font-medium text-gray-800">{{ r.categoria }}</p>
+          <p class="text-gray-700 text-sm">{{ r.ubicacion }}</p>
+          <p class="text-xs text-gray-500 mt-1">
+            Apoyos: <span class="font-semibold">{{ r.apoyos ?? 0 }}</span> —
+            {{ new Date(r.created_at).toLocaleDateString() }}
+          </p>
+
+          <button
+            @click="joinExistingReport(r)"
+            class="mt-2 w-full bg-[#3082e3] text-white py-1.5 rounded-lg text-sm hover:bg-[#085baf]"
+          >
+            Sumarme a este reporte
+          </button>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
+
+<style scoped>
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.25s ease-out;
+}
+</style>
