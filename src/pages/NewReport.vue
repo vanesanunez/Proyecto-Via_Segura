@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from "vue";
+import { ref,computed} from "vue";
 import { useRouter } from "vue-router";
-import { uploadImage, saveReport } from "../services/reports";
+import { uploadImage, saveReport,  searchSimilarReports, joinReport} from "../services/reports";
 import { subscribeToUserState } from "../services/auth";
 import MapSearchPicker from "../components/MapSearchPicker.vue";
 
@@ -14,14 +14,17 @@ const imagen = ref(null);
 const errorMessage = ref("");
 const router = useRouter();
 
-function onFileChange(e) {
-  const file = e.target.files[0];
-  if (file) {
-    imagen.value = file;
-  } else {
-    imagen.value = null;
-  }
-}
+// nombre del archivo para mostrar en el texto 
+const selectedFileName = computed(() =>
+  imagen.value ? imagen.value.name : ""
+);
+
+// NUEVO: estado para "reportes similares" 
+const similares = ref([]);
+const viendoSimilares = ref(false);
+const buscandoSimilares = ref(false);
+const errorSimilares = ref("");
+
 
 // Datos del usuario
 const user = ref({
@@ -33,7 +36,56 @@ subscribeToUserState((newUserData) => {
   user.value = newUserData;
 });
 
-// Manejador de envío
+function onFileChange(e) {
+  const file = e.target.files[0];
+  if (file) {
+    imagen.value = file;
+  } else {
+    imagen.value = null;
+  }
+}
+
+// Buscar reportes parecidos por categoría + ubicación
+async function  findSimilarReports() {
+  viendoSimilares.value = false;
+  errorSimilares.value = "";
+  similares.value = [];
+  buscandoSimilares.value = true;
+
+  try {
+    const lista = await searchSimilarReports({
+      categoria: categoria.value,
+      ubicacion: ubicacion.value,
+    });
+
+    similares.value = lista;
+    // solo muestro el bloque si encontré algo
+    viendoSimilares.value = lista.length > 0;
+  } catch (e) {
+    console.error(e);
+    errorSimilares.value = "No se pudieron buscar reportes similares.";
+  } finally {
+    buscandoSimilares.value = false;
+  }
+}
+
+// "Sumarme" a un reporte existente (sumar 1 a apoyos)
+async function  joinExistingReport(reporte) {
+  try {
+    await joinReport(reporte.id);
+    alert("Te sumaste al reclamo de ese reporte.");
+    // opcional: actualizar la lista en pantalla sumando 1
+    const item = similares.value.find((r) => r.id === reporte.id);
+    if (item) {
+      item.apoyos = (item.apoyos || 0) + 1;
+    }
+  } catch (e) {
+    console.error(e);
+    alert("No se pudo sumar al reclamo. Intentalo de nuevo.");
+  }
+}
+
+// Manejador de envío (crear reporte nuevo)
 async function handleSubmit() {
   try {
     if (
@@ -99,6 +151,61 @@ async function handleSubmit() {
             <option>Seguridad</option>
           </select>
         </label>
+      </div>
+
+      <div class="mb-4">
+        <button
+          type="button"
+          @click="findSimilarReports"
+          class="text-sm px-3 py-2 rounded border border-blue-600 text-blue-600 hover:bg-blue-50"
+        >
+          Buscar reportes similares
+        </button>
+
+        <div v-if="buscandoSimilares" class="text-sm text-gray-500 mt-2">
+          Buscando reportes similares...
+        </div>
+
+        <div v-if="errorSimilares" class="text-sm text-red-600 mt-2">
+          {{ errorSimilares }}
+        </div>
+
+        <div
+          v-if="viendoSimilares"
+          class="mt-3 p-3 border rounded bg-gray-50 text-sm"
+        >
+          <p class="font-medium mb-2">Encontramos reportes similares:</p>
+
+          <ul class="space-y-2">
+            <li
+              v-for="r in similares"
+              :key="r.id"
+              class="flex justify-between items-center gap-3"
+            >
+              <div>
+                <p class="font-semibold">{{ r.categoria }}</p>
+                <p class="text-gray-700">{{ r.ubicacion }}</p>
+                <p class="text-xs text-gray-500">
+                  Apoyos: {{ r.apoyos ?? 0 }} · Fecha:
+                  {{ new Date(r.created_at).toLocaleDateString() }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                @click=" joinExistingReport(r)"
+                class="px-2 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"
+              >
+                Sumarme
+              </button>
+            </li>
+          </ul>
+
+          <p class="text-xs text-gray-500 mt-2">
+            Si ninguno coincide con lo que querés reportar, podés continuar con
+            el formulario y crear un reporte nuevo.
+          </p>
+        </div>
       </div>
 
       <div class="mb-4">
