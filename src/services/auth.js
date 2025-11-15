@@ -39,6 +39,15 @@ async function loadUserExtendedProfile() {
   try {
     const profileData = await getUserProfileById(user.id);
 
+    // Si aún no hay perfil en la tabla, salgo sin romper nada
+    if (!profileData) {
+      console.warn(
+        "[auth.js loadUserExtendedProfile] No se encontró perfil para el usuario:",
+        user.id
+      );
+      return;
+    }
+
     updateUser({
       name: profileData.name,
       lastname: profileData.lastname,
@@ -49,7 +58,7 @@ async function loadUserExtendedProfile() {
       "[auth.js loadUserExtendedProfile] Error al traer perfil extendido del usuario: ",
       error
     );
-    throw error;
+    
   }
 }
 

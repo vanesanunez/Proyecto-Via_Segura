@@ -115,6 +115,7 @@ async function handleSubmit() {
     // Redirigir al confirmar
     router.push("/report/confirmado");
   } catch (error) {
+  console.error("[NewReport.vue handleSubmit] Error al enviar reporte:", error);
     errorMessage.value = "No se pudo enviar el reporte. Intentalo de nuevo.";
   }
 }

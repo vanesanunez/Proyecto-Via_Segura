@@ -34,10 +34,13 @@ export async function saveReport(data) {
       imagen: data.imagen,
       user_id: data.user_id,
       email: data.email,
-      estado:pendiente,
-      apoyos:0,
+      estado:data.estado || "pendiente",
+      apoyos:data.apoyos ?? 0,
     })
-  if (error) throw error
+  if (error) {
+    console.error("[reports.js saveReport] Error al guardar reporte:", error);
+    throw error;
+  }
 }
 
 /**
@@ -109,7 +112,7 @@ export async function searchSimilarReports({ categoria, ubicacion }) {
   try {
     const { data, error } = await supabase
       .from("reports")
-      .select("*")
+      .select("id, categoria, ubicacion, apoyos, created_at")
       .eq("categoria", categoria)
       .ilike("ubicacion", `%${ubicacion}%`) 
       .order("created_at", { ascending: false })
@@ -130,8 +133,8 @@ export async function searchSimilarReports({ categoria, ubicacion }) {
 // Suma 1 apoyo al reporte indicado
 export async function joinReport(reportId) {
   try {
-    // 1) leo cuántos apoyos tiene ahora
-    const { data: actual, error: readError } = await supabase
+    // 1) leer apoyos actuales desde la base
+    const { data: current, error: readError } = await supabase
       .from("reports")
       .select("apoyos")
       .eq("id", reportId)
@@ -142,21 +145,24 @@ export async function joinReport(reportId) {
       throw readError;
     }
 
-    const apoyosActuales = actual?.apoyos ?? 0;
+    const currentApoyos = current?.apoyos ?? 0;
 
-    // 2) actualizo con +1
-    const { error: updateError } = await supabase
+    // 2) actualizar con +1
+    const { data: updated, error: updateError } = await supabase
       .from("reports")
-      .update({ apoyos: apoyosActuales + 1 })
-      .eq("id", reportId);
+      .update({ apoyos: currentApoyos + 1 })
+      .eq("id", reportId)
+      .select("apoyos")
+      .single();
 
     if (updateError) {
       console.error("Error actualizando apoyos:", updateError);
       throw updateError;
     }
+
+    return updated; // por si después querés usar el valor nuevo
   } catch (e) {
     console.error("Fallo inesperado sumando apoyo:", e);
     throw e;
   }
 }
-
