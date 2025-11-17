@@ -2,14 +2,15 @@ import supabase from "./supabase";
 
 let user = null;
 let currentPath = null;
-let currentBroadcast = null; // canal supabase activo (si se comparte)
+let currentBroadcast = null;
 let globalChannel = null;
-const pathChannels = {}; 
+const pathChannels = {};
 
-// callbacks locales
-const invitationListeners = new Set(); // callbacks (invitation) => { ... }
+const invitationListeners = new Set();
 
-//  Auth 
+
+// Auth
+
 export async function subscribeToAuth() {
   const { data } = await supabase.auth.getUser();
   user = data.user ?? null;
@@ -19,22 +20,21 @@ export async function subscribeToAuth() {
   });
 }
 
-//  Global channel / invitaciones
+
+// Global channel
+
 async function initGlobalChannelIfNeeded() {
   if (globalChannel) return globalChannel;
 
   globalChannel = supabase.channel("global-path-sharing");
 
-  // escuchamos invitación y notificamos a todos los listeners registrados
   globalChannel.on(
     "broadcast",
     { event: "share-path" },
     (payload) => {
-      // payload.payload expected to contain { sharer_id, receiver_id, path_id, invitation_id, ... }
       const invite = payload.payload;
       if (!invite) return;
 
-      // solo notificar a los listeners si coincide receiver
       if (invite.receiver_id === user?.id) {
         invitationListeners.forEach((cb) => {
           try { cb(invite); } catch (err) { console.error("invite cb err", err); }
@@ -50,37 +50,30 @@ async function initGlobalChannelIfNeeded() {
   return globalChannel;
 }
 
-/**
- * Registrar callback para recibir invitaciones entrantes.
- * callback(invitation) => void
- * Devuelve una función para desuscribir ese callback.
- */
+
+// Invitaciones
+
 export async function startListeningShareInvitations(callback) {
   await subscribeToAuth();
   await initGlobalChannelIfNeeded();
   invitationListeners.add(callback);
 
-  // return unsubscribe function
   return () => {
     invitationListeners.delete(callback);
   };
 }
 
-//  Escuchar recorrido compartido (receptor) 
-/**
- * startListeningSharedPath({ sharer_id, path_id }, onCoords, onEnded)
- * - onCoords(payload) recibe { lat, lng } o la estructura enviada por el emisor
- * - onEnded(info) es llamado cuando el emisor finaliza el recorrido
- * Devuelve una función unsubscribe() para dejar de escuchar.
- */
+
+// Receptor: escuchar recorrido compartido
+
 export function startListeningSharedPath({ sharer_id, path_id }, onCoords, onEnded) {
   const channelKey = `${sharer_id}:path:${path_id}`;
+
   if (pathChannels[channelKey]) {
-    // si ya existe,  actualizamos callbacks
     pathChannels[channelKey].onCoords = onCoords;
     pathChannels[channelKey].onEnded = onEnded;
+
     return () => {
-      
       const ch = pathChannels[channelKey];
       if (ch?.channel) {
         ch.channel.unsubscribe();
@@ -92,13 +85,11 @@ export function startListeningSharedPath({ sharer_id, path_id }, onCoords, onEnd
   const channel = supabase.channel(channelKey);
 
   channel.on("broadcast", { event: "coords-update" }, (payload) => {
-    // payload.payload expected to be coords object
     if (onCoords) onCoords(payload.payload);
   });
 
   channel.on("broadcast", { event: "path-ended" }, (payload) => {
     if (onEnded) onEnded(payload.payload);
-    // cleanup
     channel.unsubscribe();
     delete pathChannels[channelKey];
   });
@@ -117,7 +108,9 @@ export function startListeningSharedPath({ sharer_id, path_id }, onCoords, onEnd
   };
 }
 
-//  Aceptar / rechazar invitación (BD)
+
+// Aceptar o rechazar la invitación
+
 export async function acceptSharedPath({ sharer_id, path_id, invitation_id }) {
   try {
     await supabase
@@ -145,11 +138,9 @@ export async function rejectSharedPath(invitationId) {
   }
 }
 
-//  Emisor: iniciar recorrido 
-/**
- * startPath() -> crea un pathId y abre un canal para broadcast (compartido)
- * Devuelve el pathId (uuid).
- */
+
+// Emisor: iniciar recorrido
+
 export async function startPath() {
   await subscribeToAuth();
   if (!user?.id) throw new Error("Usuario no autenticado");
@@ -168,26 +159,23 @@ export async function startPath() {
   return currentPath;
 }
 
-/**
- * startPathWithoutSharing() -> crea un pathId local (sin abrir canal supabase).
- * trazar en el mapa localmente sin compartir.
- */
+// Recorrido sin compartir
 export async function startPathWithoutSharing() {
   await subscribeToAuth();
   if (!user?.id) throw new Error("Usuario no autenticado");
 
   currentPath = crypto.randomUUID();
-  // currentBroadcast intentionally null: no se comparte
   currentBroadcast = null;
 
-  // asegurar globalChannel inicializado (para que podamos enviar invitaciones más adelante )
   await initGlobalChannelIfNeeded();
 
   console.log("[path-sharing] started local path (no sharing):", currentPath);
   return currentPath;
 }
 
-// Compartir: crear invitación y broadcast al receptor 
+
+// Compartir recorrido
+
 export async function sharePathWith(receiverId) {
   if (!currentPath) return console.error("No hay recorrido iniciado.");
   if (!user?.id) return console.error("Usuario no autenticado.");
@@ -210,7 +198,7 @@ export async function sharePathWith(receiverId) {
     const invitation = data[0];
     await initGlobalChannelIfNeeded();
 
-    globalChannel.send({
+    const message = {
       type: "broadcast",
       event: "share-path",
       payload: {
@@ -220,7 +208,13 @@ export async function sharePathWith(receiverId) {
         invitation_id: invitation.id,
         sender_name: user.user_metadata?.name || user.email,
       },
-    });
+    };
+
+    try {
+      await globalChannel.send(message);
+    } catch (_) {
+      await globalChannel.httpSend(message);
+    }
 
     console.log("[path-sharing] invitation sent to:", receiverId);
     return invitation;
@@ -230,33 +224,51 @@ export async function sharePathWith(receiverId) {
   }
 }
 
-//  Enviar coordenadas (solo si se está compartiendo)
+
+// Emisor: enviar coordenadas
+
 export function updateCoords(coords) {
-  if (!currentBroadcast) return; // si es recorrido local, no hacemos nada
+  if (!currentBroadcast) return;
+
+  const message = {
+    type: "broadcast",
+    event: "coords-update",
+    payload: coords,
+  };
+
   try {
-    currentBroadcast.send({
-      type: "broadcast",
-      event: "coords-update",
-      payload: coords,
-    });
-  } catch (err) {
-    console.error("[path-sharing] updateCoords error:", err);
+    currentBroadcast.send(message);
+  } catch (_) {
+    currentBroadcast.httpSend(message);
   }
 }
 
-//  Finalizar recorrido (emisor)
+
+// Finalizar recorrido
+
 export async function endPath() {
   try {
     if (currentBroadcast) {
-      // avisamos a receptores
-      currentBroadcast.send({
+      const message = {
         type: "broadcast",
         event: "path-ended",
-        payload: { message: "Recorrido finalizado", sharer_id: user?.id, path_id: currentPath },
-      });
+        payload: {
+          message: "Recorrido finalizado",
+          sharer_id: user?.id,
+          path_id: currentPath,
+        },
+      };
+
+      try {
+        currentBroadcast.send(message);
+      } catch (_) {
+        currentBroadcast.httpSend(message);
+      }
+
       await currentBroadcast.unsubscribe();
       currentBroadcast = null;
     }
+
     currentPath = null;
     console.log("[path-sharing] path ended - canal cerrado");
   } catch (err) {
@@ -264,14 +276,13 @@ export async function endPath() {
   }
 }
 
-// Helpers públicos 
+
+// Helpers
+
 export function getCurrentPathId() {
   return currentPath;
 }
 
-/**
- * stopListeningSharedPath(channelKey) ->  cerrar manualmente
- */
 export function stopListeningSharedPath({ sharer_id, path_id }) {
   const channelKey = `${sharer_id}:path:${path_id}`;
   if (pathChannels[channelKey]?.channel) {

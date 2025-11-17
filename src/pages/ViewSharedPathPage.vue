@@ -1,10 +1,15 @@
-<script>
+<script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import L from "leaflet";
 import AppH1 from "../components/AppH1.vue";
-import { startListeningSharedPath, stopListeningSharedPath } from "../services/path-sharing";
 
+import {
+  startListeningSharedPath,
+  stopListeningSharedPath,
+} from "../services/path-sharing";
+
+// Fix leaflet imágenes
 import icon2x from "leaflet/dist/images/marker-icon-2x.png";
 import icon from "leaflet/dist/images/marker-icon.png";
 import shadow from "leaflet/dist/images/marker-shadow.png";
@@ -16,106 +21,126 @@ L.Icon.Default.mergeOptions({
   shadowUrl: shadow,
 });
 
-export default {
-  name: "ViewSharedPathPage",
-  components: { AppH1 },
-  setup() {
-    const route = useRoute();
-    const router = useRouter();
+// ----------------------
+// Setup
+// ----------------------
 
-    const mapEl = ref(null);
-    const showToast = ref(false);
-    const toastMessage = ref("");
+const route = useRoute();
+const router = useRouter();
 
-    let map, trackedMarker, trackedPolyline;
-    let unsubscribeShared = null;
+const mapEl = ref(null);
+const showToast = ref(false);
+const toastMessage = ref("");
 
-    const path_id = route.params.pathId || route.query.path_id;
-    const sharer_id = route.query.sharer_id || route.params.sharer_id;
+let map = null;
+let trackedMarker = null;
+let trackedPolyline = null;
+let unsubscribeShared = null;
 
-    function triggerToast(message) {
-      toastMessage.value = message;
-      showToast.value = true;
-      setTimeout(() => {
-        showToast.value = false;
-      }, 3000);
-    }
+const path_id = route.params.pathId || route.query.path_id;
+const sharer_id = route.query.sharer_id || route.params.sharer_id;
 
-    onMounted(() => {
-      map = L.map(mapEl.value, { zoomControl: false }).setView([-34.6037, -58.3816], 13);
+// ----------------------
+// Toast
+// ----------------------
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "© OpenStreetMap contributors",
-      }).addTo(map);
+function triggerToast(message) {
+  toastMessage.value = message;
+  showToast.value = true;
 
-      if (sharer_id && path_id) {
-        unsubscribeShared = startListeningSharedPath(
-          { sharer_id, path_id },
-          (coords) => {
-            if (!coords) return;
-            const lat = coords.lat ?? coords.latitude;
-            const lng = coords.lng ?? coords.longitude ?? coords.lon;
-            if (lat == null || lng == null) return;
+  setTimeout(() => {
+    showToast.value = false;
+  }, 3000);
+}
 
-            if (!trackedMarker) {
-              trackedMarker = L.marker([lat, lng]).addTo(map).bindPopup("Usuario seguido");
-            } else {
-              trackedMarker.setLatLng([lat, lng]);
-            }
+// ----------------------
+// Mounted
+// ----------------------
 
-            if (!trackedPolyline) {
-              trackedPolyline = L.polyline([[lat, lng]], {
-                color: "#3082e3",
-                weight: 5,
-              }).addTo(map);
-            } else {
-              trackedPolyline.addLatLng([lat, lng]);
-            }
+onMounted(() => {
+  map = L.map(mapEl.value, { zoomControl: false }).setView(
+    [-34.6037, -58.3816],
+    13
+  );
 
-            map.flyTo([lat, lng], 15);
-          },
-          () => {
-            stopFollowing();
-          }
-        );
-      } else {
-        console.warn("[ViewSharedPathPage] faltan sharer_id o path_id");
-      }
-    });
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap contributors",
+  }).addTo(map);
 
-    onUnmounted(() => {
-      if (unsubscribeShared) unsubscribeShared();
-      [trackedMarker, trackedPolyline].forEach((l) => {
-        if (l && map) map.removeLayer(l);
-      });
-    });
+  if (sharer_id && path_id) {
+    unsubscribeShared = startListeningSharedPath(
+      { sharer_id, path_id },
+      (coords) => {
+        if (!coords) return;
 
-    function stopFollowing() {
-      if (unsubscribeShared) {
-        unsubscribeShared();
-        unsubscribeShared = null;
-      } else {
-        if (sharer_id && path_id) {
-          stopListeningSharedPath({ sharer_id, path_id });
+        const lat = coords.lat ?? coords.latitude;
+        const lng = coords.lng ?? coords.longitude ?? coords.lon;
+
+        if (lat == null || lng == null) return;
+
+        // Marker
+        if (!trackedMarker) {
+          trackedMarker = L.marker([lat, lng])
+            .addTo(map)
+            .bindPopup("Usuario seguido");
+        } else {
+          trackedMarker.setLatLng([lat, lng]);
         }
+
+        // Polyline
+        if (!trackedPolyline) {
+          trackedPolyline = L.polyline([[lat, lng]], {
+            color: "#3082e3",
+            weight: 5,
+          }).addTo(map);
+        } else {
+          trackedPolyline.addLatLng([lat, lng]);
+        }
+
+        map.flyTo([lat, lng], 15);
+      },
+      () => {
+        stopFollowing();
       }
+    );
+  } else {
+    console.warn("[ViewSharedPathPage] faltan sharer_id o path_id");
+  }
+});
 
-      triggerToast("Has dejado de seguir el recorrido.");
+// ----------------------
+// Cleanup
+// ----------------------
 
-      setTimeout(() => {
-        router.push("/");
-      }, 500); // pequeña demora para que el toast aparezca
+onUnmounted(() => {
+  if (unsubscribeShared) unsubscribeShared();
+
+  [trackedMarker, trackedPolyline].forEach((l) => {
+    if (l && map) map.removeLayer(l);
+  });
+});
+
+// ----------------------
+// Funciones UI
+// ----------------------
+
+function stopFollowing() {
+  if (unsubscribeShared) {
+    unsubscribeShared();
+    unsubscribeShared = null;
+  } else {
+    if (sharer_id && path_id) {
+      stopListeningSharedPath({ sharer_id, path_id });
     }
+  }
 
-    return {
-      mapEl,
-      stopFollowing,
-      showToast,
-      toastMessage,
-    };
-  },
-};
+  triggerToast("Dejaste de seguir el recorrido.");
+
+  setTimeout(() => {
+    router.push("/");
+  }, 2000);
+}
 </script>
 
 <template>
@@ -127,16 +152,16 @@ export default {
     <div class="mt-4">
       <button
         @click="stopFollowing"
-        class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition"
+        class="px-4 py-2 rounded bg-blue-200 hover:bg-blue-300 transition"
       >
         Dejar de seguir
       </button>
     </div>
 
-    <!-- ⭐ Toast -->
+    <!-- Toast -->
     <div
       v-if="showToast"
-      class="fixed top-4 right-4 bg-black text-white px-4 py-2 rounded-lg shadow-lg animate-fade"
+      class="fixed top-4 right-4 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg animate-fade"
       style="z-index: 9999;"
     >
       {{ toastMessage }}
@@ -146,10 +171,21 @@ export default {
 
 <style>
 @keyframes fade {
-  0% { opacity: 0; transform: translateY(-10px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-10px); }
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
 
 .animate-fade {
