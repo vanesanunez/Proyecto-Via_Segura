@@ -4,15 +4,36 @@ import SearchBar from "../components/SearchBar.vue";
 import ActionCard from "../components/ActionCard.vue";
 import ReportCarousel from "../components/ReportCarousel.vue";
 import BottomNav from "../components/BottomNav.vue";
-import InfoCard from '../components/InfoCard.vue';
-import MainLoader from '../components/MainLoader.vue';
+import InfoCard from "../components/InfoCard.vue";
+import MainLoader from "../components/MainLoader.vue";
 import BottomNavigation from "../components/BottomNavigation.vue";
-import ReportCard from "../components/ReportCard.vue"; 
-
+import ReportCard from "../components/ReportCard.vue";
+import {
+  PlusCircleIcon,
+  EyeIcon,
+  UsersIcon,
+  MapIcon,
+  InformationCircleIcon,
+} from "@heroicons/vue/24/solid";
 
 export default {
   name: "Home",
-  components: { AppH1, SearchBar, ActionCard, ReportCarousel, BottomNav, InfoCard, MainLoader, BottomNavigation, ReportCard },
+  components: {
+    AppH1,
+    SearchBar,
+    ActionCard,
+    ReportCarousel,
+    BottomNav,
+    InfoCard,
+    MainLoader,
+    BottomNavigation,
+    ReportCard,
+    PlusCircleIcon,
+    EyeIcon,
+    UsersIcon,
+    MapIcon,
+    InformationCircleIcon,
+  },
 };
 </script>
 
@@ -20,46 +41,42 @@ export default {
   <AppH1 class="hidden">¡Bienvenidos a Vía Segura!</AppH1>
 
   <div>
-  
     <main class="max-w-md mx-auto px-4">
-     
       <section class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
         <ActionCard title="Hacer un reporte" to="/report/nuevo" accent="blue">
           <template #icon>
-            <img src="/mano.png" alt="ícono mano" />
+            <PlusCircleIcon class="h-9 w-9 text-[#3082e3]" />
           </template>
         </ActionCard>
 
         <ActionCard title="Ver reportes" to="/reportes" accent="blue">
           <template #icon>
-            <img src="/ojo.png" alt="ícono ojo" />
+            <EyeIcon class="h-9 w-9 text-[#3082e3]" />
           </template>
         </ActionCard>
 
-        <ActionCard title="Contactos de confianza" to="/contactos" accent="blue">
+        <ActionCard title="Contactos de confianza"          to="/contactos"
+          accent="blue">
           <template #icon>
-            <img src="/comunidad.png" alt="ícono comunidad" />
+            <UsersIcon class="h-8 w-8 text-[#3082e3]" />
           </template>
         </ActionCard>
 
         <!-- <ActionCard title="Recorrido seguro" to="/recorrido-seguro" accent="blue">
           <template #icon>
-            <img src="/ruta.png" alt="ícono ruta" />
+             <EyeIcon class="h-9 w-9 text-[#3082e3]" />
           </template>
         </ActionCard> -->
 
         <ActionCard title="Recorrido seguro" to="/compartir" accent="blue">
-          <template #icon>
-            <img src="/ruta.png" alt="ícono ruta" />
-          </template>
-        </ActionCard>
-
+         <template #icon>
+         <MapIcon class="h-8 w-8 text-[#3082e3]" />
+         </template>
+         </ActionCard>
       </section>
-
 
       <div class="mt-6">
         <InfoCard />
-
       </div>
 
       <p class="text-center text-sm text-brandCoral mt-6">
@@ -67,7 +84,7 @@ export default {
       </p>
 
       <ReportCarousel />
- 
+
       <div class="h-6"></div>
     </main>
 
