@@ -194,7 +194,7 @@ function startNewReport() {
         <button
           type="button"
           @click="findSimilarReports"
-          class="text-xs text-[#3082e3] font-medium underline underline-offset-2
+          class="text-s text-[#3082e3] font-medium underline underline-offset-2
                  hover:text-[#085baf]"
         >
           Ver si ya hay reclamos en esta zona
@@ -202,10 +202,10 @@ function startNewReport() {
       </div>
 
       <!-- Mensajito de error / feedback de búsqueda -->
-      <div v-if="buscandoSimilares" class="text-xs text-gray-500">
+      <div v-if="buscandoSimilares" class="text-s text-gray-500">
         Buscando reportes similares...
       </div>
-      <div v-if="errorSimilares" class="text-xs text-gray-600">
+      <div v-if="errorSimilares" class="text-s text-gray-600">
         {{ errorSimilares }}
       </div>
 
