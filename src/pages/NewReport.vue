@@ -9,7 +9,11 @@ import {
 } from "../services/reports";
 import { subscribeToUserState } from "../services/auth";
 import MapSearchPicker from "../components/MapSearchPicker.vue";
-import { XMarkIcon, CheckCircleIcon } from "@heroicons/vue/24/solid";
+import {
+  XMarkIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/vue/24/solid";
 
 // --- Datos del formulario ---
 const categoria = ref("");
@@ -32,6 +36,9 @@ const errorSimilares = ref("");
 const showSuccessSheet = ref(false);
 const showBottomSheet = ref(false);
 
+// 🔹 NUEVO: modal popup con la tarjetita de aviso
+const showSimilarHintModal = ref(false);
+
 // --- Datos del usuario ---
 const user = ref({ id: null, email: null });
 
@@ -50,6 +57,7 @@ async function findSimilarReports() {
   errorSimilares.value = "";
   similares.value = [];
   showBottomSheet.value = false;
+  showSimilarHintModal.value = false;
   buscandoSimilares.value = true;
 
   try {
@@ -61,10 +69,12 @@ async function findSimilarReports() {
     similares.value = lista;
 
     if (lista.length > 0) {
-      showBottomSheet.value = true;
+      // ✅ Hay coincidencias: mostramos el modal tipo popup
+      showSimilarHintModal.value = true;
     } else {
+      // ❌ No hay similares
       errorSimilares.value =
-        "No encontramos reportes similares. Podés crear uno nuevo";
+        "No encontramos reportes similares. Podés crear uno nuevo.";
     }
   } catch (e) {
     console.error("[findSimilarReports]", e);
@@ -79,8 +89,8 @@ async function joinExistingReport(reporte) {
   try {
     await joinReport(reporte.id);
 
-    showBottomSheet.value = false; // cierro lista
-    showSuccessSheet.value = true; // abro modal centrado
+    showBottomSheet.value = false;    // cierro lista
+    showSuccessSheet.value = true;    // abro modal centrado de éxito
 
     const item = similares.value.find((r) => r.id === reporte.id);
     if (item) item.apoyos = (item.apoyos || 0) + 1;
@@ -94,7 +104,7 @@ async function handleSubmit() {
   try {
     if (similares.value.length > 0) {
       errorMessage.value =
-        "Ya existen reportes similares. Podés sumarte a uno.";
+        "Ya existen reportes similares en esta zona. Podés sumarte a uno.";
       return;
     }
 
@@ -106,7 +116,7 @@ async function handleSubmit() {
       !coords.value
     ) {
       errorMessage.value =
-        "Completá todos los campos y elegí un punto en el mapa.";
+        "Por favor completá todos los campos, elegí un punto en el mapa y subí una imagen.";
       return;
     }
 
@@ -126,22 +136,19 @@ async function handleSubmit() {
     router.push("/report/confirmado");
   } catch (error) {
     console.error("[handleSubmit]", error);
-    errorMessage.value = "No se pudo enviar el reporte.";
+    errorMessage.value = "No se pudo enviar el reporte. Intentalo de nuevo.";
   }
 }
 
 const hasSimilarReports = computed(() => similares.value.length > 0);
 
 function startNewReport() {
-  // cierro el modal
   showSuccessSheet.value = false;
 
-  // limpio posibles similares y errores
   similares.value = [];
   errorSimilares.value = "";
   errorMessage.value = "";
 
-  // limpio el formulario
   categoria.value = "";
   descripcion.value = "";
   ubicacion.value = "";
@@ -182,27 +189,24 @@ function startNewReport() {
         </select>
       </div>
 
-      <!-- BUSCAR SIMILARES -->
-      <div class="border rounded-lg p-3 bg-gray-50">
-        <div class="flex items-center justify-between mb-2">
-          <p class="text-sm text-gray-700">
-            Antes de crear un reporte nuevo, verificá si ya existe uno similar:
-          </p>
-          <button
-            type="button"
-            @click="findSimilarReports"
-            class="text-xs px-3 py-1.5 rounded-full border border-[#3082e3] text-[#3082e3] hover:bg-blue-50"
-          >
-            Buscar similares
-          </button>
-        </div>
+      <!-- Link chiquito para disparar la búsqueda -->
+      <div class="flex justify-end items-center gap-2">
+        <button
+          type="button"
+          @click="findSimilarReports"
+          class="text-xs text-[#3082e3] font-medium underline underline-offset-2
+                 hover:text-[#085baf]"
+        >
+          Ver si ya hay reclamos en esta zona
+        </button>
+      </div>
 
-        <div v-if="buscandoSimilares" class="text-xs text-gray-500">
-          Buscando...
-        </div>
-        <div v-if="errorSimilares" class="text-xs text-gray-600">
-          {{ errorSimilares }}
-        </div>
+      <!-- Mensajito de error / feedback de búsqueda -->
+      <div v-if="buscandoSimilares" class="text-xs text-gray-500">
+        Buscando reportes similares...
+      </div>
+      <div v-if="errorSimilares" class="text-xs text-gray-600">
+        {{ errorSimilares }}
       </div>
 
       <!-- DESCRIPCIÓN -->
@@ -211,16 +215,26 @@ function startNewReport() {
         <textarea
           v-model="descripcion"
           :disabled="hasSimilarReports"
-          class="w-full p-2 border border-gray-300 rounded min-h-[90px] disabled:bg-gray-100 disabled:text-gray-500"
-          placeholder="Contá qué pasó..."
+          class="w-full p-2 border border-gray-300 rounded min-h-[90px]
+                 disabled:bg-gray-100 disabled:text-gray-500"
+          placeholder="Contá qué pasó, por qué este lugar no es seguro, etc."
         ></textarea>
+        <p
+          v-if="hasSimilarReports"
+          class="text-sm text-yellow-700 mt-2 bg-yellow-50 px-3 py-2 rounded-md leading-normal"
+        >
+          Encontramos reportes similares en esta zona. Sumate a uno existente
+          desde la lista en lugar de crear uno nuevo.
+        </p>
       </div>
 
       <!-- IMAGEN -->
       <div class="flex flex-col items-center">
         <label
           for="imageUpload"
-          class="cursor-pointer flex items-center gap-2 bg-[#3082e3] text-white px-5 py-2 rounded-lg shadow-md hover:bg-[#085baf] active:scale-95 transition-all"
+          class="cursor-pointer flex items-center gap-2 bg-[#3082e3]
+                 text-white px-5 py-2 rounded-lg shadow-md hover:bg-[#085baf]
+                 active:scale-95 transition-all"
         >
           <span>Subir imagen</span>
         </label>
@@ -247,18 +261,75 @@ function startNewReport() {
       <button
         type="submit"
         :disabled="hasSimilarReports"
-        class="w-full bg-[#3082e3] text-white py-2 px-4 rounded hover:bg-[#085baf] disabled:bg-gray-300 disabled:cursor-not-allowed"
+        class="w-full bg-[#3082e3] text-white py-2 px-4 rounded
+               hover:bg-[#085baf] disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
         Enviar Reporte
       </button>
     </form>
 
-    <!-- MODAL ÉXITO -->
+    <!-- MODAL POPUP: “Evitá duplicar reclamos” -->
+    <div
+      v-if="showSimilarHintModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    >
+      <div
+        class="bg-white rounded-2xl w-11/12 max-w-sm p-5 shadow-xl relative"
+      >
+        <!-- Botón cerrar -->
+        <button
+          @click="showSimilarHintModal = false"
+          class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+        >
+          <XMarkIcon class="h-5 w-5" />
+        </button>
+
+        <!-- Contenido de la “tarjetita” -->
+        <div class="flex items-center gap-2 mb-3">
+          <ExclamationTriangleIcon class="w-6 h-6 text-[#3082e3]" />
+          <p class="font-semibold text-gray-800 text-base">
+            Evitá duplicar reclamos
+          </p>
+        </div>
+
+        <p class="text-sm text-gray-700 mb-4 leading-snug">
+          Encontramos reportes similares en esta zona.  
+          Podés sumarte a un reclamo existente para darle más fuerza y prioridad.
+        </p>
+
+        <div class="space-y-2">
+          <button
+            type="button"
+            @click="
+              showSimilarHintModal = false;
+              showBottomSheet = true;
+            "
+            class="w-full bg-[#3082e3] text-white py-2.5 rounded-lg font-medium
+                   hover:bg-[#085baf] active:scale-[.98] transition"
+          >
+            Ver reportes similares
+          </button>
+
+          <button
+            type="button"
+            @click="showSimilarHintModal = false"
+            class="w-full bg-gray-100 py-2.5 rounded-lg font-medium text-gray-700
+                   hover:bg-gray-200 active:scale-[.98]"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL ÉXITO SUMARSE AL RECLAMO -->
     <div
       v-if="showSuccessSheet"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
     >
-      <div class="bg-white rounded-2xl w-11/12 max-w-sm p-6 shadow-xl relative">
+      <div
+        class="bg-white rounded-2xl w-11/12 max-w-sm p-6 shadow-xl relative flex flex-col items-center gap-3"
+      >
         <button
           @click="showSuccessSheet = false"
           class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
@@ -266,18 +337,26 @@ function startNewReport() {
           <XMarkIcon class="h-5 w-5" />
         </button>
 
-        <h2 class="text-xl font-semibold text-gray-800 mb-3">
+        <div
+          class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center"
+        >
+          <CheckCircleIcon class="h-8 w-8 text-green-600" />
+        </div>
+
+        <h2 class="text-lg font-semibold text-gray-800 text-center">
           ¡Te sumaste al reclamo!
         </h2>
 
-        <p class="text-base text-gray-700 leading-relaxed mb-5">
-          Gracias por contribuir a la seguridad de tu zona.
+        <p class="text-sm text-gray-700 leading-relaxed text-center mb-2">
+          Gracias por contribuir a la seguridad de tu zona.  
+          Tu apoyo se registró correctamente.
         </p>
 
-        <div class="space-y-3">
+        <div class="w-full space-y-3 mt-1">
           <button
             @click="router.push('/')"
-            class="w-full bg-[#3082e3] text-white py-2.5 rounded-lg font-medium hover:bg-[#085baf]"
+            class="w-full bg-[#3082e3] text-white py-2.5 rounded-lg font-medium
+                   hover:bg-[#085baf] active:scale-[.98] transition"
           >
             Ir al inicio
           </button>
@@ -285,7 +364,8 @@ function startNewReport() {
           <button
             type="button"
             @click="startNewReport"
-            class="w-full bg-gray-100 py-2.5 rounded-lg font-medium text-gray-700 hover:bg-gray-200"
+            class="w-full bg-gray-100 py-2.5 rounded-lg font-medium text-gray-700
+                   hover:bg-gray-200 active:scale-[.98]"
           >
             Hacer un nuevo reporte
           </button>
@@ -302,7 +382,8 @@ function startNewReport() {
 
     <div
       v-if="showBottomSheet"
-      class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-xl z-50 p-4 pb-8 animate-slide-up"
+      class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-xl z-50
+             p-4 pb-8 animate-slide-up"
     >
       <div class="flex justify-center mb-2">
         <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
@@ -317,7 +398,8 @@ function startNewReport() {
       </div>
 
       <p class="text-sm text-gray-700 mb-3 leading-normal">
-        Ya existen reportes parecidos. Podés sumarte a uno.
+        Ya existen reportes parecidos en esta zona. Podés sumarte a uno de ellos
+        para darle más fuerza al reclamo.
       </p>
 
       <ul class="space-y-3 max-h-64 overflow-y-auto">
@@ -329,18 +411,25 @@ function startNewReport() {
           <p class="font-medium text-gray-800">{{ r.categoria }}</p>
           <p class="text-gray-700 text-sm">{{ r.ubicacion }}</p>
           <p class="text-xs text-gray-500 mt-1">
-            Apoyos: <span class="font-semibold">{{ r.apoyos ?? 0 }}</span> —
-            {{ new Date(r.created_at).toLocaleDateString() }}
+            Apoyos:
+            <span class="font-semibold">{{ r.apoyos ?? 0 }}</span>
+            — {{ new Date(r.created_at).toLocaleDateString() }}
           </p>
 
           <button
             @click="joinExistingReport(r)"
-            class="mt-2 w-full bg-[#3082e3] text-white py-1.5 rounded-lg text-sm hover:bg-[#085baf]"
+            class="mt-2 w-full bg-[#3082e3] text-white py-1.5 rounded-lg
+                   text-sm hover:bg-[#085baf] active:scale-[.98]"
           >
             Sumarme a este reporte
           </button>
         </li>
       </ul>
+
+      <p class="text-sm text-gray-500 mt-3 text-center">
+        Si ninguno coincide exactamente con lo que querés reportar, podés cerrar
+        esta ventana y completar un reporte nuevo.
+      </p>
     </div>
   </div>
 </template>
