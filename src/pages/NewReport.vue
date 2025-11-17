@@ -186,7 +186,7 @@ function startNewReport() {
       <div class="border rounded-lg p-3 bg-gray-50">
         <div class="flex items-center justify-between mb-2">
           <p class="text-sm text-gray-700">
-            Antes de crear un reporte nuevo, verificá si ya existe:
+            Antes de crear un reporte nuevo, verificá si ya existe uno similar:
           </p>
           <button
             type="button"

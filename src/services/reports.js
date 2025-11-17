@@ -34,7 +34,7 @@ export async function saveReport(data) {
       imagen: data.imagen,
       user_id: data.user_id,
       email: data.email,
-      estado:data.estado || "pendiente",
+      estado:data.estado || "Pendiente",
       apoyos:data.apoyos ?? 0,
     })
   if (error) {
@@ -66,21 +66,59 @@ export function subscribeToNewReports(callback) {
 
 /**
  * Página de reportes + total (todos los usuarios)
- * Orden: más nuevos primero
+ * Usa un solo parámetro `mode` para filtrar / ordenar
+ * mode: "recent" | "oldest" | "pending" | "resolved" | "most_supported" | "least_supported"
  */
-export async function fetchReportsPageWithCount({ page = 1, pageSize = 5 } = {}) {
-  const from = (page - 1) * pageSize
-  const to = from + pageSize - 1
+export async function fetchReportsPageWithCount({
+  page,
+  pageSize,
+  mode = "recent",
+}) {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
 
-  const { data, error, count } = await supabase
-    .from('reports')
-    .select('*', { count: 'exact', head: false })
-    .order('created_at', { ascending: false })
-    .order('id', { ascending: false })
-    .range(from, to)
+  let query = supabase
+    .from("reports")
+    .select("*", { count: "exact" });
 
-  if (error) throw error
-  return { data: data ?? [], count: count ?? 0 }
+  switch (mode) {
+    case "pending":
+      query = query
+        .eq("estado", "Pendiente")
+        .order("created_at", { ascending: false });
+      break;
+
+    case "resolved":
+      query = query
+        .eq("estado", "Resuelto")
+        .order("created_at", { ascending: false });
+      break;
+
+    case "oldest":
+      query = query.order("created_at", { ascending: true });
+      break;
+
+    case "most_supported":
+      query = query
+        .gt("apoyos", 0)
+        .order("apoyos", { ascending: false });
+      break;
+
+    case "least_supported":
+      query = query
+        .gt("apoyos", 0)
+        .order("apoyos", { ascending: true });
+      break;
+
+    case "recent":
+    default:
+      query = query.order("created_at", { ascending: false });
+      break;
+  }
+
+  const { data, error, count } = await query.range(from, to);
+  if (error) throw error;
+  return { data, count };
 }
 
 /**
