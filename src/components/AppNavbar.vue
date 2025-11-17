@@ -236,7 +236,7 @@ export default {
         this.hasNotification = false;
 
         // navegar
-        this.$router.push({ name: "ViewSharedPath", params: { path_id: pathId }, query: { sharer_id: sharerId } });
+        this.$router.push({ path: `/ver-recorrido/${pathId}`, query: { sharer_id: sharerId } });
       } catch (err) {
         console.error("Error aceptando invitación:", err);
       }
