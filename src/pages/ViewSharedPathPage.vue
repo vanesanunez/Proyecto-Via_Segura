@@ -21,10 +21,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: shadow,
 });
 
-// ----------------------
-// Setup
-// ----------------------
-
 const route = useRoute();
 const router = useRouter();
 
@@ -40,9 +36,8 @@ let unsubscribeShared = null;
 const path_id = route.params.pathId || route.query.path_id;
 const sharer_id = route.query.sharer_id || route.params.sharer_id;
 
-// ----------------------
+
 // Toast
-// ----------------------
 
 function triggerToast(message) {
   toastMessage.value = message;
@@ -53,9 +48,6 @@ function triggerToast(message) {
   }, 3000);
 }
 
-// ----------------------
-// Mounted
-// ----------------------
 
 onMounted(() => {
   map = L.map(mapEl.value, { zoomControl: false }).setView(
@@ -109,9 +101,6 @@ onMounted(() => {
   }
 });
 
-// ----------------------
-// Cleanup
-// ----------------------
 
 onUnmounted(() => {
   if (unsubscribeShared) unsubscribeShared();
@@ -121,9 +110,7 @@ onUnmounted(() => {
   });
 });
 
-// ----------------------
-// Funciones UI
-// ----------------------
+//dejar de seguir recorrido
 
 function stopFollowing() {
   if (unsubscribeShared) {

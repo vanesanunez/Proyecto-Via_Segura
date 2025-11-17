@@ -277,7 +277,7 @@ export async function endPath() {
 }
 
 
-// Helpers
+// Helper
 
 export function getCurrentPathId() {
   return currentPath;
