@@ -42,6 +42,21 @@ export default {
 
   <div>
     <main class="max-w-md mx-auto px-4">
+      <!-- HERO ILUSTRACIÓN + TEXTO DE BIENVENIDA -->
+      <div class="text-center mt-6 mb-6 px-4">
+        <img
+          src="/map.png"
+          alt="Ilustración Vía Segura"
+          class="mx-auto w-52 sm:w-60 drop-shadow-sm" />
+
+        <h2 class="text-xl font-semibold text-gray-800 mt-4">
+          Cuidémonos entre todos
+        </h2>
+
+        <p class="text-sm text-gray-600 mt-1">
+          Descubrí reportes cercanos y compartí información útil.
+        </p>
+      </div>
       <section class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
         <ActionCard title="Hacer un reporte" to="/report/nuevo" accent="blue">
           <template #icon>
@@ -55,8 +70,11 @@ export default {
           </template>
         </ActionCard>
 
-        <ActionCard title="Contactos de confianza"          to="/contactos"
-          accent="blue">
+        <ActionCard
+          title="Contactos de confianza"
+          to="/contactos"
+          accent="blue"
+        >
           <template #icon>
             <UsersIcon class="h-8 w-8 text-[#3082e3]" />
           </template>
@@ -69,10 +87,10 @@ export default {
         </ActionCard> -->
 
         <ActionCard title="Recorrido seguro" to="/compartir" accent="blue">
-         <template #icon>
-         <MapIcon class="h-8 w-8 text-[#3082e3]" />
-         </template>
-         </ActionCard>
+          <template #icon>
+            <MapIcon class="h-8 w-8 text-[#3082e3]" />
+          </template>
+        </ActionCard>
       </section>
 
       <div class="mt-6">
