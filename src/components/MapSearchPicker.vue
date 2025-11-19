@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
           @input="onInput"
           @keydown.enter.prevent.stop="searchNow"
           class="w-full rounded-full border px-4 py-2 text-sm pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/40"
-          placeholder="¿Dónde viste el problema?"
+          placeholder="¿Cuál es tu ubicación?"
         />
 
         <!-- SUGERENCIAS -->
