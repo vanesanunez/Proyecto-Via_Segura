@@ -243,7 +243,7 @@ function startNewReport() {
         <button
           type="button"
           @click="findSimilarReports"
-          class="text-s text-[#3082e3] font-medium underline underline-offset-2 hover:text-[#085baf]"
+          class="text-s text-[#3082e3] font-medium underline underline-offset-2 hover:text-[#085baf] mt-2"
         >
           Ver si ya hay reclamos en esta zona
         </button>
@@ -294,7 +294,7 @@ function startNewReport() {
       >
         <label
           for="imageUpload"
-          class="cursor-pointer flex items-center gap-2 bg-[#3082e3] text-white px-5 py-2 rounded-lg shadow-md hover:bg-[#085baf] active:scale-95 transition-all"
+          class="cursor-pointer flex items-center gap-2 bg-[#3082e3] text-white px-5 py-2 rounded-lg shadow-md hover:bg-[#085baf] active:scale-95 transition-all mb-4"
         >
           <span>Subir imagen</span>
         </label>
@@ -330,18 +330,21 @@ function startNewReport() {
     <!-- ONBOARDING: tour paso a paso (solo primera vez) -->
     <div
       v-if="showOnboarding"
-      class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40" >
+      class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40"
+    >
       <div
-        class="w-full max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-4 sm:p-5" >
+        class="w-full max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-4 sm:p-5"
+      >
         <!-- Header: título + botón cerrar -->
         <div class="flex items-center justify-between mb-3">
           <h2 class="text-base font-semibold text-gray-800">
-            Consejos para crear tu reporte 
+            Consejos para crear tu reporte
           </h2>
           <button
             type="button"
             @click="skipOnboarding"
-            class="text-xs text-gray-500 hover:text-gray-700" >
+            class="text-xs text-gray-500 hover:text-gray-700"
+          >
             Saltar
           </button>
         </div>
@@ -358,11 +361,13 @@ function startNewReport() {
                 ? PencilSquareIcon
                 : PhotoIcon
             "
-            class="w-7 h-7 text-[#3082e3]" />
+            class="w-7 h-7 text-[#3082e3]"
+          />
           <p class="font-medium text-gray-800">
             <span v-if="onboardingStep === 1">Elegí el lugar del problema</span>
             <span v-else-if="onboardingStep === 2"
-              >Seleccioná la categoría</span>
+              >Categoría y reclamos en la zona</span
+            >
             <span v-else-if="onboardingStep === 3">Describí qué pasó</span>
             <span v-else>Subí una foto del lugar</span>
           </p>
@@ -375,8 +380,13 @@ function startNewReport() {
             problema.
           </span>
           <span v-else-if="onboardingStep === 2">
-            Elegí si se trata de iluminación, infraestructura o seguridad. Esto
-            ayuda a ordenar los reportes.
+            Elegí si se trata de iluminación, infraestructura o seguridad.
+            Después de completar la dirección y la categoría, usá el enlace
+            <span class="font-medium text-[#3082e3]">
+              “Ver si ya hay reclamos en esta zona”
+            </span>
+            para comprobar si alguien ya reportó lo mismo y, si existe, sumarte
+            al reclamo en lugar de crear uno nuevo.
           </span>
           <span v-else-if="onboardingStep === 3">
             Contá en pocas palabras qué pasó y cómo afecta la zona. No hace
@@ -403,7 +413,8 @@ function startNewReport() {
           <button
             type="button"
             @click="nextOnboarding"
-            class="inline-flex items-center gap-1 bg-[#3082e3] text-white text-sm px-3 py-1.5 rounded-lg hover:bg-[#085baf] active:scale-95 transition">
+            class="inline-flex items-center gap-1 bg-[#3082e3] text-white text-sm px-3 py-1.5 rounded-lg hover:bg-[#085baf] active:scale-95 transition"
+          >
             <span v-if="onboardingStep < 4">Siguiente</span>
             <span v-else>Empezar</span>
             <ArrowRightIcon class="w-4 h-4" />
@@ -415,12 +426,14 @@ function startNewReport() {
     <!-- MODAL POPUP: “Evitá duplicar reclamos” -->
     <div
       v-if="showSimilarHintModal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    >
       <div class="bg-white rounded-2xl w-11/12 max-w-sm p-5 shadow-xl relative">
         <!-- Botón cerrar -->
         <button
           @click="showSimilarHintModal = false"
-          class="absolute top-3 right-3 text-gray-400 hover:text-gray-600" >
+          class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+        >
           <XMarkIcon class="h-5 w-5" />
         </button>
 
