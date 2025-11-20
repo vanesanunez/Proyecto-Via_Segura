@@ -33,7 +33,7 @@ const fetchInfo = async () => {
    <div
   class="w-full h-40 border-2 border-blue-400 rounded-lg flex flex-col items-center justify-center text-center shadow-md hover:shadow-lg transition"
 >
-  <h2 class="text-base font-semibold text-blue-700 mb-2">ℹ️ Info Útil</h2>
+  <h2 class="text-base font-semibold text-blue-700 mb-2"> Info Útil</h2>
   
   <!-- Botón -->
   <button 
@@ -55,7 +55,7 @@ const fetchInfo = async () => {
           :key="index"
           class="border-b border-gray-200 pb-1"
         >
-          📍 <strong>{{ item.nombre }}</strong><br>
+           <strong>{{ item.nombre }}</strong><br>
           <span class="text-gray-600">{{ item.direccion }}</span>
         </li>
       </ul>

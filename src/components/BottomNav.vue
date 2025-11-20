@@ -11,7 +11,7 @@
       </router-link>
 
       <router-link to="/contactos" class="flex justify-center"></router-link>
-      <router-link to="/recorrido-seguro" class="flex justify-center"></router-link>
+      <router-link to="/compartir" class="flex justify-center"></router-link>
     </div>
   </nav>
 </template>

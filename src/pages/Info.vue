@@ -4,11 +4,6 @@ import { useRouter } from "vue-router";
 import { subscribeToUserState } from "../services/auth";
 import AppH1 from "../components/AppH1.vue";
 import MapSearchPicker from "../components/MapSearchPicker.vue";
-import {
-  XMarkIcon,
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-} from "@heroicons/vue/24/solid";
 
 // --- Datos del formulario ---
 const categoria = ref("");

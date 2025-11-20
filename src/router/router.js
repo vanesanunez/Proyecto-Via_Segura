@@ -11,15 +11,13 @@ const routes = [
   { path: '/mi-perfil/editar',          component: () => import('../pages/MyProfileEdit.vue'),      meta:{ requiresAuth: true,},}, 
   { path: '/usuario/:id',               component: () => import('../pages/UserProfile.vue'),        meta:{ requiresAuth: true,},}, 
   { path: '/usuario/:id/chat',          component: () => import('../pages/PrivateChat.vue'),        meta:{ requiresAuth: true,},},   
-  // Ruta para crear nuevo reporte
   { path: '/report/nuevo',              component: () => import('../pages/NewReport.vue'),          meta:{ requiresAuth: true,},},
-  //  Ruta de confirmación después de enviar reporte
   { path: '/report/confirmado',         component: () => import('../pages/ReportConfirm.vue'),      meta:{ requiresAuth: true,},},
   { path: '/reportes',                  component: () => import('../pages/ViewReports.vue'),        meta:{ requiresAuth: true,},},
   { path: '/contactos',                 component: () => import('../pages/Contacts.vue'),           meta:{ requiresAuth: true,},},
   { path: '/compartir',                 component: () => import('../pages/SharePathPage.vue'),      meta:{ requiresAuth: true,},},
   { path: '/ver-recorrido/:pathId',     component: () => import('../pages/ViewSharedPathPage.vue'), meta:{ requiresAuth: true,},},
-  { path: '/info',                      component: () => import('../pages/Info.vue'), meta:{ requiresAuth: true,},},
+  { path: '/info',                      component: () => import('../pages/Info.vue'),               meta:{ requiresAuth: true,},},
 ];
 
 const router = createRouter({

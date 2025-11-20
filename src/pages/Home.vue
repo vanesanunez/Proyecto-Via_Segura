@@ -14,6 +14,7 @@ import {
   UsersIcon,
   MapIcon,
   InformationCircleIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/vue/24/solid";
 
 export default {
@@ -33,6 +34,7 @@ export default {
     UsersIcon,
     MapIcon,
     InformationCircleIcon,
+    ExclamationTriangleIcon,
   },
 };
 </script>
@@ -88,19 +90,12 @@ export default {
 
         <ActionCard title="Info útil" to="/info" accent="blue">
           <template #icon>
-            <PlusCircleIcon class="h-9 w-9 text-[#3082e3]" />
+            <ExclamationTriangleIcon class="h-9 w-9 text-[#3082e3]" />
           </template>
         </ActionCard>
        
       </section>
 
-      <div class="mt-6">
-        <InfoCard />
-      </div>
-
-      <p class="text-center text-sm text-brandCoral mt-6">
-        Últimos reportes y novedades cerca tuyo
-      </p>
 
       <ReportCarousel />
 

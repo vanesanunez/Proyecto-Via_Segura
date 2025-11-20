@@ -220,7 +220,7 @@ function selectDestination(place) {
 
 <template>
   <div class="max-w-2xl mx-auto p-4">
-    <AppH1>Compartir Recorrido</AppH1>
+    <AppH1>Recorrido seguro</AppH1>
 
     <div ref="mapEl" class="mt-4 rounded-xl border relative z-0" style="height: 500px;"></div>
 
