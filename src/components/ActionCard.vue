@@ -7,7 +7,7 @@ const props = defineProps({
 })
 
 const accentMap = {
-  blue: 'border-4 border-blue-300',
+  blue: 'border-4 border-blue-100 shadow shadow-blue-300',
   coral: 'border-4 border-red-300',
   yellow: 'border-4 border-yellow-300',
   blue2: 'border-4 border-sky-300'

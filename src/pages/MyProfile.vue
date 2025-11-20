@@ -74,91 +74,94 @@ export default {
 </script>
 
 <template>
-  <template v-if="!loading">
-    <div class="flex gap-4 items-end">
-      <AppH1>Mi perfil</AppH1>
-      <RouterLink to="/mi-perfil/editar" class="mb-4 text-blue-700"
-        >Editar</RouterLink
-      >
+  <div class="p-4">
+
+    <div v-if="!loading">
+      <div class="flex gap-4 items-end mt-4">
+        <AppH1>Mi perfil</AppH1>
+        <RouterLink to="/mi-perfil/editar" class="mb-4 text-blue-700"
+          >Editar</RouterLink
+        >
+      </div>
+  
+      <dl class="m-2">
+        <dt class="font-bold mb-2">Email:</dt>
+        <dd class="mb-4">{{ user.email }}</dd>
+        <dt class="font-bold mb-2">Nombre:</dt>
+        <dd class="mb-4">{{ user.name }}</dd>
+        <dt class="font-bold mb-2">Apellido:</dt>
+        <dd class="mb-4">{{ user.lastname }}</dd>
+        <dt class="font-bold mb-2">DNI</dt>
+        <dd class="mb-4">{{ user.dni }}</dd>
+      </dl>
     </div>
-
-    <dl class="m-2">
-      <dt class="font-bold mb-2">Email:</dt>
-      <dd class="mb-4">{{ user.email }}</dd>
-      <dt class="font-bold mb-2">Nombre:</dt>
-      <dd class="mb-4">{{ user.name }}</dd>
-      <dt class="font-bold mb-2">Apellido:</dt>
-      <dd class="mb-4">{{ user.lastname }}</dd>
-      <dt class="font-bold mb-2">DNI</dt>
-      <dd class="mb-4">{{ user.dni }}</dd>
-    </dl>
-  </template>
-
-  <div v-else class="flex justify-center items-center h-full">
-    <MainLoader />
+  
+    <div v-else class="flex justify-center items-center h-full">
+      <MainLoader />
+    </div>
+  
+    <!-- Mis reportes -->
+    <h2 class="text-xl font-semibold mb-4">Mis reportes</h2>
+  
+    <div v-if="myError" class="mb-4 text-red-600">{{ myError }}</div>
+    <div v-if="myLoading" class="mb-4 text-gray-500">Cargando…</div>
+    <div v-if="!myLoading && myReports.length === 0" class="text-gray-600">
+      Todavía no creaste reportes.
+    </div>
+  
+    <ul class="space-y-4 mb-6">
+      <ReportCard
+        v-for="r in myReports"
+        :key="r.id"
+        :report="r"
+        :to="`/report/${r.id}`"
+      />
+    </ul>
+  
+    <!-- Paginación de mis reportes -->
+    <nav
+      v-if="myTotal > myPageSize"
+      class="flex items-center justify-center gap-2"
+    >
+      <button
+        @click="goToMy(myPage - 1)"
+        :disabled="myPage === 1"
+        class="px-3 py-1 rounded border"
+        :class="
+          myPage === 1
+            ? 'text-gray-300 border-gray-200'
+            : 'hover:bg-gray-100 border-gray-300'
+        "
+      >
+        ‹
+      </button>
+  
+      <button
+        v-for="p in Math.max(1, Math.ceil(myTotal / myPageSize))"
+        :key="p"
+        @click="goToMy(p)"
+        class="px-3 py-1 rounded border"
+        :class="
+          p === myPage
+            ? 'bg-blue-600 text-white border-blue-600'
+            : 'border-gray-300 hover:bg-gray-100'
+        "
+      >
+        {{ p }}
+      </button>
+  
+      <button
+        @click="goToMy(myPage + 1)"
+        :disabled="myPage === Math.max(1, Math.ceil(myTotal / myPageSize))"
+        class="px-3 py-1 rounded border"
+        :class="
+          myPage === Math.max(1, Math.ceil(myTotal / myPageSize))
+            ? 'text-gray-300 border-gray-200'
+            : 'hover:bg-gray-100 border-gray-300'
+        "
+      >
+        ›
+      </button>
+    </nav>
   </div>
-
-  <!-- Mis reportes -->
-  <h2 class="text-xl font-semibold mb-4">Mis reportes</h2>
-
-  <div v-if="myError" class="mb-4 text-red-600">{{ myError }}</div>
-  <div v-if="myLoading" class="mb-4 text-gray-500">Cargando…</div>
-  <div v-if="!myLoading && myReports.length === 0" class="text-gray-600">
-    Todavía no creaste reportes.
-  </div>
-
-  <ul class="space-y-4 mb-6">
-    <ReportCard
-      v-for="r in myReports"
-      :key="r.id"
-      :report="r"
-      :to="`/report/${r.id}`"
-    />
-  </ul>
-
-  <!-- Paginación de mis reportes -->
-  <nav
-    v-if="myTotal > myPageSize"
-    class="flex items-center justify-center gap-2"
-  >
-    <button
-      @click="goToMy(myPage - 1)"
-      :disabled="myPage === 1"
-      class="px-3 py-1 rounded border"
-      :class="
-        myPage === 1
-          ? 'text-gray-300 border-gray-200'
-          : 'hover:bg-gray-100 border-gray-300'
-      "
-    >
-      ‹
-    </button>
-
-    <button
-      v-for="p in Math.max(1, Math.ceil(myTotal / myPageSize))"
-      :key="p"
-      @click="goToMy(p)"
-      class="px-3 py-1 rounded border"
-      :class="
-        p === myPage
-          ? 'bg-blue-600 text-white border-blue-600'
-          : 'border-gray-300 hover:bg-gray-100'
-      "
-    >
-      {{ p }}
-    </button>
-
-    <button
-      @click="goToMy(myPage + 1)"
-      :disabled="myPage === Math.max(1, Math.ceil(myTotal / myPageSize))"
-      class="px-3 py-1 rounded border"
-      :class="
-        myPage === Math.max(1, Math.ceil(myTotal / myPageSize))
-          ? 'text-gray-300 border-gray-200'
-          : 'hover:bg-gray-100 border-gray-300'
-      "
-    >
-      ›
-    </button>
-  </nav>
 </template>

@@ -4,7 +4,6 @@ import SearchBar from "../components/SearchBar.vue";
 import ActionCard from "../components/ActionCard.vue";
 import ReportCarousel from "../components/ReportCarousel.vue";
 import BottomNav from "../components/BottomNav.vue";
-import InfoCard from "../components/InfoCard.vue";
 import MainLoader from "../components/MainLoader.vue";
 import BottomNavigation from "../components/BottomNavigation.vue";
 import ReportCard from "../components/ReportCard.vue";
@@ -26,7 +25,6 @@ export default {
     ActionCard,
     ReportCarousel,
     BottomNav,
-    InfoCard,
     MainLoader,
     BottomNavigation,
     ReportCard,

@@ -2,11 +2,9 @@
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import L from "leaflet";
 import AppH1 from "../components/AppH1.vue";
-
 import { getTrustedContacts } from "../services/contacts";
 import { subscribeToUserState } from "../services/auth";
 import { nominatimSearch, composeAddress } from "../services/nominatim";
-
 import {
   startPath,
   startPathWithoutSharing,
@@ -14,7 +12,7 @@ import {
   updateCoords,
   endPath,
 } from "../services/path-sharing";
-
+import BottomNavigation from "../components/BottomNavigation.vue";
 // Fix de Leaflet para las imágenes de marker
 import icon2x from "leaflet/dist/images/marker-icon-2x.png";
 import icon from "leaflet/dist/images/marker-icon.png";
@@ -27,25 +25,19 @@ L.Icon.Default.mergeOptions({
   shadowUrl: shadow,
 });
 
-// ------------------
-// Refs reactivas
-// ------------------
+// Refs
 
 const mapEl = ref(null);
 const trustedContacts = ref([]);
 const selectedContact = ref(null);
-
 const routeActive = ref(false);
 const isSharing = ref(false);
-
 const destinationQuery = ref("");
 const destinationResults = ref([]);
-
 const currentUser = ref(null);
 
-// ------------------
 // Variables internas
-// ------------------
+
 let map = null;
 let myMarker = null;
 let myPath = null;
@@ -53,9 +45,8 @@ let destinationMarker = null;
 let routeLine = null;
 let watchId = null;
 
-// ------------------
+
 // Montaje del mapa
-// ------------------
 
 onMounted(async () => {
   // Inicializa Leaflet
@@ -80,9 +71,6 @@ onMounted(async () => {
   });
 });
 
-// ------------------
-// Cleanup
-// ------------------
 
 onUnmounted(() => {
   if (watchId) navigator.geolocation.clearWatch(watchId);
@@ -92,9 +80,8 @@ onUnmounted(() => {
   });
 });
 
-// ------------------
+
 // Funciones de ruta
-// ------------------
 
 async function startSharing() {
   if (!selectedContact.value) {
@@ -171,9 +158,7 @@ function updateMyMarker(lat, lng) {
   map.flyTo([lat, lng], 15);
 }
 
-// ------------------
 // Búsqueda de destino
-// ------------------
 
 async function searchDestination() {
   if (!destinationQuery.value.trim()) return;
@@ -222,7 +207,7 @@ function selectDestination(place) {
   <div class="max-w-2xl mx-auto p-4">
     <AppH1>Recorrido seguro</AppH1>
 
-    <div ref="mapEl" class="mt-4 rounded-xl border relative z-0" style="height: 500px;"></div>
+    <div ref="mapEl" class="mt-4 rounded-xl border relative z-0" style="height: 300px;"></div>
 
     <div class="mb-4 mt-4">
       <label class="block font-medium">Dirección de destino:</label>
@@ -264,11 +249,11 @@ function selectDestination(place) {
       </select>
     </div>
 
-    <div class="flex gap-2 mb-2">
+    <div class="flex gap-2 mb-2 items-center">
       <button
         v-if="!routeActive"
         @click="startSharing"
-        class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700"
+        class="mt-4 px-4 py-2 rounded bg-blue-500 text-white  hover:bg-blue-700"
       >
         Iniciar recorrido compartido
       </button>
@@ -276,7 +261,7 @@ function selectDestination(place) {
       <button
         v-if="!routeActive"
         @click="startLocal"
-        class="px-4 py-2 rounded border border-blue-500 bg-white text-gray hover:bg-gray-700"
+        class="mt-4 px-4 py-2 rounded border border-blue-500 bg-white text-gray hover:bg-blue-200"
       >
         Iniciar recorrido sin compartir
       </button>
@@ -284,10 +269,14 @@ function selectDestination(place) {
       <button
         v-if="routeActive"
         @click="finishSharing"
-        class="px-4 py-2 rounded bg-orange-400 text-white"
+        class="mt-4 px-4 py-2 rounded bg-orange-400 text-white"
       >
         Finalizar recorrido
       </button>
     </div>
+  </div>
+
+  <div>
+    <BottomNavigation />
   </div>
 </template>

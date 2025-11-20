@@ -1,9 +1,9 @@
 <template>
-    <div class="loader"></div>
+    <div class="loader2"></div>
 </template>
 
 <style>
-.loader {
+.loader2 {
   width: 20px;
   aspect-ratio: 4;
   --_g: no-repeat radial-gradient(circle closest-side,#000 90%,#0000);

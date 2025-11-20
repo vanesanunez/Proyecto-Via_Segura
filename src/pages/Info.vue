@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import MapSearchPicker from "../components/MapSearchPicker.vue";
 import AppH1 from "../components/AppH1.vue"; 
+import BottomNavigation from "../components/BottomNavigation.vue";
 
 const coords = ref(null);
 const direccion = ref("");
@@ -29,7 +30,7 @@ function resetPagination() {
   currentPage.value = 1;
 }
 
-//servicios
+//servicios - puntos de interés que se pueden buscar
 
 const amenityLabel = {
   hospital: "Hospitales",
@@ -154,7 +155,7 @@ async function buscarCercanos() {
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto mt-6 pb-24">
+  <div class="max-w-3xl mx-auto mt-6 ">
     <AppH1>Información útil</AppH1>
     <p>Acá podés encontrar servicios cercanos como hospitales, comisarías, bomberos y farmacias.</p>
 
@@ -180,7 +181,7 @@ async function buscarCercanos() {
       <option value="fire_station">Bomberos</option>
     </select>
 
-    <!-- CONTROLES DE RADIO -->
+    <!-- Radio de búsqueda -->
     <div class="flex gap-4 items-center mt-5 mb-4">
 
       <label class="text-sm font-medium flex flex-col">
@@ -224,7 +225,7 @@ async function buscarCercanos() {
 
    
 
-    <!-- RESULTADOS -->
+    <!-- Resultados -->
     <div v-if="paginatedResults.length" class="mt-6">
       <h2 class="text-xl font-semibold mb-3 text-blue-800">
        Resultados para: {{ amenityLabel[selectedCategory] }}
@@ -244,7 +245,7 @@ async function buscarCercanos() {
         </li>
       </ul>
 
-      <!-- PAGINACIÓN -->
+      <!-- Paginación -->
       <div class="flex justify-between items-center mt-6">
         <button
           class="px-3 py-1 bg-blue-200 rounded disabled:opacity-40"
@@ -271,11 +272,8 @@ async function buscarCercanos() {
 
   <div>
 
-   
+  <BottomNavigation />
   </div>
 </template>
 
-<style scoped>
-
-</style>
 

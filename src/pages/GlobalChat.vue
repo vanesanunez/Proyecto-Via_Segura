@@ -8,12 +8,11 @@ import MainLoader from '../components/MainLoader.vue';
 import { PaperAirplaneIcon } from '@heroicons/vue/24/solid'; 
 
 
-
 let unsubAuth = () => { };
 
 export default {
     name: 'GlobalChat',
-    components: { AppH1, MainLoader, PaperAirplaneIcon },
+    components: { AppH1, MainLoader, PaperAirplaneIcon, },
 
     data() {
         return {
@@ -76,11 +75,11 @@ export default {
 </script>
 
 <template>
-    <AppH1>Chat general</AppH1>
+    <AppH1 class="mt-8">Chat general</AppH1>
 
     <div class="flex flex-col md:flex-row gap-4 items-start justify-center md:justify-start">
 
-        <section ref="chatContainer" class="overflow-y-auto w-full h-100 p-2 border border-blue-200 rounded">
+        <section ref="chatContainer" class="overflow-y-auto w-full h-135 p-2 border border-blue-200 rounded">
 
             <h2 class="sr-only">Lista de mensajes</h2>
 
@@ -103,7 +102,7 @@ export default {
             </div>
         </section>
 
-        <section class="md:w-3/12 w-full flex flex-col">
+        <section class="pb-10 w-full fixed bottom-0 left-0 bg-white p-4 border-t border-blue-200">
 
             <form @submit.prevent="sendMessage" class="flex gap-2 items-center">
 

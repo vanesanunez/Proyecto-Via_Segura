@@ -87,7 +87,7 @@ export default {
             <h2 class="text-lg font-semibold">{{ userChat.name }}</h2>
         </header>
 
-        <section ref="chatContainer" class="overflow-y-auto h-100 p-4 mb-4 border border-blue-400 rounded">
+        <section ref="chatContainer" class="overflow-y-auto h-135 p-4 mb-4 border border-blue-400 rounded">
             <h2 class="sr-only">Lista de mensajes</h2>
 
             <ul v-if="!loadingMessages" class="flex flex-col gap-4">
@@ -106,14 +106,14 @@ export default {
             </div>
         </section>
 
-        <section>
+        <section class="pb-10 w-full fixed bottom-0 left-0 bg-white p-4 border-t border-blue-200">
             <form @submit.prevent="sendMessage" class="flex gap-2 items-center">
                 <input type="text" v-model="NewMessage.body" placeholder="Escribí un mensaje..."
                     class="flex-1 p-2 border border-blue-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400" />
 
                 <button type="submit"
                     class="p-2 bg-blue-600 rounded-full hover:bg-blue-500 active:bg-blue-700 text-white flex items-center justify-center">
-                    <PaperAirplaneIcon class="h-5 w-5 "/>
+                    <PaperAirplaneIcon class="h-5 w-5 " />
                 </button>
             </form>
         </section>
