@@ -49,11 +49,11 @@ export default {
           alt="Ilustración Vía Segura"
           class="mx-auto w-52 sm:w-60 drop-shadow-sm" />
 
-        <h2 class="text-xl font-semibold text-gray-800 mt-4">
+        <h2 class="text-xl font-semibold text-gray-800 mt-4 ">
           Cuidémonos entre todos
         </h2>
 
-        <p class="text-sm text-gray-600 mt-1">
+        <p class="text-sm text-gray-600 mt-1 text-left sm:text-center">
           Descubrí reportes cercanos y compartí información útil.
         </p>
       </div>
