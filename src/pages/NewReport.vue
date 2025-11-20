@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import {
   uploadImage,
@@ -13,6 +13,11 @@ import {
   XMarkIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
+  MapPinIcon,
+  TagIcon,
+  PencilSquareIcon,
+  PhotoIcon,
+  ArrowRightIcon,
 } from "@heroicons/vue/24/solid";
 
 // --- Datos del formulario ---
@@ -36,7 +41,11 @@ const errorSimilares = ref("");
 const showSuccessSheet = ref(false);
 const showBottomSheet = ref(false);
 
-// modal popup con la tarjetita de aviso
+// --- Onboarding para crear reporte (solo primera vez) ---
+const showOnboarding = ref(false);
+const onboardingStep = ref(1); // 1: mapa, 2: categoría, 3: descripción, 4: imagen
+
+// modal popup con la tarjeta de aviso
 const showSimilarHintModal = ref(false);
 
 // --- Datos del usuario ---
@@ -45,6 +54,32 @@ const user = ref({ id: null, email: null });
 subscribeToUserState((newUserData) => {
   user.value = newUserData;
 });
+
+onMounted(() => {
+  // Si nunca lo vio, mostramos el onboarding
+  if (localStorage.getItem("vs_newreport_onboarding_seen") !== "1") {
+    showOnboarding.value = true;
+    onboardingStep.value = 1;
+  }
+});
+
+function finishOnboarding() {
+  showOnboarding.value = false;
+  localStorage.setItem("vs_newreport_onboarding_seen", "1");
+}
+
+function nextOnboarding() {
+  if (onboardingStep.value < 4) {
+    onboardingStep.value++;
+  } else {
+    // Último paso → cerramos
+    finishOnboarding();
+  }
+}
+
+function skipOnboarding() {
+  finishOnboarding();
+}
 
 // Manejo de archivos
 function onFileChange(e) {
@@ -89,8 +124,8 @@ async function joinExistingReport(reporte) {
   try {
     await joinReport(reporte.id);
 
-    showBottomSheet.value = false;    // cierro lista
-    showSuccessSheet.value = true;    // abro modal centrado de éxito
+    showBottomSheet.value = false; // cierro lista
+    showSuccessSheet.value = true; // abro modal centrado de éxito
 
     const item = similares.value.find((r) => r.id === reporte.id);
     if (item) item.apoyos = (item.apoyos || 0) + 1;
@@ -163,7 +198,14 @@ function startNewReport() {
 
     <form @submit.prevent="handleSubmit" class="space-y-4">
       <!-- MAPA -->
-      <div>
+      <div
+        :class="[
+          'rounded-xl p-2 -m-2 transition-all',
+          showOnboarding && onboardingStep === 1
+            ? 'ring-2 ring-[#3082e3] bg-blue-50/60'
+            : '',
+        ]"
+      >
         <label class="block mb-1 font-semibold">Ubicación</label>
         <MapSearchPicker
           v-model="coords"
@@ -176,7 +218,14 @@ function startNewReport() {
       </div>
 
       <!-- CATEGORÍA -->
-      <div>
+      <div
+        :class="[
+          'rounded-xl p-2 -m-2 mt-3 transition-all',
+          showOnboarding && onboardingStep === 2
+            ? 'ring-2 ring-[#3082e3] bg-blue-50/60'
+            : '',
+        ]"
+      >
         <label class="block mb-2 font-semibold">Categoría del problema</label>
         <select
           v-model="categoria"
@@ -194,8 +243,7 @@ function startNewReport() {
         <button
           type="button"
           @click="findSimilarReports"
-          class="text-s text-[#3082e3] font-medium underline underline-offset-2
-                 hover:text-[#085baf]"
+          class="text-s text-[#3082e3] font-medium underline underline-offset-2 hover:text-[#085baf] mt-2"
         >
           Ver si ya hay reclamos en esta zona
         </button>
@@ -210,13 +258,19 @@ function startNewReport() {
       </div>
 
       <!-- DESCRIPCIÓN -->
-      <div>
+      <div
+        :class="[
+          'rounded-xl p-2 -m-2 mt-3 transition-all',
+          showOnboarding && onboardingStep === 3
+            ? 'ring-2 ring-[#3082e3] bg-blue-50/60'
+            : '',
+        ]"
+      >
         <label class="block mb-1 font-semibold">Descripción</label>
         <textarea
           v-model="descripcion"
           :disabled="hasSimilarReports"
-          class="w-full p-2 border border-gray-300 rounded min-h-[90px]
-                 disabled:bg-gray-100 disabled:text-gray-500"
+          class="w-full p-2 border border-gray-300 rounded min-h-[90px] disabled:bg-gray-100 disabled:text-gray-500"
           placeholder="Contá qué pasó, por qué este lugar no es seguro, etc."
         ></textarea>
         <p
@@ -229,12 +283,18 @@ function startNewReport() {
       </div>
 
       <!-- IMAGEN -->
-      <div class="flex flex-col items-center">
+      <div
+        class="flex flex-col items-center"
+        :class="[
+          'rounded-xl p-2 -m-2 mt-3 transition-all',
+          showOnboarding && onboardingStep === 4
+            ? 'ring-2 ring-[#3082e3] bg-blue-50/60'
+            : '',
+        ]"
+      >
         <label
           for="imageUpload"
-          class="cursor-pointer flex items-center gap-2 bg-[#3082e3]
-                 text-white px-5 py-2 rounded-lg shadow-md hover:bg-[#085baf]
-                 active:scale-95 transition-all"
+          class="cursor-pointer flex items-center gap-2 bg-[#3082e3] text-white px-5 py-2 rounded-lg shadow-md hover:bg-[#085baf] active:scale-95 transition-all mb-4"
         >
           <span>Subir imagen</span>
         </label>
@@ -248,7 +308,7 @@ function startNewReport() {
         />
 
         <p v-if="selectedFileName" class="mt-2 text-sm text-gray-600">
-           {{ selectedFileName }}
+          {{ selectedFileName }}
         </p>
       </div>
 
@@ -261,21 +321,114 @@ function startNewReport() {
       <button
         type="submit"
         :disabled="hasSimilarReports"
-        class="w-full bg-[#3082e3] text-white py-2 px-4 rounded
-               hover:bg-[#085baf] disabled:bg-gray-300 disabled:cursor-not-allowed"
+        class="w-full bg-[#3082e3] text-white py-2 px-4 rounded hover:bg-[#085baf] disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
         Enviar Reporte
       </button>
     </form>
+
+    <!-- ONBOARDING: tour paso a paso (solo primera vez) -->
+    <div
+      v-if="showOnboarding"
+      class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40"
+    >
+      <div
+        class="w-full max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-4 sm:p-5"
+      >
+        <!-- Header: título + botón cerrar -->
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-semibold text-gray-800">
+            Consejos para crear tu reporte
+          </h2>
+          <button
+            type="button"
+            @click="skipOnboarding"
+            class="text-xs text-gray-500 hover:text-gray-700"
+          >
+            Saltar
+          </button>
+        </div>
+
+        <!-- Ícono según el paso -->
+        <div class="flex items-center gap-3 mb-2">
+          <component
+            :is="
+              onboardingStep === 1
+                ? MapPinIcon
+                : onboardingStep === 2
+                ? TagIcon
+                : onboardingStep === 3
+                ? PencilSquareIcon
+                : PhotoIcon
+            "
+            class="w-7 h-7 text-[#3082e3]"
+          />
+          <p class="font-medium text-gray-800">
+            <span v-if="onboardingStep === 1">Elegí el lugar del problema</span>
+            <span v-else-if="onboardingStep === 2"
+              >Categoría y reclamos en la zona</span
+            >
+            <span v-else-if="onboardingStep === 3">Describí qué pasó</span>
+            <span v-else>Subí una foto del lugar</span>
+          </p>
+        </div>
+
+        <!-- Texto según el paso -->
+        <p class="text-sm text-gray-700 leading-relaxed mb-4">
+          <span v-if="onboardingStep === 1">
+            Usá el mapa para escribir lo más preciso posible dónde ocurrió el
+            problema.
+          </span>
+          <span v-else-if="onboardingStep === 2">
+            Elegí si se trata de iluminación, infraestructura o seguridad.
+            Después de completar la dirección y la categoría, usá el enlace
+            <span class="font-medium text-[#3082e3]">
+              “Ver si ya hay reclamos en esta zona”
+            </span>
+            para comprobar si alguien ya reportó lo mismo y, si existe, sumarte
+            al reclamo en lugar de crear uno nuevo.
+          </span>
+          <span v-else-if="onboardingStep === 3">
+            Contá en pocas palabras qué pasó y cómo afecta la zona. No hace
+            falta un texto largo, solo claro.
+          </span>
+          <span v-else>
+            Una imagen dice mucho: sacá una foto del problema para que otras
+            personas puedan identificarlo rápido.
+          </span>
+        </p>
+
+        <!-- Footer: progreso + botón siguiente -->
+        <div class="flex items-center justify-between">
+          <!-- Dots del onboarding -->
+          <div class="flex gap-1">
+            <span
+              v-for="i in 4"
+              :key="i"
+              class="w-2 h-2 rounded-full"
+              :class="i === onboardingStep ? 'bg-[#3082e3]' : 'bg-gray-300'"
+            />
+          </div>
+
+          <button
+            type="button"
+            @click="nextOnboarding"
+            class="inline-flex items-center gap-1 bg-[#3082e3] text-white text-sm px-3 py-1.5 rounded-lg hover:bg-[#085baf] active:scale-95 transition"
+          >
+            <span v-if="onboardingStep < 4">Siguiente</span>
+            <span v-else>Empezar</span>
+            <ArrowRightIcon class="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- MODAL POPUP: “Evitá duplicar reclamos” -->
     <div
       v-if="showSimilarHintModal"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
     >
-      <div
-        class="bg-white rounded-2xl w-11/12 max-w-sm p-5 shadow-xl relative"
-      >
+      <div class="bg-white rounded-2xl w-11/12 max-w-sm p-5 shadow-xl relative">
         <!-- Botón cerrar -->
         <button
           @click="showSimilarHintModal = false"
@@ -293,8 +446,8 @@ function startNewReport() {
         </div>
 
         <p class="text-sm text-gray-700 mb-4 leading-snug">
-          Encontramos reportes similares en esta zona.  
-          Podés sumarte a un reclamo existente para darle más fuerza y prioridad.
+          Encontramos reportes similares en esta zona. Podés sumarte a un
+          reclamo existente para darle más fuerza y prioridad.
         </p>
 
         <div class="space-y-2">
@@ -304,8 +457,7 @@ function startNewReport() {
               showSimilarHintModal = false;
               showBottomSheet = true;
             "
-            class="w-full bg-[#3082e3] text-white py-2.5 rounded-lg font-medium
-                   hover:bg-[#085baf] active:scale-[.98] transition"
+            class="w-full bg-[#3082e3] text-white py-2.5 rounded-lg font-medium hover:bg-[#085baf] active:scale-[.98] transition"
           >
             Ver reportes similares
           </button>
@@ -313,8 +465,7 @@ function startNewReport() {
           <button
             type="button"
             @click="showSimilarHintModal = false"
-            class="w-full bg-gray-100 py-2.5 rounded-lg font-medium text-gray-700
-                   hover:bg-gray-200 active:scale-[.98]"
+            class="w-full bg-gray-100 py-2.5 rounded-lg font-medium text-gray-700 hover:bg-gray-200 active:scale-[.98]"
           >
             Cerrar
           </button>
@@ -348,15 +499,14 @@ function startNewReport() {
         </h2>
 
         <p class="text-sm text-gray-700 leading-relaxed text-center mb-2">
-          Gracias por contribuir a la seguridad de tu zona.  
-          Tu apoyo se registró correctamente.
+          Gracias por contribuir a la seguridad de tu zona. Tu apoyo se registró
+          correctamente.
         </p>
 
         <div class="w-full space-y-3 mt-1">
           <button
             @click="router.push('/')"
-            class="w-full bg-[#3082e3] text-white py-2.5 rounded-lg font-medium
-                   hover:bg-[#085baf] active:scale-[.98] transition"
+            class="w-full bg-[#3082e3] text-white py-2.5 rounded-lg font-medium hover:bg-[#085baf] active:scale-[.98] transition"
           >
             Ir al inicio
           </button>
@@ -364,8 +514,7 @@ function startNewReport() {
           <button
             type="button"
             @click="startNewReport"
-            class="w-full bg-gray-100 py-2.5 rounded-lg font-medium text-gray-700
-                   hover:bg-gray-200 active:scale-[.98]"
+            class="w-full bg-gray-100 py-2.5 rounded-lg font-medium text-gray-700 hover:bg-gray-200 active:scale-[.98]"
           >
             Hacer un nuevo reporte
           </button>
@@ -382,8 +531,7 @@ function startNewReport() {
 
     <div
       v-if="showBottomSheet"
-      class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-xl z-50
-             p-4 pb-8 animate-slide-up"
+      class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-xl z-50 p-4 pb-8 animate-slide-up"
     >
       <div class="flex justify-center mb-2">
         <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
@@ -418,8 +566,7 @@ function startNewReport() {
 
           <button
             @click="joinExistingReport(r)"
-            class="mt-2 w-full bg-[#3082e3] text-white py-1.5 rounded-lg
-                   text-sm hover:bg-[#085baf] active:scale-[.98]"
+            class="mt-2 w-full bg-[#3082e3] text-white py-1.5 rounded-lg text-sm hover:bg-[#085baf] active:scale-[.98]"
           >
             Sumarme a este reporte
           </button>
