@@ -1,34 +1,36 @@
 <script setup>
-import { ref } from "vue"
+import { ref } from "vue";
 
-// Solo las imágenes del carrusel de bienvenida
+// Carrusel SOLO de imágenes estáticas
 const slides = [
   new URL("/carrousel-01.png", import.meta.url).href,
   new URL("/carrousel-02.png", import.meta.url).href,
   new URL("/carrousel-03.png", import.meta.url).href,
   new URL("/carrousel-04.png", import.meta.url).href,
-]
+];
 
-const current = ref(0)
+const current = ref(0);
 
-// Controles
+// Controles siguiente / anterior
 function next() {
-  current.value = (current.value + 1) % slides.length
+  current.value = (current.value + 1) % slides.length;
 }
 
 function prev() {
-  current.value = (current.value - 1 + slides.length) % slides.length
+  current.value = (current.value - 1 + slides.length) % slides.length;
 }
 </script>
 
 <template>
   <div class="max-w-md mx-auto mt-6 relative">
-    <!-- Caja -->
-    <div class="overflow-hidden rounded-2xl bg-white shadow p-2 h-64 flex items-center justify-center">
+    <!-- Caja del slide -->
+    <div
+      class="overflow-hidden rounded-2xl bg-white shadow p-2 h-64 flex items-center justify-center"
+    >
       <img
         :src="slides[current]"
         alt="slide"
-        class="object-contain w-full h-full rounded-xl "
+        class="object-contain w-full h-full rounded-xl"
       />
     </div>
 
@@ -52,7 +54,8 @@ function prev() {
       <span
         v-for="(s, i) in slides"
         :key="i"
-        :class="i === current ? 'w-2 h-2 rounded-full bg-brandBlue' : 'w-2 h-2 rounded-full bg-gray-300'"
+        class="w-2 h-2 rounded-full"
+        :class="i === current ? 'bg-brandBlue' : 'bg-gray-300'"
       />
     </div>
   </div>
