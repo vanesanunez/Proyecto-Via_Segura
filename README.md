@@ -1,5 +1,5 @@
-# Proyecto-final
-Proyecto via segura Nuñez, Vanesa - Ramírez, Tatiana DWN4AV
+# Proyecto Vía Segura
+Proyecto Final: Nuñez, Vanesa - Ramírez, Tatiana DWN4AV
 
 Es una app ciudadana colaborativa que les permite a los usuarios moverse por la ciudad con mayor seguridad, 
 ofreciendo información en tiempo real sobre el estado de las calles y promoviendo la participación activa de la
