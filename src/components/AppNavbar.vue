@@ -279,6 +279,14 @@ export default {
                 >
               </li>
               <li>
+                <RouterLink
+                  @click="drawer = false"
+                  to="/info"
+                  class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                  >Información útil</RouterLink
+                >
+              </li>
+              <li>
                 <form action="#" @submit.prevent="handleLogout">
                   <button
                     type="submit"

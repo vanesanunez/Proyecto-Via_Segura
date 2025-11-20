@@ -25,7 +25,7 @@ function prev() {
   <div class="max-w-md mx-auto mt-6 relative">
     <!-- Caja del slide -->
     <div
-      class="overflow-hidden rounded-2xl bg-white shadow p-2 h-64 flex items-center justify-center"
+      class="overflow-hidden mb-8 rounded-2xl bg-white shadow p-2 h-44 flex items-center justify-center"
     >
       <img
         :src="slides[current]"

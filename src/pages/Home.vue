@@ -16,6 +16,7 @@ import {
   InformationCircleIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/vue/24/solid";
+import EmergencyButton from "../components/EmergencyButton.vue";
 
 export default {
   name: "Home",
@@ -35,6 +36,7 @@ export default {
     MapIcon,
     InformationCircleIcon,
     ExclamationTriangleIcon,
+    EmergencyButton,
   },
 };
 </script>
@@ -55,8 +57,8 @@ export default {
           Cuidémonos entre todos
         </h2>
 
-        <p class="text-sm text-gray-600 mt-1 text-left sm:text-center">
-          Descubrí reportes cercanos y compartí información útil.
+        <p class="text-sm text-gray-600 mt-1 text-left">
+          Descubrí, creá y apoyá reportes urbanos. Encontrá información útil y compartí tu recorrido en tiempo real con contactos de confianza.
         </p>
       </div>
       <section class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
@@ -96,6 +98,7 @@ export default {
        
       </section>
 
+      <EmergencyButton />
 
       <ReportCarousel />
 
