@@ -7,7 +7,6 @@ import { RouterLink } from 'vue-router';
 import MainLoader from '../components/MainLoader.vue';
 import { PaperAirplaneIcon } from '@heroicons/vue/24/solid'; 
 
-
 let unsubAuth = () => { };
 
 export default {
