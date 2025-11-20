@@ -37,15 +37,13 @@ function prev() {
     <!-- Flechas -->
     <button
       @click="prev"
-      class="absolute left-3 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow"
-    >
+      class="absolute left-3 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow" >
       ‹
     </button>
 
     <button
       @click="next"
-      class="absolute right-3 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow"
-    >
+      class="absolute right-3 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow" >
       ›
     </button>
 
