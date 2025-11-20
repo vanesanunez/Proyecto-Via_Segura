@@ -35,7 +35,10 @@ export default {
 </script>
 
 <template>
-    <AppH1>Crear una nueva cuenta</AppH1>
+    <div class="mt-4 mb-4">
+        <AppH1>Crear una nueva cuenta</AppH1>
+
+    </div>
 
     <form action="#"
           @submit.prevent="handleSubmit"

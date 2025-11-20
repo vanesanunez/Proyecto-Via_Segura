@@ -34,7 +34,8 @@ export default {
 </script>
 
 <template>
-    <AppH1>Ingresar a mi cuenta</AppH1>
+    <div class="mt-4 "> <AppH1>Ingresar a mi cuenta</AppH1> </div>
+    
 
     <div v-if="loading" class="flex justify-center items-center h-full">
     <MainLoader />
@@ -60,7 +61,10 @@ export default {
                 id="password" 
                 class="w-full p-2 border border-blue-300 rounded"
                 v-model="user.password"
+                
                 >
+                
+
         </div>
         <MainButton type="submit"
         >
