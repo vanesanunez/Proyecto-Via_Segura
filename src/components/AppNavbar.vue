@@ -133,7 +133,7 @@ export default {
       </button>
 
       <RouterLink class="flex items-center" to="/">
-        <img src="/logo2.png" alt="Vía Segura" class=" " />
+        <img src="/logo2.png" alt="Vía Segura" class="h-10 w-auto " />
       </RouterLink>
     </div>
 
