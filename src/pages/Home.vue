@@ -42,7 +42,7 @@ export default {
 
   <div>
     <main class="max-w-md mx-auto px-4">
-      <!-- HERO ILUSTRACIÓN + TEXTO DE BIENVENIDA -->
+      <!-- ILUSTRACIÓN + TEXTO DE BIENVENIDA -->
       <div class="text-center mt-6 mb-6 px-4">
         <img
           src="/map.png"
@@ -80,17 +80,18 @@ export default {
           </template>
         </ActionCard>
 
-        <!-- <ActionCard title="Recorrido seguro" to="/recorrido-seguro" accent="blue">
-          <template #icon>
-             <EyeIcon class="h-9 w-9 text-[#3082e3]" />
-          </template>
-        </ActionCard> -->
-
         <ActionCard title="Recorrido seguro" to="/compartir" accent="blue">
           <template #icon>
             <MapIcon class="h-8 w-8 text-[#3082e3]" />
           </template>
         </ActionCard>
+
+        <ActionCard title="Info útil" to="/info" accent="blue">
+          <template #icon>
+            <PlusCircleIcon class="h-9 w-9 text-[#3082e3]" />
+          </template>
+        </ActionCard>
+       
       </section>
 
       <div class="mt-6">

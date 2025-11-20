@@ -36,7 +36,7 @@ const errorSimilares = ref("");
 const showSuccessSheet = ref(false);
 const showBottomSheet = ref(false);
 
-// 🔹 NUEVO: modal popup con la tarjetita de aviso
+// modal popup con la tarjetita de aviso
 const showSimilarHintModal = ref(false);
 
 // --- Datos del usuario ---
@@ -69,10 +69,10 @@ async function findSimilarReports() {
     similares.value = lista;
 
     if (lista.length > 0) {
-      // ✅ Hay coincidencias: mostramos el modal tipo popup
+      // Hay coincidencias: mostramos el modal tipo popup
       showSimilarHintModal.value = true;
     } else {
-      // ❌ No hay similares
+      // No hay similares
       errorSimilares.value =
         "No encontramos reportes similares. Podés crear uno nuevo.";
     }
@@ -248,7 +248,7 @@ function startNewReport() {
         />
 
         <p v-if="selectedFileName" class="mt-2 text-sm text-gray-600">
-          📎 {{ selectedFileName }}
+           {{ selectedFileName }}
         </p>
       </div>
 

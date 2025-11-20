@@ -43,8 +43,8 @@
       </button>
   
      
-      <button @click="goTo('/recorrido-seguro')"
-              :class="buttonClass('/recorrido-seguro')">
+      <button @click="goTo('/compartir')"
+              :class="buttonClass('/compartir')">
         <MapPinIcon class="h-6 w-6"/>
         <span class="text-xs">Rutas</span>
       </button>

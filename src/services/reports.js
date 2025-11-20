@@ -198,7 +198,7 @@ export async function joinReport(reportId) {
       throw updateError;
     }
 
-    return updated; // por si después querés usar el valor nuevo
+    return updated; // por si después quuiero usar el valor nuevo
   } catch (e) {
     console.error("Fallo inesperado sumando apoyo:", e);
     throw e;
