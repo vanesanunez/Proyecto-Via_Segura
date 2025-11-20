@@ -5,7 +5,7 @@ import AppFooter from './components/AppFooter.vue';
 
 export default {
     name: 'App',
-    components: { AppNavbar, AppFooter,  },
+    components: { AppNavbar, AppFooter, },
 }
 </script>
 
@@ -14,6 +14,5 @@ export default {
     <main class="container mx-auto p-2">
         <RouterView />
     </main>
-    
-</template>
 
+</template>

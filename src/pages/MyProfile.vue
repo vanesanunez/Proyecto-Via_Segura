@@ -129,24 +129,24 @@ export default {
     <!-- Paginación de mis reportes -->
     <nav v-if="myTotal > myPageSize" class="flex items-center justify-center gap-2">
       <button @click="goToMy(myPage - 1)" :disabled="myPage === 1" class="px-3 py-1 rounded border" :class="myPage === 1
-          ? 'text-gray-300 border-gray-200'
-          : 'hover:bg-gray-100 border-gray-300'
+        ? 'text-gray-300 border-gray-200'
+        : 'hover:bg-gray-100 border-gray-300'
         ">
         ‹
       </button>
 
       <button v-for="p in Math.max(1, Math.ceil(myTotal / myPageSize))" :key="p" @click="goToMy(p)"
         class="px-3 py-1 rounded border" :class="p === myPage
-            ? 'bg-blue-600 text-white border-blue-600'
-            : 'border-gray-300 hover:bg-gray-100'
+          ? 'bg-blue-600 text-white border-blue-600'
+          : 'border-gray-300 hover:bg-gray-100'
           ">
         {{ p }}
       </button>
 
       <button @click="goToMy(myPage + 1)" :disabled="myPage === Math.max(1, Math.ceil(myTotal / myPageSize))"
         class="px-3 py-1 rounded border" :class="myPage === Math.max(1, Math.ceil(myTotal / myPageSize))
-            ? 'text-gray-300 border-gray-200'
-            : 'hover:bg-gray-100 border-gray-300'
+          ? 'text-gray-300 border-gray-200'
+          : 'hover:bg-gray-100 border-gray-300'
           ">
         ›
       </button>

@@ -3,13 +3,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import L from "leaflet";
 import AppH1 from "../components/AppH1.vue";
-
-import {
-  startListeningSharedPath,
-  stopListeningSharedPath,
-} from "../services/path-sharing";
-
-// Fix leaflet imágenes
+import { startListeningSharedPath, stopListeningSharedPath,} from "../services/path-sharing";
 import icon2x from "leaflet/dist/images/marker-icon-2x.png";
 import icon from "leaflet/dist/images/marker-icon.png";
 import shadow from "leaflet/dist/images/marker-shadow.png";
@@ -23,7 +17,6 @@ L.Icon.Default.mergeOptions({
 
 const route = useRoute();
 const router = useRouter();
-
 const mapEl = ref(null);
 const showToast = ref(false);
 const toastMessage = ref("");
@@ -38,7 +31,6 @@ const sharer_id = route.query.sharer_id || route.params.sharer_id;
 
 
 // Toast
-
 function triggerToast(message) {
   toastMessage.value = message;
   showToast.value = true;
@@ -111,7 +103,6 @@ onUnmounted(() => {
 });
 
 //dejar de seguir recorrido
-
 function stopFollowing() {
   if (unsubscribeShared) {
     unsubscribeShared();
@@ -145,7 +136,6 @@ function stopFollowing() {
       </button>
     </div>
 
-    <!-- Toast -->
     <div
       v-if="showToast"
       class="fixed top-4 right-4 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg animate-fade"

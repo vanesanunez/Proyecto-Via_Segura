@@ -44,19 +44,16 @@ export default {
 
   <div>
     <main class="max-w-md mx-auto px-4">
-      <!-- ILUSTRACIÓN + TEXTO DE BIENVENIDA -->
       <div class="text-center mt-6 mb-6 px-4">
-        <img
-          src="/map.png"
-          alt="Ilustración Vía Segura"
-          class="mx-auto w-52 sm:w-60 drop-shadow-sm" />
+        <img src="/map.png" alt="Ilustración Vía Segura" class="mx-auto w-52 sm:w-60 drop-shadow-sm" />
 
         <h2 class="text-xl font-semibold text-gray-800 mt-4 ">
           Cuidémonos entre todos
         </h2>
 
         <p class="text-sm text-gray-600 mt-1 text-left">
-          Descubrí, creá y apoyá reportes urbanos. Encontrá información útil y compartí tu recorrido en tiempo real con contactos de confianza.
+          Descubrí, creá y apoyá reportes urbanos. Encontrá información útil y compartí tu recorrido en tiempo real con
+          contactos de confianza.
         </p>
       </div>
       <section class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
@@ -72,11 +69,7 @@ export default {
           </template>
         </ActionCard>
 
-        <ActionCard
-          title="Contactos de confianza"
-          to="/contactos"
-          accent="blue"
-        >
+        <ActionCard title="Contactos de confianza" to="/contactos" accent="blue">
           <template #icon>
             <UsersIcon class="h-8 w-8 text-[#3082e3]" />
           </template>
@@ -93,7 +86,7 @@ export default {
             <ExclamationTriangleIcon class="h-9 w-9 text-[#3082e3]" />
           </template>
         </ActionCard>
-       
+
       </section>
 
       <EmergencyButton />

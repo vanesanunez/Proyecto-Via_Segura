@@ -13,7 +13,6 @@ import {
   endPath,
 } from "../services/path-sharing";
 import BottomNavigation from "../components/BottomNavigation.vue";
-// Fix de Leaflet para las imágenes de marker
 import icon2x from "leaflet/dist/images/marker-icon-2x.png";
 import icon from "leaflet/dist/images/marker-icon.png";
 import shadow from "leaflet/dist/images/marker-shadow.png";
@@ -26,7 +25,6 @@ L.Icon.Default.mergeOptions({
 });
 
 // Refs
-
 const mapEl = ref(null);
 const trustedContacts = ref([]);
 const selectedContact = ref(null);
@@ -37,7 +35,6 @@ const destinationResults = ref([]);
 const currentUser = ref(null);
 
 // Variables internas
-
 let map = null;
 let myMarker = null;
 let myPath = null;
@@ -47,22 +44,17 @@ let watchId = null;
 
 
 // Montaje del mapa
-
 onMounted(async () => {
-  // Inicializa Leaflet
   map = L.map(mapEl.value, { zoomControl: false }).setView([-34.6037, -58.3816], 13);
-
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: "© OpenStreetMap contributors",
   }).addTo(map);
-
   L.control.zoom({ position: "topright" }).addTo(map);
 
   // Cargar contactos del usuario autenticado
   subscribeToUserState(async (user) => {
     currentUser.value = user;
-
     if (user?.id) {
       trustedContacts.value = await getTrustedContacts(user.id);
     } else {
@@ -70,7 +62,6 @@ onMounted(async () => {
     }
   });
 });
-
 
 onUnmounted(() => {
   if (watchId) navigator.geolocation.clearWatch(watchId);
@@ -82,7 +73,6 @@ onUnmounted(() => {
 
 
 // Funciones de ruta
-
 async function startSharing() {
   if (!selectedContact.value) {
     alert("Seleccioná un contacto de confianza.");
@@ -91,29 +81,22 @@ async function startSharing() {
 
   routeActive.value = true;
   isSharing.value = true;
-
-  await startPath(); 
+  await startPath();
   await sharePathWith(selectedContact.value.id);
-
   myPath = L.polyline([], { color: "#3082e3", weight: 5 }).addTo(map);
-
   startWatchingPosition(true);
 }
 
 async function startLocal() {
   routeActive.value = true;
   isSharing.value = false;
-
   await startPathWithoutSharing();
-
   myPath = L.polyline([], { color: "#3082e3", weight: 5 }).addTo(map);
-
   startWatchingPosition(false);
 }
 
 function startWatchingPosition(shouldShare) {
   if (!("geolocation" in navigator)) return;
-
   watchId = navigator.geolocation.watchPosition(
     (pos) => {
       const { latitude, longitude } = pos.coords;
@@ -159,7 +142,6 @@ function updateMyMarker(lat, lng) {
 }
 
 // Búsqueda de destino
-
 async function searchDestination() {
   if (!destinationQuery.value.trim()) return;
 
@@ -212,28 +194,16 @@ function selectDestination(place) {
     <div class="mb-4 mt-4">
       <label class="block font-medium">Dirección de destino:</label>
       <div class="flex gap-2">
-        <input
-          v-model="destinationQuery"
-          type="text"
-          class="flex-1 border rounded px-3 py-2"
-          @keyup.enter="searchDestination"
-          placeholder="Ej: Av. Corrientes 1234"
-        />
+        <input v-model="destinationQuery" type="text" class="flex-1 border rounded px-3 py-2"
+          @keyup.enter="searchDestination" placeholder="Ej: Av. Corrientes 1234" />
         <button @click="searchDestination" class="px-4 py-2 rounded bg-blue-500 text-white">
           Buscar
         </button>
       </div>
 
-      <ul
-        v-if="destinationResults.length"
-        class="bg-white border mt-2 rounded shadow max-h-40 overflow-auto"
-      >
-        <li
-          v-for="r in destinationResults"
-          :key="r.place_id"
-          class="p-2 hover:bg-blue-100 cursor-pointer"
-          @click="selectDestination(r)"
-        >
+      <ul v-if="destinationResults.length" class="bg-white border mt-2 rounded shadow max-h-40 overflow-auto">
+        <li v-for="r in destinationResults" :key="r.place_id" class="p-2 hover:bg-blue-100 cursor-pointer"
+          @click="selectDestination(r)">
           {{ composeAddress(r.address) }}
         </li>
       </ul>
@@ -250,27 +220,17 @@ function selectDestination(place) {
     </div>
 
     <div class="flex gap-2 mb-2 items-center">
-      <button
-        v-if="!routeActive"
-        @click="startSharing"
-        class="mt-4 px-4 py-2 rounded bg-blue-500 text-white  hover:bg-blue-700"
-      >
+      <button v-if="!routeActive" @click="startSharing"
+        class="mt-4 px-4 py-2 rounded bg-blue-500 text-white  hover:bg-blue-700">
         Iniciar recorrido compartido
       </button>
 
-      <button
-        v-if="!routeActive"
-        @click="startLocal"
-        class="mt-4 px-4 py-2 rounded border border-blue-500 bg-white text-gray hover:bg-blue-200"
-      >
+      <button v-if="!routeActive" @click="startLocal"
+        class="mt-4 px-4 py-2 rounded border border-blue-500 bg-white text-gray hover:bg-blue-200">
         Iniciar recorrido sin compartir
       </button>
 
-      <button
-        v-if="routeActive"
-        @click="finishSharing"
-        class="mt-4 px-4 py-2 rounded bg-orange-400 text-white"
-      >
+      <button v-if="routeActive" @click="finishSharing" class="mt-4 px-4 py-2 rounded bg-orange-400 text-white">
         Finalizar recorrido
       </button>
     </div>

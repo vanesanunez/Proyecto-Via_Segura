@@ -1,5 +1,9 @@
 import supabase from "./supabase";
-import { createUserProfile, getUserProfileById, updateUserProfile } from "./user-profiles";
+import {
+  createUserProfile,
+  getUserProfileById,
+  updateUserProfile,
+} from "./user-profiles";
 
 //defino una variable que contenga los datos del usuario ("subject")
 let user = {
@@ -16,8 +20,8 @@ let observers = [];
 loadInitialUserState();
 
 //apenas levanta la aplicación pregunta si hay un usuario en localstorage que figure como autenticado
-if(localStorage.getItem('user')) {
-  user = JSON.parse(localStorage.getItem('user'));  //si hay usuario lo parseo y guardo en la variable "user"
+if (localStorage.getItem("user")) {
+  user = JSON.parse(localStorage.getItem("user")); //si hay usuario lo parseo y guardo en la variable "user"
 }
 
 //Carga la información del usuario autenticado,si es que existe alguno
@@ -31,8 +35,8 @@ async function loadInitialUserState() {
     email: data.user.email,
   });
 
-    //traemos los datos faltantes (los que agregué después, nombre,apellido y dni)
-    loadUserExtendedProfile();
+  //traemos los datos faltantes (los que agregué después, nombre,apellido y dni)
+  loadUserExtendedProfile();
 }
 
 async function loadUserExtendedProfile() {
@@ -58,7 +62,6 @@ async function loadUserExtendedProfile() {
       "[auth.js loadUserExtendedProfile] Error al traer perfil extendido del usuario: ",
       error
     );
-    
   }
 }
 
@@ -94,7 +97,6 @@ export async function register(email, name, lastname, dni, password) {
     id: data.user.id,
     email: data.user.email,
   });
-  
 }
 
 export async function login(email, password) {
@@ -130,20 +132,22 @@ export async function logout() {
 }
 
 /**
- * 
- * @param {{ email: string, name: string, lastname: string}} data 
+ *
+ * @param {{ email: string, name: string, lastname: string}} data
  */
 export async function updateAuthUserProfile(data) {
-    try {
-        await updateUserProfile(user.id, data);
+  try {
+    await updateUserProfile(user.id, data);
 
-        updateUser(data);
-    } catch (error) {
-        console.error("[auth.js updateAuthUserProfile] Error al actualizar perfil: ", error);
-        throw error;
-    }
+    updateUser(data);
+  } catch (error) {
+    console.error(
+      "[auth.js updateAuthUserProfile] Error al actualizar perfil: ",
+      error
+    );
+    throw error;
+  }
 }
-
 
 //Métodos para el observer//
 
@@ -151,7 +155,7 @@ export async function updateAuthUserProfile(data) {
  * Suscribe un obseerver que se va a ejecutar cada vez que los datos del usuario autenticado cambien.
  * El observer  debe ser una función (callback) que recibe como argumento el objeto con los datos del usuario.
  * Retorna una nueva función que permite cancelar la suscripción.
- * 
+ *
  * @param {({id: string|null, email:string|null}) => void} callback
  */
 export function subscribeToUserState(callback) {
@@ -162,9 +166,8 @@ export function subscribeToUserState(callback) {
   notify(callback);
 
   //retornamos una nueva función que elimina el callback de la lista de observers
-  return () => observers = observers.filter(obs => obs !== callback);
+  return () => (observers = observers.filter((obs) => obs !== callback));
 }
-
 
 /**
  * invoca un observer y le pasa los datos del usuario
@@ -190,12 +193,12 @@ function updateUser(data) {
   user = {
     ...user,
     ...data,
-  }
+  };
 
-  if(user.id !== null){
-    localStorage.setItem('user', JSON.stringify(user));
+  if (user.id !== null) {
+    localStorage.setItem("user", JSON.stringify(user));
   } else {
-    localStorage.removeItem('user');
+    localStorage.removeItem("user");
   }
 
   notifyAll();

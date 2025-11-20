@@ -5,7 +5,6 @@ import MainLoader from '../components/MainLoader.vue';
 import { getUserProfileById } from '../services/user-profiles';
 import MainButton from '../components/MainButton.vue';
 
-
 export default {
     name: 'UserProfile',
     components: { AppH1, MainLoader, MainButton },
@@ -39,7 +38,7 @@ export default {
 
         <template v-if="!loading">
             <AppH1 class="text-center">Perfil de {{ user.email }}</AppH1>
-    
+
             <div
                 class="bg-gray-50 flex flex-col border-gray-200 gap-2 p-2 sm:flex-row sm:items-center sm:gap-6 sm:py-4 mb-4">
                 <img class="mx-auto block h-12 rounded-full sm:mx-0 sm:shrink-0"
@@ -48,14 +47,14 @@ export default {
                     <div class="space-y-0.5">
                         <p class="text-lg font-semibold text-black">{{ user.display_name }}</p>
                     </div>
-    
+
                     <MainButton>
                         <RouterLink :to="`/usuario/${user.id}/chat`" class="text-white">Enviar mensaje</RouterLink>
                     </MainButton>
-    
+
                 </div>
             </div>
-    
+
             <dl class="mb-4">
                 <dt class="font-bold mb-2">Email</dt>
                 <dd class="mb-4">{{ user.email }}</dd>
@@ -65,7 +64,7 @@ export default {
                 <dd class="mb-4">{{ user.lastname }}</dd>
             </dl>
         </template>
-    
+
         <div v-else class="flex justify-center items-center h-full">
             <MainLoader />
         </div>

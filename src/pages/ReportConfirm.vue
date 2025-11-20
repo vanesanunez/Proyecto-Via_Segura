@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-md mx-auto text-center p-6 bg-blue-50 rounded-lg shadow-md mt-8">
     <div class="text-blue-600 text-5xl mb-4">✔️</div>
-     <p class="text-gray-700 mb-6">
+    <p class="text-gray-700 mb-6">
       Gracias por ayudarnos a mantener la seguridad de la comunidad.<br />
       Tu reporte ha sido enviado y será revisado en breve.
     </p>

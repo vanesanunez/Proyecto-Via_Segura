@@ -48,7 +48,7 @@ export default {
                 this.feedback = {
                     type: 'success',
                     message: 'Tu perfil se actualizó con éxito.',
-                    
+
                 }
 
             } catch (error) {
@@ -83,14 +83,10 @@ export default {
         <AppH1>Editar mi perfil</AppH1>
     </div>
 
-    <div
-        v-if="feedback.message != null"
-        class="p-4 mb-4 rounded"
-        :class="{
-            'bg-red-100 text-red-700' : feedback.type === 'error',
-            'bg-green-100 text-green-700' : feedback.type === 'success',
-        }"
-    >
+    <div v-if="feedback.message != null" class="p-4 mb-4 rounded" :class="{
+        'bg-red-100 text-red-700': feedback.type === 'error',
+        'bg-green-100 text-green-700': feedback.type === 'success',
+    }">
         {{ feedback.message }}
     </div>
 
@@ -108,14 +104,13 @@ export default {
             <input type="text" id="lastname" class="w-full p-2 border border-gray-400 rounded"
                 v-model="profile.lastname">
         </div>
-        <MainButton type="submit"
-        >
-            <template v-if="!updating" >Actualizar</template>
+        <MainButton type="submit">
+            <template v-if="!updating">Actualizar</template>
             <MainLoader v-else />
         </MainButton>
     </form>
 
-<div>
-    <BottomNavigation />
-</div>
+    <div>
+        <BottomNavigation />
+    </div>
 </template>

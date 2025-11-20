@@ -1,42 +1,38 @@
-
-import supabase from './supabase'
+import supabase from "./supabase";
 
 /**
  * Sube una imagen al bucket y devuelve la URL pública
  */
 export async function uploadImage(file) {
-  const fileName = `${Date.now()}_${file.name}`
+  const fileName = `${Date.now()}_${file.name}`;
   const { error } = await supabase.storage
-    .from('report-images')
-    .upload(fileName, file)
-  if (error) throw error
+    .from("report-images")
+    .upload(fileName, file);
+  if (error) throw error;
 
-  const { data: publicData } = supabase
-    .storage
-    .from('report-images')
-    .getPublicUrl(fileName)
+  const { data: publicData } = supabase.storage
+    .from("report-images")
+    .getPublicUrl(fileName);
 
-  return publicData.publicUrl
+  return publicData.publicUrl;
 }
 
 /**
  * Guarda un nuevo reporte
  */
 export async function saveReport(data) {
-  const { error } = await supabase
-    .from('reports')
-    .insert({
-      categoria: data.categoria,
-      descripcion: data.descripcion,
-      ubicacion: data.ubicacion,
-      latitud: data.latitud,
-      longitud: data.longitud,
-      imagen: data.imagen,
-      user_id: data.user_id,
-      email: data.email,
-      estado:data.estado || "Pendiente",
-      apoyos:data.apoyos ?? 0,
-    })
+  const { error } = await supabase.from("reports").insert({
+    categoria: data.categoria,
+    descripcion: data.descripcion,
+    ubicacion: data.ubicacion,
+    latitud: data.latitud,
+    longitud: data.longitud,
+    imagen: data.imagen,
+    user_id: data.user_id,
+    email: data.email,
+    estado: data.estado || "Pendiente",
+    apoyos: data.apoyos ?? 0,
+  });
   if (error) {
     console.error("[reports.js saveReport] Error al guardar reporte:", error);
     throw error;
@@ -47,9 +43,9 @@ export async function saveReport(data) {
  * Trae todos los reportes (sin paginar)
  */
 export async function fetchAllReports() {
-  const { data, error } = await supabase.from('reports').select('*')
-  if (error) throw error
-  return data
+  const { data, error } = await supabase.from("reports").select("*");
+  if (error) throw error;
+  return data;
 }
 
 /**
@@ -57,11 +53,13 @@ export async function fetchAllReports() {
  */
 export function subscribeToNewReports(callback) {
   return supabase
-    .channel('realtime:public:reports')
-    .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'reports' },
-        (payload) => callback(payload.new))
-    .subscribe()
+    .channel("realtime:public:reports")
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "reports" },
+      (payload) => callback(payload.new)
+    )
+    .subscribe();
 }
 
 /**
@@ -77,9 +75,7 @@ export async function fetchReportsPageWithCount({
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  let query = supabase
-    .from("reports")
-    .select("*", { count: "exact" });
+  let query = supabase.from("reports").select("*", { count: "exact" });
 
   switch (mode) {
     case "pending":
@@ -99,15 +95,11 @@ export async function fetchReportsPageWithCount({
       break;
 
     case "most_supported":
-      query = query
-        .gt("apoyos", 0)
-        .order("apoyos", { ascending: false });
+      query = query.gt("apoyos", 0).order("apoyos", { ascending: false });
       break;
 
     case "least_supported":
-      query = query
-        .gt("apoyos", 0)
-        .order("apoyos", { ascending: true });
+      query = query.gt("apoyos", 0).order("apoyos", { ascending: true });
       break;
 
     case "recent":
@@ -124,20 +116,24 @@ export async function fetchReportsPageWithCount({
 /**
  * Página de reportes + total (SOLO del usuario)
  */
-export async function fetchUserReportsPageWithCount({ userId, page = 1, pageSize = 2 } = {}) {
-  const from = (page - 1) * pageSize
-  const to = from + pageSize - 1
+export async function fetchUserReportsPageWithCount({
+  userId,
+  page = 1,
+  pageSize = 2,
+} = {}) {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
 
   const { data, error, count } = await supabase
-    .from('reports')
-    .select('*', { count: 'exact', head: false })
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .order('id', { ascending: false })
-    .range(from, to)
+    .from("reports")
+    .select("*", { count: "exact", head: false })
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
+    .range(from, to);
 
-  if (error) throw error
-  return { data: data ?? [], count: count ?? 0 }
+  if (error) throw error;
+  return { data: data ?? [], count: count ?? 0 };
 }
 
 //Busca reportes parecidos por categoria + texto de la ubicación
@@ -152,9 +148,9 @@ export async function searchSimilarReports({ categoria, ubicacion }) {
       .from("reports")
       .select("id, categoria, ubicacion, apoyos, created_at")
       .eq("categoria", categoria)
-      .ilike("ubicacion", `%${ubicacion}%`) 
+      .ilike("ubicacion", `%${ubicacion}%`)
       .order("created_at", { ascending: false })
-      .limit(5); 
+      .limit(5);
 
     if (error) {
       console.error("Error buscando reportes similares:", error);

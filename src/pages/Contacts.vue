@@ -148,7 +148,7 @@ async function removeContact(relationId) {
       </div>
     </div>
   </div>
-<BottomNavigation />
+  <BottomNavigation />
 </template>
 
 

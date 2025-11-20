@@ -9,7 +9,6 @@ const direccion = ref("");
 const loading = ref(false);
 const errorMessage = ref("");
 const results = ref([]);
-
 const radiusMeters = ref(3000);
 const selectedCategory = ref("hospital");
 

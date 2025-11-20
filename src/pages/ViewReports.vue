@@ -10,7 +10,7 @@ const total = ref(0);
 const loading = ref(false);
 const errorMsg = ref("");
 
-// 🔹 Un solo filtro combinado
+// Un solo filtro combinado
 const filterMode = ref("recent"); // "recent" | "oldest" | "pending" | "resolved" | "most_supported" | "least_supported"
 const showFilterSheet = ref(false);
 
@@ -60,26 +60,13 @@ watch(filterMode, () => {
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-semibold">Reportes</h1>
 
-      <button
-        type="button"
-        @click="showFilterSheet = true"
-        class="flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-100 active:scale-[.97] transition"
-      >
+      <button type="button" @click="showFilterSheet = true"
+        class="flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-100 active:scale-[.97] transition">
         <!-- Icono de filtro -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L14 13.414V19a1 1 0 
-         01-1.447.894l-4-2A1 1 0 018 17V13.414L3.293 6.707A1 1 0 013 6V4z"
-          />
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L14 13.414V19a1 1 0 
+         01-1.447.894l-4-2A1 1 0 018 17V13.414L3.293 6.707A1 1 0 013 6V4z" />
         </svg>
 
         <span>Filtros</span>
@@ -93,77 +80,45 @@ watch(filterMode, () => {
     </div>
 
     <ul class="space-y-4 mb-6">
-      <ReportCard
-        v-for="r in reports"
-        :key="r.id"
-        :report="r"
-        :to="`/report/${r.id}`"
-      />
+      <ReportCard v-for="r in reports" :key="r.id" :report="r" :to="`/report/${r.id}`" />
     </ul>
 
     <!-- Paginación -->
     <nav v-if="totalPages > 1" class="flex items-center justify-center gap-2">
-      <button
-        @click="goTo(page - 1)"
-        :disabled="page === 1"
-        class="px-3 py-1 rounded border"
-        :class="
-          page === 1
-            ? 'text-gray-300 border-gray-200'
-            : 'hover:bg-gray-100 border-gray-300'
-        "
-      >
+      <button @click="goTo(page - 1)" :disabled="page === 1" class="px-3 py-1 rounded border" :class="page === 1
+          ? 'text-gray-300 border-gray-200'
+          : 'hover:bg-gray-100 border-gray-300'
+        ">
         ‹
       </button>
 
-      <button
-        v-for="p in totalPages"
-        :key="p"
-        @click="goTo(p)"
-        class="px-3 py-1 rounded border"
-        :class="
-          p === page
-            ? 'bg-blue-600 text-white border-blue-600'
-            : 'border-gray-300 hover:bg-gray-100'
-        "
-      >
+      <button v-for="p in totalPages" :key="p" @click="goTo(p)" class="px-3 py-1 rounded border" :class="p === page
+          ? 'bg-blue-600 text-white border-blue-600'
+          : 'border-gray-300 hover:bg-gray-100'
+        ">
         {{ p }}
       </button>
 
-      <button
-        @click="goTo(page + 1)"
-        :disabled="page === totalPages"
-        class="px-3 py-1 rounded border"
-        :class="
-          page === totalPages
-            ? 'text-gray-300 border-gray-200'
-            : 'hover:bg-gray-100 border-gray-300'
-        "
-      >
+      <button @click="goTo(page + 1)" :disabled="page === totalPages" class="px-3 py-1 rounded border" :class="page === totalPages
+          ? 'text-gray-300 border-gray-200'
+          : 'hover:bg-gray-100 border-gray-300'
+        ">
         ›
       </button>
     </nav>
 
     <!-- Botón volver a inicio -->
-    <router-link
-      to="/"
-      class="bg-[#3082e3] text-white py-2 px-4 rounded w-1/2 mx-auto text-center mb-3 hover:bg-[#085baf] mt-8 block"
-    >
+    <router-link to="/"
+      class="bg-[#3082e3] text-white py-2 px-4 rounded w-1/2 mx-auto text-center mb-3 hover:bg-[#085baf] mt-8 block">
       Volver a la página de inicio
     </router-link>
 
     <!-- FONDO OSCURO FILTROS -->
-    <div
-      v-if="showFilterSheet"
-      class="fixed inset-0 bg-black/40 z-40"
-      @click="showFilterSheet = false"
-    ></div>
+    <div v-if="showFilterSheet" class="fixed inset-0 bg-black/40 z-40" @click="showFilterSheet = false"></div>
 
     <!-- BOTTOM SHEET DE FILTROS (TODO JUNTO) -->
-    <div
-      v-if="showFilterSheet"
-      class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-xl z-50 p-4 pb-6 animate-slide-up"
-    >
+    <div v-if="showFilterSheet"
+      class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-xl z-50 p-4 pb-6 animate-slide-up">
       <div class="flex justify-center mb-2">
         <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
       </div>
@@ -206,19 +161,15 @@ watch(filterMode, () => {
       </div>
 
       <div class="flex gap-2 mt-2">
-        <button
-          type="button"
+        <button type="button"
           class="flex-1 bg-[#3082e3] text-white py-2 rounded-lg text-m font-medium hover:bg-[#085baf] active:scale-[.98] transition"
-          @click="showFilterSheet = false"
-        >
+          @click="showFilterSheet = false">
           Aplicar filtros
         </button>
 
-        <button
-          type="button"
+        <button type="button"
           class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-m font-medium hover:bg-gray-200 active:scale-[.98]"
-          @click="filterMode = 'recent'"
-        >
+          @click="filterMode = 'recent'">
           Limpiar
         </button>
       </div>
@@ -231,6 +182,7 @@ watch(filterMode, () => {
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0%);
   }

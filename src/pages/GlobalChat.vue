@@ -5,7 +5,7 @@ import { saveGlobalChatMessage, subscribeToGlobalChatNewMessages, loadLastGlobal
 import { subscribeToUserState } from '../services/auth';
 import { RouterLink } from 'vue-router';
 import MainLoader from '../components/MainLoader.vue';
-import { PaperAirplaneIcon } from '@heroicons/vue/24/solid'; 
+import { PaperAirplaneIcon } from '@heroicons/vue/24/solid';
 
 let unsubAuth = () => { };
 
@@ -110,7 +110,7 @@ export default {
 
                 <button type="submit"
                     class="p-2 bg-blue-600 rounded-full hover:bg-blue-500 active:bg-blue-700 text-white flex items-center justify-center">
-                    <PaperAirplaneIcon class="h-5 w-5 "/> 
+                    <PaperAirplaneIcon class="h-5 w-5 " />
                 </button>
             </form>
         </section>
