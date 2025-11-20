@@ -27,7 +27,7 @@ import MainLoader from "../components/MainLoader.vue";
         @click="mostrarToast"
         class="bg-[#f2826d] text-white mt-6 font-bold py-3 px-6 rounded-lg w-full transition-transform active:scale-95 active:opacity-80"
       >
-        EMERGENCIA
+       <p>EMERGENCIA</p> 
       </button>
   
       <!-- Toast -->
@@ -48,10 +48,7 @@ import MainLoader from "../components/MainLoader.vue";
   </template>
   
 
-  <style scoped>
-  /* Animación con Tailwind compatible */
- 
-  
+  <style scoped> 
   .slide-down-enter-from {
     opacity: 0;
     transform: translateY(-10px) translateX(-50%);
