@@ -7,6 +7,7 @@ import { startListeningSharedPath, stopListeningSharedPath,} from "../services/p
 import icon2x from "leaflet/dist/images/marker-icon-2x.png";
 import icon from "leaflet/dist/images/marker-icon.png";
 import shadow from "leaflet/dist/images/marker-shadow.png";
+import BottomNavigation from "../components/BottomNavigation.vue";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -143,6 +144,9 @@ function stopFollowing() {
     >
       {{ toastMessage }}
     </div>
+  </div>
+  <div>
+    <BottomNavigation />
   </div>
 </template>
 
