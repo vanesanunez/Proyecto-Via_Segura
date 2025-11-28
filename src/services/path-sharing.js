@@ -1,3 +1,4 @@
+// services/path-sharing.js
 import supabase from "./supabase";
 
 let user = null;
@@ -6,6 +7,10 @@ let currentBroadcast = null;
 let globalChannel = null;
 const pathChannels = {};
 const invitationListeners = new Set();
+
+// NUEVO: historial y destino en memoria (temporal)
+let coordsHistory = [];
+let currentDestination = null;
 
 // Auth
 export async function subscribeToAuth() {
@@ -79,10 +84,17 @@ export function startListeningSharedPath(
 
   const channel = supabase.channel(channelKey);
 
+  // cuando el emisor mande puntos nuevos
   channel.on("broadcast", { event: "coords-update" }, (payload) => {
-    if (onCoords) onCoords(payload.payload);
+    if (onCoords) onCoords({ type: "point", payload: payload.payload });
   });
 
+  // cuando el emisor mande el historial completo
+  channel.on("broadcast", { event: "full-history" }, (payload) => {
+    if (onCoords) onCoords({ type: "full-history", payload: payload.payload });
+  });
+
+  // señal de finalización
   channel.on("broadcast", { event: "path-ended" }, (payload) => {
     if (onEnded) onEnded(payload.payload);
     channel.unsubscribe();
@@ -94,6 +106,28 @@ export function startListeningSharedPath(
       `[path-sharing] subscribed to shared path ${channelKey}:`,
       status
     );
+
+    // Cuando nos suscribimos le pedimos al emisor que nos envie el historial
+    // (si el protocolo lo permite; es un evento simple que el emisor escucha)
+    if (status === "SUBSCRIBED") {
+      // enviamos una solicitud por el mismo canal para que el emisor responda con 'full-history'
+      const request = {
+        type: "broadcast",
+        event: "request-history",
+        payload: {
+          requested_at: new Date().toISOString(),
+        },
+      };
+
+      try {
+        channel.send(request);
+      } catch (_) {
+        // si falla por algún motivo, intentar vía httpSend
+        channel.httpSend(request).catch((e) => {
+          console.warn("[path-sharing] request-history httpSend failed", e);
+        });
+      }
+    }
   });
 
   pathChannels[channelKey] = { channel, onCoords, onEnded };
@@ -142,12 +176,22 @@ export async function startPath() {
   currentPath = crypto.randomUUID();
   currentBroadcast = supabase.channel(`${user.id}:path:${currentPath}`);
 
+  // responder a solicitudes de historial
+  currentBroadcast.on("broadcast", { event: "request-history" }, (_payload) => {
+    // cuando alguien pida historial le respondemos con full-history
+    sendFullHistory();
+  });
+
   currentBroadcast.on("broadcast", { event: "path-ended" }, () => {
     console.log("[path-sharing] local path-ended received");
   });
 
   await currentBroadcast.subscribe();
   await initGlobalChannelIfNeeded();
+
+  // resetear historial y destino cuando inicia un nuevo recorrido
+  coordsHistory = [];
+  currentDestination = null;
 
   console.log("[path-sharing] started shared path:", currentPath);
   return currentPath;
@@ -163,12 +207,15 @@ export async function startPathWithoutSharing() {
 
   await initGlobalChannelIfNeeded();
 
+  // reset historial y destino
+  coordsHistory = [];
+  currentDestination = null;
+
   console.log("[path-sharing] started local path (no sharing):", currentPath);
   return currentPath;
 }
 
 // Compartir recorrido
-
 export async function sharePathWith(receiverId) {
   if (!currentPath) return console.error("No hay recorrido iniciado.");
   if (!user?.id) return console.error("Usuario no autenticado.");
@@ -218,9 +265,14 @@ export async function sharePathWith(receiverId) {
 }
 
 // Emisor: enviar coordenadas
-
 export function updateCoords(coords) {
   if (!currentBroadcast) return;
+
+  // Guardamos en el historial temporal
+  coordsHistory.push({
+    ...coords,
+    ts: new Date().toISOString(),
+  });
 
   const message = {
     type: "broadcast",
@@ -235,8 +287,33 @@ export function updateCoords(coords) {
   }
 }
 
-// Finalizar recorrido
+// NUEVO: permitir que el emisor comparta un destino (opcional)
+export function setCurrentDestination(destination) {
+  // destination = { lat: number, lng: number, address?: string }
+  currentDestination = destination;
+}
 
+// Emisor: enviar historial completo (responde a request-history)
+export function sendFullHistory() {
+  if (!currentBroadcast) return;
+
+  const message = {
+    type: "broadcast",
+    event: "full-history",
+    payload: {
+      history: coordsHistory,
+      destination: currentDestination,
+    },
+  };
+
+  try {
+    currentBroadcast.send(message);
+  } catch (_) {
+    currentBroadcast.httpSend(message);
+  }
+}
+
+// Finalizar recorrido
 export async function endPath() {
   try {
     if (currentBroadcast) {
@@ -261,6 +338,9 @@ export async function endPath() {
     }
 
     currentPath = null;
+    coordsHistory = [];
+    currentDestination = null;
+
     console.log("[path-sharing] path ended - canal cerrado");
   } catch (err) {
     console.error("[path-sharing] endPath error:", err);
