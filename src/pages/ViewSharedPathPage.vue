@@ -27,12 +27,12 @@ let trackedMarker = null;
 let historicPolyline = null;
 let livePolyline = null;
 
-// Nueva polyline para la ruta sugerida
+// polyline para la ruta sugerida
 let suggestedRouteLine = null;
 
 let unsubscribeShared = null;
 
-// guardaremos el DESTINO cuando lo envié el emisor
+// guardaremos el destino cuando lo envie el emisor
 let sharedDestination = null;
 
 // URL para OSRM
@@ -76,12 +76,12 @@ onMounted(() => {
         if (!msg) return;
 
         //
-        // 📌 DESTINO RECIBIDO
+        // destino recibido
         //
         if (msg.type === "destination") {
           sharedDestination = msg.payload;
 
-          // si ya tenemos ubicación actual → dibujamos ruta sugerida
+          // si ya tenemos ubicación actual dibujamos ruta sugerida
           if (trackedMarker) {
             const pos = trackedMarker.getLatLng();
             const origin = { lat: pos.lat, lng: pos.lng };
@@ -102,7 +102,7 @@ onMounted(() => {
         }
 
         //
-        // 📌 HISTORIAL COMPLETO
+        // historial completo
         //
         if (msg.type === "full-history") {
           const { history } = msg.payload || {};
@@ -160,7 +160,7 @@ onMounted(() => {
         }
 
         //
-        // 📌 PUNTO EN TIEMPO REAL
+        // punto en tiempo real 
         //
         if (msg.type === "point") {
           const coords = msg.payload;
