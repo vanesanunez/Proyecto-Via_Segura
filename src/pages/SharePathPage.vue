@@ -17,6 +17,7 @@ import icon2x from "leaflet/dist/images/marker-icon-2x.png";
 import icon from "leaflet/dist/images/marker-icon.png";
 import shadow from "leaflet/dist/images/marker-shadow.png";
 
+// Fix Leaflet paths
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: icon2x,
@@ -42,17 +43,22 @@ let destinationMarker = null;
 let routeLine = null;
 let watchId = null;
 
+// ⚠️ NUEVO: guardamos coords del destino
+let destinationCoords = null;
 
+// -----------------------------------------------------------
 // Montaje del mapa
+// -----------------------------------------------------------
 onMounted(async () => {
   map = L.map(mapEl.value, { zoomControl: false }).setView([-34.6037, -58.3816], 13);
+
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: "© OpenStreetMap contributors",
   }).addTo(map);
+
   L.control.zoom({ position: "topright" }).addTo(map);
 
-  // Cargar contactos del usuario autenticado
   subscribeToUserState(async (user) => {
     currentUser.value = user;
     if (user?.id) {
@@ -63,6 +69,9 @@ onMounted(async () => {
   });
 });
 
+// -----------------------------------------------------------
+// Cleanup
+// -----------------------------------------------------------
 onUnmounted(() => {
   if (watchId) navigator.geolocation.clearWatch(watchId);
 
@@ -71,8 +80,9 @@ onUnmounted(() => {
   });
 });
 
-
-// Funciones de ruta
+// -----------------------------------------------------------
+// Funciones de recorrido
+// -----------------------------------------------------------
 async function startSharing() {
   if (!selectedContact.value) {
     alert("Seleccioná un contacto de confianza.");
@@ -81,8 +91,10 @@ async function startSharing() {
 
   routeActive.value = true;
   isSharing.value = true;
+
   await startPath();
   await sharePathWith(selectedContact.value.id);
+
   myPath = L.polyline([], { color: "#3082e3", weight: 5 }).addTo(map);
   startWatchingPosition(true);
 }
@@ -90,6 +102,7 @@ async function startSharing() {
 async function startLocal() {
   routeActive.value = true;
   isSharing.value = false;
+
   await startPathWithoutSharing();
   myPath = L.polyline([], { color: "#3082e3", weight: 5 }).addTo(map);
   startWatchingPosition(false);
@@ -97,8 +110,9 @@ async function startLocal() {
 
 function startWatchingPosition(shouldShare) {
   if (!("geolocation" in navigator)) return;
+
   watchId = navigator.geolocation.watchPosition(
-    (pos) => {
+    async (pos) => {
       const { latitude, longitude } = pos.coords;
 
       updateMyMarker(latitude, longitude);
@@ -106,6 +120,11 @@ function startWatchingPosition(shouldShare) {
 
       if (shouldShare) {
         updateCoords({ lat: latitude, lng: longitude });
+      }
+
+      // ⚠️ Si ya hay destino, recalcular ruta en tiempo real (como Waze/Uber)
+      if (destinationCoords) {
+        drawRoute({ lat: latitude, lng: longitude }, destinationCoords);
       }
     },
     (err) => console.error("Error en geolocalización:", err),
@@ -137,29 +156,32 @@ function updateMyMarker(lat, lng) {
   } else {
     myMarker.setLatLng([lat, lng]);
   }
-
   map.flyTo([lat, lng], 15);
 }
 
+// -----------------------------------------------------------
 // Búsqueda de destino
+// -----------------------------------------------------------
 async function searchDestination() {
   if (!destinationQuery.value.trim()) return;
 
-  const results = await nominatimSearch(destinationQuery.value, {
+  destinationResults.value = await nominatimSearch(destinationQuery.value, {
     countrycodes: "ar",
     limit: 5,
   });
-
-  destinationResults.value = results;
 }
 
 function selectDestination(place) {
   const lat = parseFloat(place.lat);
   const lon = parseFloat(place.lon);
 
+  destinationCoords = { lat, lng: lon }; // ⚠️ guardamos coords
+
+  // Borrar marcadores previos
   if (destinationMarker) map.removeLayer(destinationMarker);
   if (routeLine) map.removeLayer(routeLine);
 
+  // Crear marcador de destino
   destinationMarker = L.marker([lat, lon], {
     icon: L.icon({
       iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
@@ -172,16 +194,42 @@ function selectDestination(place) {
 
   map.setView([lat, lon], 15);
 
-  if (myMarker) {
-    const myPos = myMarker.getLatLng();
-    routeLine = L.polyline([myPos, [lat, lon]], {
-      color: "#2a2a2a",
-      dashArray: "6,6",
-    }).addTo(map);
-  }
-
   destinationQuery.value = composeAddress(place.address);
   destinationResults.value = [];
+
+  // Si ya tenemos ubicación actual → trazar ruta real
+  if (myMarker) {
+    const { lat: myLat, lng: myLng } = myMarker.getLatLng();
+    drawRoute({ lat: myLat, lng: myLng }, destinationCoords);
+  }
+}
+
+// -----------------------------------------------------------
+// NUEVO → Función real de ruta OSRM
+// -----------------------------------------------------------
+async function drawRoute(from, to) {
+  try {
+    const res = await fetch(
+      `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`
+    );
+
+    const data = await res.json();
+    if (!data.routes.length) return;
+
+    const coords = data.routes[0].geometry.coordinates.map((c) => [c[1], c[0]]);
+
+    if (routeLine) map.removeLayer(routeLine);
+
+    routeLine = L.polyline(coords, {
+      color: "blue",
+      weight: 6,
+      opacity: 0.9,
+    }).addTo(map);
+
+    map.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
+  } catch (e) {
+    console.error("Error trazando ruta:", e);
+  }
 }
 </script>
 
@@ -194,16 +242,28 @@ function selectDestination(place) {
     <div class="mb-4 mt-4">
       <label class="block font-medium">Dirección de destino:</label>
       <div class="flex gap-2">
-        <input v-model="destinationQuery" type="text" class="flex-1 border rounded px-3 py-2"
-          @keyup.enter="searchDestination" placeholder="Ej: Av. Corrientes 1234" />
+        <input
+          v-model="destinationQuery"
+          type="text"
+          class="flex-1 border rounded px-3 py-2"
+          @keyup.enter="searchDestination"
+          placeholder="Ej: Av. Corrientes 1234"
+        />
         <button @click="searchDestination" class="px-4 py-2 rounded bg-blue-500 text-white">
           Buscar
         </button>
       </div>
 
-      <ul v-if="destinationResults.length" class="bg-white border mt-2 rounded shadow max-h-40 overflow-auto">
-        <li v-for="r in destinationResults" :key="r.place_id" class="p-2 hover:bg-blue-100 cursor-pointer"
-          @click="selectDestination(r)">
+      <ul
+        v-if="destinationResults.length"
+        class="bg-white border mt-2 rounded shadow max-h-40 overflow-auto"
+      >
+        <li
+          v-for="r in destinationResults"
+          :key="r.place_id"
+          class="p-2 hover:bg-blue-100 cursor-pointer"
+          @click="selectDestination(r)"
+        >
           {{ composeAddress(r.address) }}
         </li>
       </ul>
@@ -220,23 +280,32 @@ function selectDestination(place) {
     </div>
 
     <div class="flex gap-2 mb-2 items-center">
-      <button v-if="!routeActive" @click="startSharing"
-        class="mt-4 px-4 py-2 rounded bg-blue-500 text-white  hover:bg-blue-700">
+      <button
+        v-if="!routeActive"
+        @click="startSharing"
+        class="mt-4 px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700"
+      >
         Iniciar recorrido compartido
       </button>
 
-      <button v-if="!routeActive" @click="startLocal"
-        class="mt-4 px-4 py-2 rounded border border-blue-500 bg-white text-gray hover:bg-blue-200">
+      <button
+        v-if="!routeActive"
+        @click="startLocal"
+        class="mt-4 px-4 py-2 rounded border border-blue-500 bg-white text-gray hover:bg-blue-200"
+      >
         Iniciar recorrido sin compartir
       </button>
 
-      <button v-if="routeActive" @click="finishSharing" class="mt-4 px-4 py-2 rounded bg-orange-400 text-white">
+      <button
+        v-if="routeActive"
+        @click="finishSharing"
+        class="mt-4 px-4 py-2 rounded bg-orange-400 text-white"
+      >
         Finalizar recorrido
       </button>
     </div>
   </div>
 
-  <div>
-    <BottomNavigation />
-  </div>
+  <BottomNavigation />
 </template>
+
