@@ -224,7 +224,7 @@ function stopFollowing() {
 
   triggerToast("Dejaste de seguir el recorrido.");
 
-  setTimeout(() => router.push("/"), 2000);
+  setTimeout(() => router.push("/"), 3000);
 }
 </script>
 
@@ -242,7 +242,7 @@ function stopFollowing() {
 
     <div
       v-if="showToast"
-      class="fixed top-4 right-4 bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg animate-fade"
+      class="fixed top-4 right-4 bg-blue-200 text-gray-600 px-4 py-2 rounded-lg shadow-lg animate-fade"
       style="z-index: 9999;"
     >
       {{ toastMessage }}
