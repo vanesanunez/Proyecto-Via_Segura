@@ -10,7 +10,7 @@ const loading = ref(false);
 const errorMessage = ref("");
 const results = ref([]);
 const radiusMeters = ref(3000);
-const selectedCategory = ref("hospital");
+const selectedCategory = ref("police");
 
 // Paginación
 const currentPage = ref(1);
@@ -174,9 +174,9 @@ async function buscarCercanos() {
     <label class="block mb-2 font-medium mt-4">*¿Qué estás buscando?</label>
     <select v-model="selectedCategory"
       class="border p-2 rounded w-full max-w-sm bg-white shadow-sm">
+      <option value="police">Comisarías</option>
       <option value="hospital">Hospitales</option>
       <option value="pharmacy">Farmacias</option>
-      <option value="police">Comisarías</option>
       <option value="fire_station">Bomberos</option>
     </select>
 
