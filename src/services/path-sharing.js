@@ -1,4 +1,3 @@
-// services/path-sharing.js
 import supabase from "./supabase";
 
 let user = null;
@@ -8,7 +7,7 @@ let globalChannel = null;
 const pathChannels = {};
 const invitationListeners = new Set();
 
-// NUEVO: historial y destino en memoria (temporal)
+// historial y destino en memoria (temporal)
 let coordsHistory = [];
 let currentDestination = null;
 
@@ -94,7 +93,7 @@ export function startListeningSharedPath(
     if (onCoords) onCoords({ type: "full-history", payload: payload.payload });
   });
 
-  // señal de finalización
+  
   channel.on("broadcast", { event: "path-ended" }, (payload) => {
     if (onEnded) onEnded(payload.payload);
     channel.unsubscribe();
@@ -287,7 +286,7 @@ export function updateCoords(coords) {
   }
 }
 
-// NUEVO: permitir que el emisor comparta un destino (opcional)
+//permitir que el emisor comparta un destino
 export function setCurrentDestination(destination) {
   // destination = { lat: number, lng: number, address?: string }
   currentDestination = destination;

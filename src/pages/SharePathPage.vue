@@ -43,7 +43,7 @@ let destinationMarker = null;
 let routeLine = null;
 let watchId = null;
 
-// ⚠️ NUEVO: guardamos coords del destino
+// guardamos coords del destino
 let destinationCoords = null;
 
 // -----------------------------------------------------------
@@ -122,7 +122,7 @@ function startWatchingPosition(shouldShare) {
         updateCoords({ lat: latitude, lng: longitude });
       }
 
-      // ⚠️ Si ya hay destino, recalcular ruta en tiempo real (como Waze/Uber)
+      // Si ya hay destino, recalcular ruta en tiempo real 
       if (destinationCoords) {
         drawRoute({ lat: latitude, lng: longitude }, destinationCoords);
       }
@@ -175,7 +175,7 @@ function selectDestination(place) {
   const lat = parseFloat(place.lat);
   const lon = parseFloat(place.lon);
 
-  destinationCoords = { lat, lng: lon }; // ⚠️ guardamos coords
+  destinationCoords = { lat, lng: lon }; // guardamos coords
 
   // Borrar marcadores previos
   if (destinationMarker) map.removeLayer(destinationMarker);
@@ -197,7 +197,7 @@ function selectDestination(place) {
   destinationQuery.value = composeAddress(place.address);
   destinationResults.value = [];
 
-  // Si ya tenemos ubicación actual → trazar ruta real
+  // Si ya tenemos ubicación actual, trazar ruta real
   if (myMarker) {
     const { lat: myLat, lng: myLng } = myMarker.getLatLng();
     drawRoute({ lat: myLat, lng: myLng }, destinationCoords);
@@ -205,7 +205,7 @@ function selectDestination(place) {
 }
 
 // -----------------------------------------------------------
-// NUEVO → Función real de ruta OSRM
+// Función de ruta OSRM
 // -----------------------------------------------------------
 async function drawRoute(from, to) {
   try {
