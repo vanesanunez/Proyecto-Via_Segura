@@ -118,7 +118,7 @@ onMounted(() => {
 
             historicPolyline = L.polyline(coords, {
               color: "#9aa0a6",
-              weight: 5,
+              weight: 3,
               opacity: 0.7,
             }).addTo(map);
 
@@ -170,7 +170,7 @@ onMounted(() => {
           if (lat == null || lng == null) return;
 
           if (!livePolyline) {
-            livePolyline = L.polyline([], { color: "#3082e3", weight: 5 }).addTo(map);
+            livePolyline = L.polyline([], { color: "#3082e3", weight: 3 }).addTo(map);
           }
 
           livePolyline.addLatLng([lat, lng]);
@@ -195,7 +195,7 @@ onMounted(() => {
 
               suggestedRouteLine = L.polyline(suggestedCoords, {
                 color: "#3082e3",
-                weight: 4,
+                weight: 3,
                 opacity: 0.6,
                 dashArray: "5,5",
               }).addTo(map);

@@ -95,7 +95,7 @@ async function startSharing() {
   await startPath();
   await sharePathWith(selectedContact.value.id);
 
-  myPath = L.polyline([], { color: "#3082e3", weight: 5 }).addTo(map);
+  myPath = L.polyline([], { color: "#3082e3", weight: 3 }).addTo(map);
   startWatchingPosition(true);
 }
 
@@ -104,7 +104,7 @@ async function startLocal() {
   isSharing.value = false;
 
   await startPathWithoutSharing();
-  myPath = L.polyline([], { color: "#3082e3", weight: 5 }).addTo(map);
+  myPath = L.polyline([], { color: "#3082e3", weight: 3 }).addTo(map);
   startWatchingPosition(false);
 }
 
@@ -222,7 +222,7 @@ async function drawRoute(from, to) {
 
     routeLine = L.polyline(coords, {
       color: "blue",
-      weight: 6,
+      weight: 3,
       opacity: 0.9,
     }).addTo(map);
 
