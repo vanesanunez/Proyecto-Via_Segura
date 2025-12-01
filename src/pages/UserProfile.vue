@@ -56,11 +56,11 @@ export default {
             </div>
 
             <dl class="mb-4">
-                <dt class="font-bold mb-2">Email</dt>
+                <dt class="font-bold mb-2 text-blue-600">Email</dt>
                 <dd class="mb-4">{{ user.email }}</dd>
-                <dt class="font-bold mb-2">Nombre</dt>
+                <dt class="font-bold mb-2 text-blue-600">Nombre</dt>
                 <dd class="mb-4">{{ user.name }}</dd>
-                <dt class="font-bold mb-2">Apellido</dt>
+                <dt class="font-bold mb-2 text-blue-600">Apellido</dt>
                 <dd class="mb-4">{{ user.lastname }}</dd>
             </dl>
         </template>

@@ -6,13 +6,14 @@ import MainLoader from "../components/MainLoader.vue";
 import { fetchUserReportsPageWithCount } from "../services/reports";
 import ReportCard from "../components/ReportCard.vue";
 import MainButton from "../components/MainButton.vue";
+import BottomNavigation from "../components/BottomNavigation.vue";
 
 //Variable para guardar la función de cancelar la suscripción a la autenticación.
 let unsubAuth = () => { };
 
 export default {
   name: "MyProfile",
-  components: { AppH1, MainLoader, ReportCard, MainButton },
+  components: { AppH1, MainLoader, ReportCard, MainButton, BottomNavigation },
   data() {
     return {
       user: {
@@ -98,13 +99,13 @@ export default {
       </div>
 
       <dl class="m-2">
-        <dt class="font-bold mb-2">Email:</dt>
+        <dt class="font-bold mb-2 text-blue-600">Email:</dt>
         <dd class="mb-4">{{ user.email }}</dd>
-        <dt class="font-bold mb-2">Nombre:</dt>
+        <dt class="font-bold mb-2 text-blue-600">Nombre:</dt>
         <dd class="mb-4">{{ user.name }}</dd>
-        <dt class="font-bold mb-2">Apellido:</dt>
+        <dt class="font-bold mb-2 text-blue-600">Apellido:</dt>
         <dd class="mb-4">{{ user.lastname }}</dd>
-        <dt class="font-bold mb-2">DNI</dt>
+        <dt class="font-bold mb-2 text-blue-600">DNI</dt>
         <dd class="mb-4">{{ user.dni }}</dd>
       </dl>
     </div>
@@ -152,4 +153,5 @@ export default {
       </button>
     </nav>
   </div>
+  <BottomNavigation />
 </template>
