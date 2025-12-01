@@ -4,10 +4,11 @@ import AppH1 from '../components/AppH1.vue';
 import MainLoader from '../components/MainLoader.vue';
 import { getUserProfileById } from '../services/user-profiles';
 import MainButton from '../components/MainButton.vue';
+import BottomNavigation from '../components/BottomNavigation.vue';
 
 export default {
     name: 'UserProfile',
-    components: { AppH1, MainLoader, MainButton },
+    components: { AppH1, MainLoader, MainButton, BottomNavigation },
     data() {
         return {
             user: {
@@ -69,4 +70,5 @@ export default {
             <MainLoader />
         </div>
     </div>
+    <BottomNavigation />
 </template>
