@@ -12,6 +12,7 @@ let user = {
   name: null,
   lastname: null,
   dni: null,
+  role: null,
 };
 //Array para guardar la lista de observers que deben ser notificados de los cambios en "user"
 let observers = [];
@@ -56,6 +57,7 @@ async function loadUserExtendedProfile() {
       name: profileData.name,
       lastname: profileData.lastname,
       dni: profileData.dni,
+      role: profileData.role,
     });
   } catch (error) {
     console.error(
@@ -128,6 +130,10 @@ export async function logout() {
   updateUser({
     id: null,
     email: null,
+    name: null,
+    lastname: null,
+    dni: null,
+    role: null,
   });
 }
 
