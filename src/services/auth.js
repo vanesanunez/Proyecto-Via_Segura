@@ -59,6 +59,8 @@ async function loadUserExtendedProfile() {
       dni: profileData.dni,
       role: profileData.role,
     });
+   // console.log("[auth.js] perfil extendido cargado:", profileData);
+   // console.log("[auth.js] role detectado:", profileData.role);
   } catch (error) {
     console.error(
       "[auth.js loadUserExtendedProfile] Error al traer perfil extendido del usuario: ",
