@@ -15,6 +15,7 @@ export default {
         id: null,
         email: null,
         name: null,
+        role: null,
         photoURL: null,
       },
       drawer: false,
@@ -133,7 +134,7 @@ export default {
       </button>
 
       <RouterLink class="flex items-center" to="/">
-        <img src="/logo2.png" alt="Vía Segura" class="h-10 w-auto " />
+        <img src="/logo2.png" alt="Vía Segura" class="h-10 w-auto" />
       </RouterLink>
     </div>
 
@@ -166,6 +167,9 @@ export default {
       <template v-if="user.id !== null">
         <li><RouterLink to="/chat">Chat</RouterLink></li>
         <li><RouterLink to="/mi-perfil">Mi perfil</RouterLink></li>
+        <li v-if="user.role === 'admin'">
+          <RouterLink to="/admin/dashboard">Admin</RouterLink>
+        </li>
         <li>
           <form action="#" @submit.prevent="handleLogout">
             <button type="submit">Cerrar sesión</button>
@@ -285,6 +289,15 @@ export default {
                   class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
                   >Información útil</RouterLink
                 >
+              </li>
+              <li v-if="user.role === 'admin'">
+                <RouterLink
+                  @click="drawer = false"
+                  to="/admin/dashboard"
+                  class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                >
+                  Admin
+                </RouterLink>
               </li>
               <li>
                 <form action="#" @submit.prevent="handleLogout">
