@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory} from 'vue-router';
 import { subscribeToUserState } from "../services/auth";
+import supabase from "../services/supabase";
+//import { consoleError } from 'vuetify/lib/util/console.mjs';
 
 
 const routes = [
@@ -18,6 +20,9 @@ const routes = [
   { path: '/compartir',                 component: () => import('../pages/SharePathPage.vue'),      meta:{ requiresAuth: true,},},
   { path: '/ver-recorrido/:pathId',     component: () => import('../pages/ViewSharedPathPage.vue'), meta:{ requiresAuth: true,},},
   { path: '/info',                      component: () => import('../pages/Info.vue'),               meta:{ requiresAuth: true,},},
+  { path: '/admin/dashboard',
+  component: () => import('../pages/AdminDashboard.vue'),
+  meta: { requiresAuth: true, requiresAdmin: true },},
 ];
 
 const router = createRouter({
@@ -29,14 +34,45 @@ const router = createRouter({
 let user = {
   id: null,
   email: null,
+  role: null,
 }
 subscribeToUserState(newUserData => user = newUserData);
 
+async function isAdmin(){
+  const{ data,error } = await supabase.auth.getUser();
+
+  if (error || !data.user){
+    return false;
+  }
+
+  const { data: profile, error: profileError } = await supabase
+  .from('user_profiles')
+  .select('role')
+  .eq('id', data.user.id)
+  .single();
+
+  if (profileError){
+    console.error('[router] Error al verificar rol admin:', profileError);
+    return false;
+  }
+
+  return profile?.role === 'admin';
+}
+
 //navigation guard
-router.beforeEach((to, from) => {  
+router.beforeEach(async (to, from) => {  
   if(to.meta.requiresAuth && user.id === null){  //si el usuario no está autenticado redireccionamos a iniciar sesión
       return '/ingresar';
   }
+
+  if (to.meta.requiresAdmin){
+    const admin = await isAdmin();
+
+    if (!admin){
+      return '/';
+    }
+  }
+    return true;
 });
 
 export default router;
