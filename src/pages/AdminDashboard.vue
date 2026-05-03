@@ -192,6 +192,7 @@ onMounted(() => {
                 <tr class="border-b border-slate-200 text-left">
                   <th class="px-3 py-3 text-sm font-semibold text-slate-700">Categoría</th>
                   <th class="px-3 py-3 text-sm font-semibold text-slate-700">Ubicación</th>
+                  <th class="px-3 py-3 text-sm font-semibold text-slate-700">Apoyos</th>
                   <th class="px-3 py-3 text-sm font-semibold text-slate-700">Usuario</th>
                   <th class="px-3 py-3 text-sm font-semibold text-slate-700">Fecha</th>
                   <th class="px-3 py-3 text-sm font-semibold text-slate-700">Estado</th>
@@ -212,6 +213,10 @@ onMounted(() => {
                     {{ report.ubicacion }}
                   </td>
 
+                   <td class="px-3 py-3 text-sm text-slate-700">
+                    {{ report.apoyos ?? 0 }}
+                  </td>
+                  
                   <td class="px-3 py-3 text-sm text-slate-700">
                     {{ report.email }}
                   </td>

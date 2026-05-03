@@ -204,7 +204,7 @@ export async function joinReport(reportId) {
 export async function fetchAdminReports(limit = 10) {
   const { data, error } = await supabase
     .from("reports")
-    .select("id, categoria, ubicacion, estado, email, created_at")
+    .select("id, categoria, ubicacion, estado, apoyos, email, created_at")
     .order("created_at", { ascending: false })
     .limit(limit);
 
