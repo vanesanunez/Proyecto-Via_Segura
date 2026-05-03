@@ -210,60 +210,130 @@ onMounted(() => {
             <p class="text-slate-600">Todavía no hay reportes cargados.</p>
           </div>
 
-          <div v-else class="overflow-x-auto">
-            <table class="min-w-full border-collapse">
-              <thead>
-                <tr class="border-b border-slate-200 text-left">
-                  <th class="px-3 py-3 text-sm font-semibold text-slate-700">Categoría</th>
-                  <th class="px-3 py-3 text-sm font-semibold text-slate-700">Ubicación</th>
-                  <th class="px-3 py-3 text-sm font-semibold text-slate-700">Apoyos</th>
-                  <th class="px-3 py-3 text-sm font-semibold text-slate-700">Usuario</th>
-                  <th class="px-3 py-3 text-sm font-semibold text-slate-700">Fecha</th>
-                  <th class="px-3 py-3 text-sm font-semibold text-slate-700">Estado</th>
-                </tr>
-              </thead>
+         <div v-else>
+  <!-- Vista mobile -->
+  <div class="space-y-4 md:hidden">
+    <article
+      v-for="report in adminReports"
+      :key="report.id"
+      class="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm"
+    >
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <p class="text-sm text-slate-500">Categoría</p>
+          <p class="font-semibold text-slate-800">
+            {{ report.categoria }}
+          </p>
+        </div>
 
-              <tbody>
-                <tr
-                  v-for="report in adminReports"
-                  :key="report.id"
-                  class="border-b border-slate-100"
-                >
-                  <td class="px-3 py-3 text-sm text-slate-700">
-                    {{ report.categoria }}
-                  </td>
+        <span
+          class="rounded-full px-3 py-1 text-xs font-medium"
+          :class="
+            report.estado === 'Resuelto'
+              ? 'bg-green-100 text-green-700'
+              : 'bg-amber-100 text-amber-700'
+          "
+        >
+          {{ report.estado }}
+        </span>
+      </div>
 
-                  <td class="px-3 py-3 text-sm text-slate-700">
-                    {{ report.ubicacion }}
-                  </td>
+      <div class="mt-3 space-y-2 text-sm text-slate-700">
+        <p>
+          <span class="font-medium text-slate-500">Ubicación:</span>
+          {{ report.ubicacion }}
+        </p>
 
-                   <td class="px-3 py-3 text-sm text-slate-700">
-                    {{ report.apoyos ?? 0 }}
-                  </td>
+        <p>
+          <span class="font-medium text-slate-500">Apoyos:</span>
+          {{ report.apoyos ?? 0 }}
+        </p>
 
-                  <td class="px-3 py-3 text-sm text-slate-700">
-                    {{ report.email }}
-                  </td>
+        <p>
+          <span class="font-medium text-slate-500">Usuario:</span>
+          {{ report.email }}
+        </p>
 
-                  <td class="px-3 py-3 text-sm text-slate-700">
-                    {{ new Date(report.created_at).toLocaleDateString() }}
-                  </td>
+        <p>
+          <span class="font-medium text-slate-500">Fecha:</span>
+          {{ new Date(report.created_at).toLocaleDateString() }}
+        </p>
+      </div>
 
-                  <td class="px-3 py-3">
-                    <select
-                      :value="report.estado"
-                      @change="handleStatusChange(report.id, $event)"
-                      :disabled="updatingReportId === report.id"
-                      class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
-                    >
-                      <option value="Pendiente">Pendiente</option>
-                      <option value="Resuelto">Resuelto</option>
-                    </select>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      <div class="mt-4">
+        <label class="mb-1 block text-sm font-medium text-slate-600">
+          Cambiar estado
+        </label>
+
+        <select
+          :value="report.estado"
+          @change="handleStatusChange(report.id, $event)"
+          :disabled="updatingReportId === report.id"
+          class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
+        >
+          <option value="Pendiente">Pendiente</option>
+          <option value="Resuelto">Resuelto</option>
+        </select>
+      </div>
+    </article>
+  </div>
+
+  <!-- Vista desktop -->
+  <div class="hidden overflow-x-auto md:block">
+    <table class="min-w-full border-collapse">
+      <thead>
+        <tr class="border-b border-slate-200 text-left">
+          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Categoría</th>
+          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Ubicación</th>
+          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Apoyos</th>
+          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Usuario</th>
+          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Fecha</th>
+          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Estado</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr
+          v-for="report in adminReports"
+          :key="report.id"
+          class="border-b border-slate-100"
+        >
+          <td class="px-3 py-3 text-sm text-slate-700">
+            {{ report.categoria }}
+          </td>
+
+          <td class="px-3 py-3 text-sm text-slate-700">
+            {{ report.ubicacion }}
+          </td>
+
+          <td class="px-3 py-3 text-sm text-slate-700">
+            {{ report.apoyos ?? 0 }}
+          </td>
+
+          <td class="px-3 py-3 text-sm text-slate-700">
+            {{ report.email }}
+          </td>
+
+          <td class="px-3 py-3 text-sm text-slate-700">
+            {{ new Date(report.created_at).toLocaleDateString() }}
+          </td>
+
+          <td class="px-3 py-3">
+            <select
+              :value="report.estado"
+              @change="handleStatusChange(report.id, $event)"
+              :disabled="updatingReportId === report.id"
+              class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
+            >
+              <option value="Pendiente">Pendiente</option>
+              <option value="Resuelto">Resuelto</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
         </section>
       </template>
     </div>
