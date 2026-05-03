@@ -200,3 +200,34 @@ export async function joinReport(reportId) {
     throw e;
   }
 }
+
+export async function fetchAdminReports(limit = 10) {
+  const { data, error } = await supabase
+    .from("reports")
+    .select("id, categoria, ubicacion, estado, email, created_at")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("[reports.js fetchAdminReports] Error al traer reportes admin:", error);
+    throw error;
+  }
+
+  return data ?? [];
+}
+
+export async function updateReportStatus(reportId, newStatus) {
+  const { data, error } = await supabase
+    .from("reports")
+    .update({ estado: newStatus })
+    .eq("id", reportId)
+    .select("id, estado")
+    .single();
+
+  if (error) {
+    console.error("[reports.js updateReportStatus] Error al actualizar estado:", error);
+    throw error;
+  }
+
+  return data;
+}
