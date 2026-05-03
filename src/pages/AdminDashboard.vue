@@ -8,6 +8,11 @@ const loadingReports = ref(true);
 const errorMessage = ref("");
 const reportsError = ref("");
 
+
+const adminReports = ref([]);
+const updatingReportId = ref(null);
+const reportOrder = ref("recent");
+
 const stats = ref({
   totalReports: 0,
   pendingReports: 0,
@@ -15,8 +20,7 @@ const stats = ref({
   totalUsers: 0,
 });
 
-const adminReports = ref([]);
-const updatingReportId = ref(null);
+
 
 async function loadDashboardStats() {
   errorMessage.value = "";
@@ -65,7 +69,7 @@ async function loadAdminReports() {
   reportsError.value = "";
 
   try {
-    adminReports.value = await fetchAdminReports(10);
+    adminReports.value = await fetchAdminReports(10, reportOrder.value);
   } catch (error) {
     console.error("[AdminDashboard] Error cargando reportes:", error);
     reportsError.value = "No se pudieron cargar los reportes.";
@@ -73,6 +77,12 @@ async function loadAdminReports() {
     loadingReports.value = false;
   }
 }
+
+async function handleOrderChange(event) {
+  reportOrder.value = event.target.value;
+  await loadAdminReports();
+}
+
 
 async function handleStatusChange(reportId, event) {
   const newStatus = event.target.value;
@@ -163,16 +173,30 @@ onMounted(() => {
         </div>
 
         <section class="mt-8 rounded-2xl bg-white p-6 shadow-sm">
-          <div class="mb-4 flex items-center justify-between">
-            <div>
-              <h2 class="text-xl font-semibold text-slate-800">
-                Últimos reportes
-              </h2>
-              <p class="mt-1 text-sm text-slate-500">
-                Podés revisar el estado y actualizarlo desde acá.
-              </p>
-            </div>
-          </div>
+       <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+  <div>
+    <h2 class="text-xl font-semibold text-slate-800">
+      Gestión de reportes
+    </h2>
+    <p class="mt-1 text-sm text-slate-500">
+      Podés revisar el estado, actualizarlo y priorizar por apoyos.
+    </p>
+  </div>
+
+  <div class="w-full md:w-auto">
+    <label class="mb-1 block text-sm font-medium text-slate-600">
+      Ordenar por
+    </label>
+    <select
+      :value="reportOrder"
+      @change="handleOrderChange"
+      class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 md:w-56"
+    >
+      <option value="recent">Más recientes</option>
+      <option value="most_supported">Más apoyados</option>
+    </select>
+  </div>
+</div>
 
           <div v-if="loadingReports" class="py-4">
             <p class="text-slate-600">Cargando reportes...</p>
@@ -216,7 +240,7 @@ onMounted(() => {
                    <td class="px-3 py-3 text-sm text-slate-700">
                     {{ report.apoyos ?? 0 }}
                   </td>
-                  
+
                   <td class="px-3 py-3 text-sm text-slate-700">
                     {{ report.email }}
                   </td>

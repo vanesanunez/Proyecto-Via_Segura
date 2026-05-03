@@ -201,12 +201,23 @@ export async function joinReport(reportId) {
   }
 }
 
-export async function fetchAdminReports(limit = 10) {
-  const { data, error } = await supabase
+export async function fetchAdminReports(limit = 10, mode = "recent") {
+  let query = supabase
     .from("reports")
-    .select("id, categoria, ubicacion, estado, apoyos, email, created_at")
-    .order("created_at", { ascending: false })
-    .limit(limit);
+    .select("id, categoria, ubicacion, estado, apoyos, email, created_at");
+
+  switch (mode) {
+    case "most_supported":
+      query = query.order("apoyos", { ascending: false });
+      break;
+
+    case "recent":
+    default:
+      query = query.order("created_at", { ascending: false });
+      break;
+  }
+
+  const { data, error } = await query.limit(limit);
 
   if (error) {
     console.error("[reports.js fetchAdminReports] Error al traer reportes admin:", error);
