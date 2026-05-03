@@ -201,12 +201,24 @@ export async function joinReport(reportId) {
   }
 }
 
-export async function fetchAdminReports(limit = 10, mode = "recent") {
+export async function fetchAdminReports({
+  limit = 10,
+  orderBy = "recent",
+  status = "all",
+} = {}) {
   let query = supabase
     .from("reports")
     .select("id, categoria, ubicacion, estado, apoyos, email, created_at");
 
-  switch (mode) {
+  if (status === "pending") {
+    query = query.eq("estado", "Pendiente");
+  }
+
+  if (status === "resolved") {
+    query = query.eq("estado", "Resuelto");
+  }
+
+  switch (orderBy) {
     case "most_supported":
       query = query.order("apoyos", { ascending: false });
       break;

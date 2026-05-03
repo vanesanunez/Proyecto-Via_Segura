@@ -8,10 +8,10 @@ const loadingReports = ref(true);
 const errorMessage = ref("");
 const reportsError = ref("");
 
-
 const adminReports = ref([]);
 const updatingReportId = ref(null);
 const reportOrder = ref("recent");
+const reportStatusFilter = ref("all");
 
 const stats = ref({
   totalReports: 0,
@@ -19,8 +19,6 @@ const stats = ref({
   resolvedReports: 0,
   totalUsers: 0,
 });
-
-
 
 async function loadDashboardStats() {
   errorMessage.value = "";
@@ -44,7 +42,9 @@ async function loadDashboardStats() {
         .select("*", { count: "exact", head: true })
         .eq("estado", "Resuelto"),
 
-      supabase.from("user_profiles").select("*", { count: "exact", head: true }),
+      supabase
+        .from("user_profiles")
+        .select("*", { count: "exact", head: true }),
     ]);
 
     if (totalReportsResponse.error) throw totalReportsResponse.error;
@@ -69,7 +69,11 @@ async function loadAdminReports() {
   reportsError.value = "";
 
   try {
-    adminReports.value = await fetchAdminReports(10, reportOrder.value);
+    adminReports.value = await fetchAdminReports({
+      limit: 10,
+      orderBy: reportOrder.value,
+      status: reportStatusFilter.value,
+    });
   } catch (error) {
     console.error("[AdminDashboard] Error cargando reportes:", error);
     reportsError.value = "No se pudieron cargar los reportes.";
@@ -83,6 +87,10 @@ async function handleOrderChange(event) {
   await loadAdminReports();
 }
 
+async function handleStatusFilterChange(event) {
+  reportStatusFilter.value = event.target.value;
+  await loadAdminReports();
+}
 
 async function handleStatusChange(reportId, event) {
   const newStatus = event.target.value;
@@ -90,14 +98,7 @@ async function handleStatusChange(reportId, event) {
 
   try {
     await updateReportStatus(reportId, newStatus);
-
-    adminReports.value = adminReports.value.map((report) =>
-      report.id === reportId
-        ? { ...report, estado: newStatus }
-        : report
-    );
-
-    await loadDashboardStats();
+    await Promise.all([loadDashboardStats(), loadAdminReports()]);
   } catch (error) {
     console.error("[AdminDashboard] Error actualizando estado:", error);
     reportsError.value = "No se pudo actualizar el estado del reporte.";
@@ -125,10 +126,10 @@ onMounted(() => {
   <section class="min-h-screen bg-slate-50 p-6">
     <div class="mx-auto max-w-6xl">
       <header class="mb-8">
-        <h1 class="text-3xl font-bold text-slate-800">
+        <h1 class="text-2xl font-bold text-slate-800 sm:text-3xl">
           Panel de administración
         </h1>
-        <p class="mt-2 text-slate-600">
+        <p class="mt-2 text-sm text-slate-600 sm:text-base">
           Desde acá vas a poder revisar el estado general de la app y gestionar reportes.
         </p>
       </header>
@@ -173,30 +174,47 @@ onMounted(() => {
         </div>
 
         <section class="mt-8 rounded-2xl bg-white p-6 shadow-sm">
-       <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-  <div>
-    <h2 class="text-xl font-semibold text-slate-800">
-      Gestión de reportes
-    </h2>
-    <p class="mt-1 text-sm text-slate-500">
-      Podés revisar el estado, actualizarlo y priorizar por apoyos.
-    </p>
-  </div>
+          <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 class="text-xl font-semibold text-slate-800">
+                Gestión de reportes
+              </h2>
+              <p class="mt-1 text-sm text-slate-500">
+                Podés revisar el estado, actualizarlo y priorizar por apoyos.
+              </p>
+            </div>
 
-  <div class="w-full md:w-auto">
-    <label class="mb-1 block text-sm font-medium text-slate-600">
-      Ordenar por
-    </label>
-    <select
-      :value="reportOrder"
-      @change="handleOrderChange"
-      class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 md:w-56"
-    >
-      <option value="recent">Más recientes</option>
-      <option value="most_supported">Más apoyados</option>
-    </select>
-  </div>
-</div>
+            <div class="grid gap-3 md:grid-cols-2">
+              <div class="w-full">
+                <label class="mb-1 block text-sm font-medium text-slate-600">
+                  Ordenar por
+                </label>
+                <select
+                  :value="reportOrder"
+                  @change="handleOrderChange"
+                  class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 md:w-56"
+                >
+                  <option value="recent">Más recientes</option>
+                  <option value="most_supported">Más apoyados</option>
+                </select>
+              </div>
+
+              <div class="w-full">
+                <label class="mb-1 block text-sm font-medium text-slate-600">
+                  Estado
+                </label>
+                <select
+                  :value="reportStatusFilter"
+                  @change="handleStatusFilterChange"
+                  class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 md:w-56"
+                >
+                  <option value="all">Todos</option>
+                  <option value="pending">Pendientes</option>
+                  <option value="resolved">Resueltos</option>
+                </select>
+              </div>
+            </div>
+          </div>
 
           <div v-if="loadingReports" class="py-4">
             <p class="text-slate-600">Cargando reportes...</p>
@@ -210,130 +228,128 @@ onMounted(() => {
             <p class="text-slate-600">Todavía no hay reportes cargados.</p>
           </div>
 
-         <div v-else>
-  <!-- Vista mobile -->
-  <div class="space-y-4 md:hidden">
-    <article
-      v-for="report in adminReports"
-      :key="report.id"
-      class="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm"
-    >
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <p class="text-sm text-slate-500">Categoría</p>
-          <p class="font-semibold text-slate-800">
-            {{ report.categoria }}
-          </p>
-        </div>
+          <div v-else>
+            <div class="space-y-4 md:hidden">
+              <article
+                v-for="report in adminReports"
+                :key="report.id"
+                class="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <p class="text-sm text-slate-500">Categoría</p>
+                    <p class="font-semibold text-slate-800">
+                      {{ report.categoria }}
+                    </p>
+                  </div>
 
-        <span
-          class="rounded-full px-3 py-1 text-xs font-medium"
-          :class="
-            report.estado === 'Resuelto'
-              ? 'bg-green-100 text-green-700'
-              : 'bg-amber-100 text-amber-700'
-          "
-        >
-          {{ report.estado }}
-        </span>
-      </div>
+                  <span
+                    class="rounded-full px-3 py-1 text-xs font-medium"
+                    :class="
+                      report.estado === 'Resuelto'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-amber-100 text-amber-700'
+                    "
+                  >
+                    {{ report.estado }}
+                  </span>
+                </div>
 
-      <div class="mt-3 space-y-2 text-sm text-slate-700">
-        <p>
-          <span class="font-medium text-slate-500">Ubicación:</span>
-          {{ report.ubicacion }}
-        </p>
+                <div class="mt-3 space-y-2 text-sm text-slate-700">
+                  <p>
+                    <span class="font-medium text-slate-500">Ubicación:</span>
+                    {{ report.ubicacion }}
+                  </p>
 
-        <p>
-          <span class="font-medium text-slate-500">Apoyos:</span>
-          {{ report.apoyos ?? 0 }}
-        </p>
+                  <p>
+                    <span class="font-medium text-slate-500">Apoyos:</span>
+                    {{ report.apoyos ?? 0 }}
+                  </p>
 
-        <p>
-          <span class="font-medium text-slate-500">Usuario:</span>
-          {{ report.email }}
-        </p>
+                  <p class="break-all">
+                    <span class="font-medium text-slate-500">Usuario:</span>
+                    {{ report.email }}
+                  </p>
 
-        <p>
-          <span class="font-medium text-slate-500">Fecha:</span>
-          {{ new Date(report.created_at).toLocaleDateString() }}
-        </p>
-      </div>
+                  <p>
+                    <span class="font-medium text-slate-500">Fecha:</span>
+                    {{ new Date(report.created_at).toLocaleDateString() }}
+                  </p>
+                </div>
 
-      <div class="mt-4">
-        <label class="mb-1 block text-sm font-medium text-slate-600">
-          Cambiar estado
-        </label>
+                <div class="mt-4">
+                  <label class="mb-1 block text-sm font-medium text-slate-600">
+                    Cambiar estado
+                  </label>
 
-        <select
-          :value="report.estado"
-          @change="handleStatusChange(report.id, $event)"
-          :disabled="updatingReportId === report.id"
-          class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
-        >
-          <option value="Pendiente">Pendiente</option>
-          <option value="Resuelto">Resuelto</option>
-        </select>
-      </div>
-    </article>
-  </div>
+                  <select
+                    :value="report.estado"
+                    @change="handleStatusChange(report.id, $event)"
+                    :disabled="updatingReportId === report.id"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
+                  >
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Resuelto">Resuelto</option>
+                  </select>
+                </div>
+              </article>
+            </div>
 
-  <!-- Vista desktop -->
-  <div class="hidden overflow-x-auto md:block">
-    <table class="min-w-full border-collapse">
-      <thead>
-        <tr class="border-b border-slate-200 text-left">
-          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Categoría</th>
-          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Ubicación</th>
-          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Apoyos</th>
-          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Usuario</th>
-          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Fecha</th>
-          <th class="px-3 py-3 text-sm font-semibold text-slate-700">Estado</th>
-        </tr>
-      </thead>
+            <div class="hidden overflow-x-auto md:block">
+              <table class="min-w-full border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-left">
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Categoría</th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Ubicación</th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Apoyos</th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Usuario</th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Fecha</th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Estado</th>
+                  </tr>
+                </thead>
 
-      <tbody>
-        <tr
-          v-for="report in adminReports"
-          :key="report.id"
-          class="border-b border-slate-100"
-        >
-          <td class="px-3 py-3 text-sm text-slate-700">
-            {{ report.categoria }}
-          </td>
+                <tbody>
+                  <tr
+                    v-for="report in adminReports"
+                    :key="report.id"
+                    class="border-b border-slate-100"
+                  >
+                    <td class="px-3 py-3 text-sm text-slate-700">
+                      {{ report.categoria }}
+                    </td>
 
-          <td class="px-3 py-3 text-sm text-slate-700">
-            {{ report.ubicacion }}
-          </td>
+                    <td class="px-3 py-3 text-sm text-slate-700">
+                      {{ report.ubicacion }}
+                    </td>
 
-          <td class="px-3 py-3 text-sm text-slate-700">
-            {{ report.apoyos ?? 0 }}
-          </td>
+                    <td class="px-3 py-3 text-sm text-slate-700">
+                      {{ report.apoyos ?? 0 }}
+                    </td>
 
-          <td class="px-3 py-3 text-sm text-slate-700">
-            {{ report.email }}
-          </td>
+                    <td class="px-3 py-3 text-sm text-slate-700 break-all">
+                      {{ report.email }}
+                    </td>
 
-          <td class="px-3 py-3 text-sm text-slate-700">
-            {{ new Date(report.created_at).toLocaleDateString() }}
-          </td>
+                    <td class="px-3 py-3 text-sm text-slate-700">
+                      {{ new Date(report.created_at).toLocaleDateString() }}
+                    </td>
 
-          <td class="px-3 py-3">
-            <select
-              :value="report.estado"
-              @change="handleStatusChange(report.id, $event)"
-              :disabled="updatingReportId === report.id"
-              class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
-            >
-              <option value="Pendiente">Pendiente</option>
-              <option value="Resuelto">Resuelto</option>
-            </select>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+                    <td class="px-3 py-3">
+                      <select
+                        :value="report.estado"
+                        @change="handleStatusChange(report.id, $event)"
+                        :disabled="updatingReportId === report.id"
+                        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
+                      >
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Resuelto">Resuelto</option>
+                      </select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </section>
       </template>
     </div>
