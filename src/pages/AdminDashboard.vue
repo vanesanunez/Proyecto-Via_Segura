@@ -343,6 +343,15 @@ onMounted(() => {
                     </select>
                   </div>
 
+                    <div class="grid gap-2 sm:grid-cols-2">
+                     <button
+                     type="button"
+                      @click="$router.push(`/admin/reportes/${report.id}/editar`)"
+                      class="w-full rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+                     >
+                     Editar reporte
+                     </button>
+
                   <button
                     type="button"
                     @click="handleDeleteReport(report.id)"
@@ -351,6 +360,7 @@ onMounted(() => {
                     Eliminar reporte
                   </button>
                 </div>
+               </div> 
               </article>
             </div>
 
@@ -419,15 +429,25 @@ onMounted(() => {
                         <option value="Resuelto">Resuelto</option>
                       </select>
                     </td>
-                    <td class="px-3 py-3">
-                      <button
-                        type="button"
-                        @click="handleDeleteReport(report.id)"
-                        class="rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200"
-                      >
-                        Eliminar
-                      </button>
-                    </td>
+                   <td class="px-3 py-3">
+                   <div class="flex flex-wrap gap-2">
+                   <button
+                   type="button"
+                   @click="$router.push(`/admin/reportes/${report.id}/editar`)"
+                   class="rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+                   >
+                   Editar
+                  </button>
+
+                  <button
+                  type="button"
+                  @click="handleDeleteReport(report.id)"
+                  class="rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200"
+                  >
+                 Eliminar
+                 </button>
+                 </div>
+                 </td>
                   </tr>
                 </tbody>
               </table>
