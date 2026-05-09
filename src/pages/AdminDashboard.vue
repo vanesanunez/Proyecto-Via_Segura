@@ -11,6 +11,7 @@ const loading = ref(true);
 const loadingReports = ref(true);
 const errorMessage = ref("");
 const reportsError = ref("");
+const successMessage = ref("");
 
 const adminReports = ref([]);
 const updatingReportId = ref(null);
@@ -117,8 +118,10 @@ async function handleDeleteReport(reportId) {
   if (!confirmed) return;
 
   try {
+    reportsError.value = "";
     await deleteReport(reportId);
     await Promise.all([loadDashboardStats(), loadAdminReports()]);
+    showSuccessMessage("Se eliminó el reporte con éxito.");
   } catch (error) {
     console.error("[AdminDashboard] Error eliminando reporte:", error);
     reportsError.value = "No se pudo eliminar el reporte.";
@@ -152,7 +155,12 @@ onMounted(() => {
           reportes.
         </p>
       </header>
-
+      <div
+        v-if="successMessage"
+        class="fixed top-20 right-4 z-50 w-[calc(100%-2rem)] max-w-sm rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700 shadow-lg"
+      >
+        <p class="text-sm font-medium">{{ successMessage }}</p>
+      </div>
       <div v-if="loading" class="rounded-2xl bg-white p-6 shadow-sm">
         <p class="text-slate-600">Cargando panel...</p>
       </div>
