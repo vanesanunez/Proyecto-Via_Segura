@@ -266,3 +266,39 @@ export async function deleteReport(reportId) {
     throw error;
   }
 }
+
+export async function fetchReportById(reportId) {
+  const { data, error } = await supabase
+    .from("reports")
+    .select("*")
+    .eq("id", reportId)
+    .single();
+
+  if (error) {
+    console.error("[reports.js fetchReportById] Error al traer reporte:", error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function updateReport(reportId, reportData) {
+  const { data, error } = await supabase
+    .from("reports")
+    .update({
+      categoria: reportData.categoria,
+      descripcion: reportData.descripcion,
+      ubicacion: reportData.ubicacion,
+      estado: reportData.estado,
+    })
+    .eq("id", reportId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("[reports.js updateReport] Error al actualizar reporte:", error);
+    throw error;
+  }
+
+  return data;
+}
