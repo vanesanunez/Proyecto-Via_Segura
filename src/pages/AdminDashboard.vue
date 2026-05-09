@@ -25,6 +25,21 @@ const stats = ref({
   totalUsers: 0,
 });
 
+
+let successTimeout = null;
+
+function showSuccessMessage(message) {
+  successMessage.value = message;
+
+  if (successTimeout) {
+    clearTimeout(successTimeout);
+  }
+
+  successTimeout = setTimeout(() => {
+    successMessage.value = "";
+  }, 3000);
+}
+
 async function loadDashboardStats() {
   errorMessage.value = "";
 
