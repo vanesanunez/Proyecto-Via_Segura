@@ -23,6 +23,11 @@ const routes = [
   { path: '/admin/dashboard',
   component: () => import('../pages/AdminDashboard.vue'),
   meta: { requiresAuth: true, requiresAdmin: true },},
+  {
+  path: '/admin/reportes/:id/editar',
+  component: () => import('../pages/AdminEditReport.vue'),
+  meta: { requiresAuth: true, requiresAdmin: true },
+},
 ];
 
 const router = createRouter({
