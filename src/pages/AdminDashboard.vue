@@ -1,7 +1,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import supabase from "../services/supabase";
-import { fetchAdminReports, updateReportStatus } from "../services/reports";
+import {
+  fetchAdminReports,
+  updateReportStatus,
+  deleteReport,
+} from "../services/reports";
 
 const loading = ref(true);
 const loadingReports = ref(true);
@@ -107,6 +111,20 @@ async function handleStatusChange(reportId, event) {
   }
 }
 
+async function handleDeleteReport(reportId) {
+  const confirmed = window.confirm("¿Seguro que querés eliminar este reporte?");
+
+  if (!confirmed) return;
+
+  try {
+    await deleteReport(reportId);
+    await Promise.all([loadDashboardStats(), loadAdminReports()]);
+  } catch (error) {
+    console.error("[AdminDashboard] Error eliminando reporte:", error);
+    reportsError.value = "No se pudo eliminar el reporte.";
+  }
+}
+
 async function loadDashboardData() {
   loading.value = true;
 
@@ -130,7 +148,8 @@ onMounted(() => {
           Panel de administración
         </h1>
         <p class="mt-2 text-sm text-slate-600 sm:text-base">
-          Desde acá vas a poder revisar el estado general de la app y gestionar reportes.
+          Desde acá vas a poder revisar el estado general de la app y gestionar
+          reportes.
         </p>
       </header>
 
@@ -139,7 +158,10 @@ onMounted(() => {
       </div>
 
       <template v-else>
-        <div v-if="errorMessage" class="mb-6 rounded-2xl bg-white p-6 shadow-sm">
+        <div
+          v-if="errorMessage"
+          class="mb-6 rounded-2xl bg-white p-6 shadow-sm"
+        >
           <p class="text-red-600">{{ errorMessage }}</p>
         </div>
 
@@ -174,7 +196,9 @@ onMounted(() => {
         </div>
 
         <section class="mt-8 rounded-2xl bg-white p-6 shadow-sm">
-          <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div
+            class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between"
+          >
             <div>
               <h2 class="text-xl font-semibold text-slate-800">
                 Gestión de reportes
@@ -277,20 +301,32 @@ onMounted(() => {
                   </p>
                 </div>
 
-                <div class="mt-4">
-                  <label class="mb-1 block text-sm font-medium text-slate-600">
-                    Cambiar estado
-                  </label>
+                <div class="mt-4 space-y-3">
+                  <div>
+                    <label
+                      class="mb-1 block text-sm font-medium text-slate-600"
+                    >
+                      Cambiar estado
+                    </label>
 
-                  <select
-                    :value="report.estado"
-                    @change="handleStatusChange(report.id, $event)"
-                    :disabled="updatingReportId === report.id"
-                    class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
+                    <select
+                      :value="report.estado"
+                      @change="handleStatusChange(report.id, $event)"
+                      :disabled="updatingReportId === report.id"
+                      class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
+                    >
+                      <option value="Pendiente">Pendiente</option>
+                      <option value="Resuelto">Resuelto</option>
+                    </select>
+                  </div>
+
+                  <button
+                    type="button"
+                    @click="handleDeleteReport(report.id)"
+                    class="w-full rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200"
                   >
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Resuelto">Resuelto</option>
-                  </select>
+                    Eliminar reporte
+                  </button>
                 </div>
               </article>
             </div>
@@ -299,12 +335,27 @@ onMounted(() => {
               <table class="min-w-full border-collapse">
                 <thead>
                   <tr class="border-b border-slate-200 text-left">
-                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Categoría</th>
-                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Ubicación</th>
-                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Apoyos</th>
-                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Usuario</th>
-                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Fecha</th>
-                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">Estado</th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">
+                      Categoría
+                    </th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">
+                      Ubicación
+                    </th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">
+                      Apoyos
+                    </th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">
+                      Usuario
+                    </th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">
+                      Fecha
+                    </th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">
+                      Estado
+                    </th>
+                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">
+                      Acciones
+                    </th>
                   </tr>
                 </thead>
 
@@ -344,6 +395,15 @@ onMounted(() => {
                         <option value="Pendiente">Pendiente</option>
                         <option value="Resuelto">Resuelto</option>
                       </select>
+                    </td>
+                    <td class="px-3 py-3">
+                      <button
+                        type="button"
+                        @click="handleDeleteReport(report.id)"
+                        class="rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200"
+                      >
+                        Eliminar
+                      </button>
                     </td>
                   </tr>
                 </tbody>

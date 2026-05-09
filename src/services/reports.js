@@ -254,3 +254,15 @@ export async function updateReportStatus(reportId, newStatus) {
 
   return data;
 }
+
+export async function deleteReport(reportId) {
+  const { error } = await supabase
+    .from("reports")
+    .delete()
+    .eq("id", reportId);
+
+  if (error) {
+    console.error("[reports.js deleteReport] Error al eliminar reporte:", error);
+    throw error;
+  }
+}
