@@ -87,6 +87,11 @@ export default {
           </template>
         </ActionCard>
 
+        <ActionCard title="Puntos seguros" to="/puntos-seguros" accent="blue">
+          <template #icon>
+            <ExclamationTriangleIcon class="h-9 w-9 text-[#3082e3]" />
+          </template>
+        </ActionCard>
       </section>
 
       <EmergencyButton />
