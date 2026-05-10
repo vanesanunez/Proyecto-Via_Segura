@@ -143,11 +143,11 @@
         </div>
   
         <!-- Mapa Leaflet -->
-        <div ref="mapaRef" class="w-full flex-shrink-0" style="height:220px; z-index:0;"></div>
+        <div ref="mapaRef" class="w-full " style="height:220px; z-index:0;"></div>
   
         <!-- Slider de radio -->
-        <div class="px-4 py-2.5 border-b border-gray-100 flex items-center gap-3 flex-shrink-0">
-          <span class="text-xs font-medium flex-shrink-0" style="color:#6b7280;">Radio</span>
+        <div class="px-4 py-2.5 border-b border-gray-100 flex items-center gap-3 ">
+          <span class="text-xs font-medium " style="color:#6b7280;">Radio</span>
           <input
             type="range"
             v-model.number="radioBusqueda"
@@ -155,13 +155,13 @@
             class="flex-1"
             style="accent-color:#3082e3;"
           />
-          <span class="text-xs font-semibold flex-shrink-0 w-14 text-right" style="color:#3082e3;">
+          <span class="text-xs font-semibold  w-14 text-right" style="color:#3082e3;">
             {{ radioBusqueda >= 1000 ? (radioBusqueda/1000).toFixed(1)+' km' : radioBusqueda+' m' }}
           </span>
         </div>
   
         <!-- Encabezado de lista -->
-        <div class="px-4 py-2 flex items-center justify-between flex-shrink-0 border-b border-gray-100">
+        <div class="px-4 py-2 flex items-center justify-between  border-b border-gray-100">
           <span class="text-xs" style="color:#6b7280;">
             <span class="font-semibold" style="color:#3082e3;">{{ puntosEnRadio.length }}</span>
             {{ puntosEnRadio.length === 1 ? ' punto seguro encontrado' : ' puntos seguros encontrados' }}
@@ -194,7 +194,7 @@
           >
             <!-- Número -->
             <div
-              class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+              class=" w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
               :style="`background:${puntoSeleccionado?.id === punto.id ? '#3082e3' : '#eff6ff'};
                        color:${puntoSeleccionado?.id === punto.id ? '#fff' : '#3082e3'};`"
             >
@@ -220,7 +220,7 @@
   
             <!-- Chevron -->
             <svg
-              xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 " fill="none" viewBox="0 0 24 24"
               stroke="currentColor" stroke-width="2"
               :style="`color:${puntoSeleccionado?.id === punto.id ? '#3082e3' : '#d1d5db'}`"
             >
