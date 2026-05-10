@@ -213,7 +213,7 @@
                   class="text-xs font-semibold px-1.5 py-0.5 rounded-md"
                   style="background:#fff3f2; color:#f2826d;"
                 >
-                  🧭 Ruta activa
+                  Ruta activa
                 </span>
               </div>
             </div>
