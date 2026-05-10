@@ -2,7 +2,7 @@
     <div class="flex flex-col h-full bg-white font-['Inter']" style="color: #2a2a2a;">
   
       <!-- ── HEADER ── -->
-      <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100 flex-shrink-0">
+      <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100 ">
         <button
           @click="$router.back()"
           class="flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200"
@@ -75,7 +75,7 @@
               @click="seleccionarSugerencia(s)"
               class="flex items-start gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-blue-50 active:bg-blue-100 border-b border-gray-50 last:border-0 transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="#3082e3" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 mt-0.5 " fill="none" viewBox="0 0 24 24" stroke="#3082e3" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
               </svg>
@@ -127,15 +127,15 @@
       <div v-if="ubicacionUsuario" class="flex-1 flex flex-col overflow-hidden">
   
         <!-- Barra de dirección activa + botón nueva búsqueda -->
-        <div class="px-4 py-2.5 border-b border-gray-100 flex items-center gap-2 flex-shrink-0" style="background:#f9fafb;">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="#3082e3" stroke-width="2">
+        <div class="px-4 py-2.5 border-b border-gray-100 flex items-center gap-2 " style="background:#f9fafb;">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 " fill="none" viewBox="0 0 24 24" stroke="#3082e3" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>
           <span class="flex-1 text-xs truncate" style="color:#2a2a2a;">{{ direccionInput }}</span>
           <button
             @click="nuevaBusqueda"
-            class="flex-shrink-0 text-xs font-semibold px-3 py-1 rounded-full border transition-colors active:bg-blue-50"
+            class="text-xs font-semibold px-3 py-1 rounded-full border transition-colors active:bg-blue-50"
             style="border-color:#3082e3; color:#3082e3;"
           >
             Nueva búsqueda
