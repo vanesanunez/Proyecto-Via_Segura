@@ -20,15 +20,13 @@ const routes = [
   { path: '/compartir',                 component: () => import('../pages/SharePathPage.vue'),      meta:{ requiresAuth: true,},},
   { path: '/ver-recorrido/:pathId',     component: () => import('../pages/ViewSharedPathPage.vue'), meta:{ requiresAuth: true,},},
   { path: '/info',                      component: () => import('../pages/Info.vue'),               meta:{ requiresAuth: true,},},
-  { path: '/puntos-seguros',            component: () => import('../pages/Points.vue'),                 meta:{ requiresAuth: true,},},
-  { path: '/admin/dashboard',
-  component: () => import('../pages/AdminDashboard.vue'),
-  meta: { requiresAuth: true, requiresAdmin: true },},
-  {
-  path: '/admin/reportes/:id/editar',
-  component: () => import('../pages/AdminEditReport.vue'),
-  meta: { requiresAuth: true, requiresAdmin: true },
-},
+  { path: '/puntos-seguros',            component: () => import('../pages/Points.vue'),             meta:{ requiresAuth: true,},},
+  { path: '/admin/dashboard',           component: () => import('../pages/AdminDashboard.vue'),     meta: { requiresAuth: true, requiresAdmin: true },},
+  { path: '/admin/reportes',            component: () => import('../pages/AdminReports.vue'),       meta: { requiresAuth: true, requiresAdmin: true },},
+  { path: '/admin/usuarios',            component: () => import('../pages/AdminUsers.vue'),         meta: { requiresAuth: true, requiresAdmin: true },},
+  { path: '/admin/chat',                component: () => import('../pages/AdminChat.vue'),          meta: { requiresAuth: true, requiresAdmin: true },},
+  {  path: '/admin/reportes/:id/editar',  component: () => import('../pages/AdminEditReport.vue'),  meta: { requiresAuth: true, requiresAdmin: true },},
+
 
 ];
 
