@@ -53,3 +53,35 @@ export async function subscribeToGlobalChatNewMessages(callback) {
     );
     chatChannel.subscribe();
 }
+
+export async function fetchAllGlobalChatMessages() {
+  const { data, error } = await supabase
+    .from("global_chat")
+    .select("id, user_id, email, body, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(
+      "[global-chat.js fetchAllGlobalChatMessages] Error al traer mensajes:",
+      error
+    );
+    throw error;
+  }
+
+  return data ?? [];
+}
+
+export async function deleteGlobalChatMessage(messageId) {
+  const { error } = await supabase
+    .from("global_chat")
+    .delete()
+    .eq("id", messageId);
+
+  if (error) {
+    console.error(
+      "[global-chat.js deleteGlobalChatMessage] Error al eliminar mensaje:",
+      error
+    );
+    throw error;
+  }
+}
