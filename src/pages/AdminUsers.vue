@@ -72,17 +72,17 @@ onMounted(() => {
       <button
         type="button"
         @click="router.push('/admin/dashboard')"
-        class="mb-6 inline-flex items-center gap-3 text-left transition group"
+        class="mb-6 inline-flex items-center gap-3 text-left transition group active:scale-95"
       >
         <span
-          class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-xl font-bold text-[#3082e3] transition group-hover:bg-[#3082e3] group-hover:text-white"
+          class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-xl font-bold text-[#3082e3] transition group-hover:bg-[#3082e3] group-hover:text-white group-active:bg-[#3082e3] group-active:text-white"
         >
           ←
         </span>
 
         <span>
           <span
-            class="block text-sm font-semibold text-slate-900 group-hover:text-[#3082e3]"
+            class="block text-sm font-semibold text-slate-900 transition group-hover:text-[#3082e3] group-active:text-[#3082e3]"
           >
             Volver al panel admin
           </span>
