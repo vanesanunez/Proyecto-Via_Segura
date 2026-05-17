@@ -4,6 +4,8 @@ import {
   fetchAllUserProfiles,
   updateUserRole,
 } from "../services/user-profiles";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 const loading = ref(true);
 const errorMessage = ref("");
@@ -47,7 +49,7 @@ async function handleRoleChange(userId, event) {
     await updateUserRole(userId, newRole);
 
     users.value = users.value.map((user) =>
-      user.id === userId ? { ...user, role: newRole } : user
+      user.id === userId ? { ...user, role: newRole } : user,
     );
 
     showSuccessMessage("Rol actualizado con éxito.");
@@ -67,6 +69,28 @@ onMounted(() => {
 <template>
   <section class="min-h-screen bg-slate-50 p-6">
     <div class="mx-auto max-w-6xl">
+      <button
+        type="button"
+        @click="router.push('/admin/dashboard')"
+        class="mb-6 inline-flex items-center gap-3 text-left transition group"
+      >
+        <span
+          class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-xl font-bold text-[#3082e3] transition group-hover:bg-[#3082e3] group-hover:text-white"
+        >
+          ←
+        </span>
+
+        <span>
+          <span
+            class="block text-sm font-semibold text-slate-900 group-hover:text-[#3082e3]"
+          >
+            Volver al panel admin
+          </span>
+          <span class="block text-xs text-slate-500">
+            Regresá a la vista principal del administrador
+          </span>
+        </span>
+      </button>
       <header class="mb-8">
         <h1 class="text-2xl font-bold text-slate-800 sm:text-3xl">
           Gestión de usuarios

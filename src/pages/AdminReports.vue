@@ -6,6 +6,8 @@ import {
   updateReportStatus,
   deleteReport,
 } from "../services/reports";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 const loading = ref(true);
 const loadingReports = ref(true);
@@ -24,7 +26,6 @@ const stats = ref({
   resolvedReports: 0,
   totalUsers: 0,
 });
-
 
 let successTimeout = null;
 
@@ -161,6 +162,27 @@ onMounted(() => {
 <template>
   <section class="min-h-screen bg-slate-50 p-6">
     <div class="mx-auto max-w-6xl">
+    <button
+          type="button"
+          @click="router.push('/admin/dashboard')"
+          class="mb-6 inline-flex items-center gap-3 text-left transition group"
+           >
+          <span
+          class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-xl font-bold text-[#3082e3] transition group-hover:bg-[#3082e3] group-hover:text-white"
+          >
+          ←
+         </span>
+
+         <span>
+         <span class="block text-sm font-semibold text-slate-900 group-hover:text-[#3082e3]">
+         Volver al panel admin
+        </span>
+        <span class="block text-xs text-slate-500">
+        Regresá a la vista principal del administrador
+       </span>
+       </span>
+       </button>
+      
       <header class="mb-8">
         <h1 class="text-2xl font-bold text-slate-800 sm:text-3xl">
           Panel de administración
@@ -343,24 +365,26 @@ onMounted(() => {
                     </select>
                   </div>
 
-                    <div class="grid gap-2 sm:grid-cols-2">
-                     <button
-                     type="button"
-                      @click="$router.push(`/admin/reportes/${report.id}/editar`)"
+                  <div class="grid gap-2 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      @click="
+                        $router.push(`/admin/reportes/${report.id}/editar`)
+                      "
                       class="w-full rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
-                     >
-                     Editar reporte
-                     </button>
+                    >
+                      Editar reporte
+                    </button>
 
-                  <button
-                    type="button"
-                    @click="handleDeleteReport(report.id)"
-                    class="w-full rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200"
-                  >
-                    Eliminar reporte
-                  </button>
+                    <button
+                      type="button"
+                      @click="handleDeleteReport(report.id)"
+                      class="w-full rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200"
+                    >
+                      Eliminar reporte
+                    </button>
+                  </div>
                 </div>
-               </div> 
               </article>
             </div>
 
@@ -429,25 +453,27 @@ onMounted(() => {
                         <option value="Resuelto">Resuelto</option>
                       </select>
                     </td>
-                   <td class="px-3 py-3">
-                   <div class="flex flex-wrap gap-2">
-                   <button
-                   type="button"
-                   @click="$router.push(`/admin/reportes/${report.id}/editar`)"
-                   class="rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
-                   >
-                   Editar
-                  </button>
+                    <td class="px-3 py-3">
+                      <div class="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          @click="
+                            $router.push(`/admin/reportes/${report.id}/editar`)
+                          "
+                          class="rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+                        >
+                          Editar
+                        </button>
 
-                  <button
-                  type="button"
-                  @click="handleDeleteReport(report.id)"
-                  class="rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200"
-                  >
-                 Eliminar
-                 </button>
-                 </div>
-                 </td>
+                        <button
+                          type="button"
+                          @click="handleDeleteReport(report.id)"
+                          class="rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200"
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 </tbody>
               </table>
