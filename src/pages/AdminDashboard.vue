@@ -3,128 +3,96 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-const secondarySections = [
+const cards = [
+  {
+    title: "Reportes",
+    subtitle: "Estados, apoyos y resolución",
+    description:
+      "Gestioná reclamos, revisá prioridades y administrá su resolución.",
+    route: "/admin/reportes",
+    icon: "RP",
+    iconText: "text-[#3082e3]",
+  },
   {
     title: "Usuarios",
     subtitle: "Roles y administración",
-    description: "Visualizá perfiles y administrá permisos.",
+    description: "Visualizá perfiles y administrá permisos de la comunidad.",
     route: "/admin/usuarios",
     icon: "US",
-    softBg: "bg-[#fdf1ee]",
-    softText: "text-[#d86d59]",
+    iconText: "text-[#f2826d]",
   },
   {
     title: "Chat",
     subtitle: "Moderación de comunidad",
-    description: "Revisá mensajes e intervení cuando haga falta.",
+    description: "Revisá mensajes e intervení cuando haga falta moderar.",
     route: "/admin/chat",
     icon: "CH",
-    softBg: "bg-slate-100",
-    softText: "text-slate-700",
+    iconText: "text-[#3082e3]",
   },
 ];
 </script>
 
 <template>
-  <section class="min-h-screen bg-slate-50 px-5 pb-6 pt-8 sm:p-6">
-    <div class="mx-auto max-w-6xl">
-      <header class="mb-5">
-        <p
-          class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3082e3]"
-        >
-          Admin
-        </p>
-
-        <h1 class="mt-3 text-[28px] font-bold leading-tight text-slate-900 sm:text-3xl">
+  <section class="min-h-screen bg-[#E0E5EC] px-4 pt-4 pb-6">
+    <div class="mx-auto w-full max-w-[390px]">
+      <header class="mb-6">
+        <h1 class="text-[28px] font-bold leading-[1.1] text-[#0f172a]">
           Panel de administración
         </h1>
 
-        <p class="mt-2 max-w-[20rem] text-sm leading-6 text-slate-600">
+        <p class="mt-3 max-w-[290px] text-[15px] leading-[1.7] text-slate-500">
           Elegí el módulo que querés gestionar dentro del panel admin.
         </p>
       </header>
 
-      <!-- Card principal -->
-      <button
-        type="button"
-        @click="router.push('/admin/reportes')"
-        class="group relative w-full overflow-hidden rounded-[26px] border border-slate-200 bg-white p-5 text-left shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md active:scale-[0.98]"
-      >
-        <div class="absolute inset-0 overflow-hidden">
-          <div class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-blue-100/70 blur-2xl"></div>
-          <div class="absolute bottom-0 right-4 h-16 w-16 rounded-full bg-orange-100/60 blur-xl"></div>
-        </div>
+      <div class="space-y-5">
+        <button
+          v-for="card in cards"
+          :key="card.route"
+          type="button"
+          @click="router.push(card.route)"
+          class="group block w-full text-left"
+        >
+          <div
+            class="min-h-[205px] rounded-[30px] bg-[#E0E5EC] px-5 py-6 transition duration-300 shadow-[-8px_-8px_16px_rgba(255,255,255,0.85),8px_8px_16px_rgba(163,177,198,0.45)] group-hover:bg-[#e6ebf2] group-active:bg-[#e6ebf2] group-hover:shadow-[-10px_-10px_18px_rgba(255,255,255,0.9),10px_10px_18px_rgba(163,177,198,0.5)] group-active:shadow-[-10px_-10px_18px_rgba(255,255,255,0.9),10px_10px_18px_rgba(163,177,198,0.5)] group-hover:-translate-y-[2px] group-active:-translate-y-[2px] group-active:scale-[0.985]"
+          >
+            <div class="flex items-center gap-4">
+              <!-- Icono -->
+              <div
+                class="flex h-[80px] w-[80px] shrink-0 items-center justify-center rounded-[22px] bg-[#E0E5EC] text-[30px] font-bold shadow-[-6px_-6px_12px_rgba(255,255,255,0.85),6px_6px_12px_rgba(163,177,198,0.35)]"
+                :class="card.iconText"
+              >
+                {{ card.icon }}
+              </div>
 
-        <div class="relative z-10">
-          <div class="flex items-start justify-between gap-4">
-            <div class="min-w-0">
-              <div class="flex items-center gap-3">
-                <div
-                  class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-base font-bold text-[#3082e3]"
+              <!-- Texto -->
+              <div class="min-w-0 flex-1 pr-5">
+                <p class="text-[13px] leading-[1.35] text-slate-500">
+                  {{ card.subtitle }}
+                </p>
+
+                <h2
+                  class="mt-2 text-[30px] font-bold leading-none text-[#020617]"
                 >
-                  RP
-                </div>
+                  {{ card.title }}
+                </h2>
 
-                <div class="min-w-0">
-                  <p class="text-xs font-semibold text-[#3082e3] sm:text-sm">
-                    Estados, apoyos y resolución
-                  </p>
-                  <h2 class="mt-1 text-[30px] font-bold leading-none text-slate-900 sm:text-[36px]">
-                    Reportes
-                  </h2>
-                </div>
+                <p class="mt-3 text-[15px] leading-[1.75] text-slate-500">
+                  {{ card.description }}
+                </p>
+              </div>
+
+              <!-- Flecha -->
+              <div class="shrink-0">
+                <span
+                  class="block text-[38px] font-light leading-none transition duration-300 group-hover:translate-x-2 group-active:translate-x-1"
+                  :class="card.iconText"
+                >
+                  ›
+                </span>
               </div>
             </div>
-
-            <span
-              class="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xl font-semibold text-[#3082e3] transition group-hover:translate-x-1 group-hover:bg-[#3082e3] group-hover:text-white group-active:bg-[#3082e3] group-active:text-white"
-            >
-              →
-            </span>
           </div>
-
-          <p class="mt-4 max-w-[18rem] text-sm leading-6 text-slate-600 sm:max-w-xl sm:text-base">
-            Gestioná reclamos, revisá prioridades y administrá su resolución.
-          </p>
-        </div>
-      </button>
-
-      <!-- Cards secundarias -->
-      <div class="mt-4 grid gap-4 md:grid-cols-2">
-        <button
-          v-for="section in secondarySections"
-          :key="section.route"
-          type="button"
-          @click="router.push(section.route)"
-          class="group w-full rounded-[22px] border border-slate-200 bg-white p-5 text-left shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md active:scale-[0.98]"
-        >
-          <div class="flex items-start justify-between gap-4">
-            <div
-              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-sm font-bold"
-              :class="[section.softBg, section.softText]"
-            >
-              {{ section.icon }}
-            </div>
-
-            <span
-              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-semibold transition group-hover:translate-x-1"
-              :class="[section.softBg, section.softText]"
-            >
-              →
-            </span>
-          </div>
-
-          <p class="mt-5 text-xs font-semibold sm:text-sm" :class="section.softText">
-            {{ section.subtitle }}
-          </p>
-
-          <h2 class="mt-1 text-[28px] font-bold leading-none text-slate-900">
-            {{ section.title }}
-          </h2>
-
-          <p class="mt-4 max-w-[16rem] text-sm leading-6 text-slate-600">
-            {{ section.description }}
-          </p>
         </button>
       </div>
     </div>
