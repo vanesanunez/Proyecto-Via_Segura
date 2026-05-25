@@ -1,4 +1,6 @@
 <script setup>
+import { HandThumbUpIcon } from "@heroicons/vue/24/outline";
+
 const props = defineProps({
   report: { type: Object, required: true },
   to: { type: String, default: null },
@@ -75,20 +77,7 @@ function handleSupport() {
             class="inline-flex items-center gap-2 rounded-full bg-[#eef4ff] px-3 py-1.5 text-xs font-medium text-[#3082e3]
                    shadow-[-3px_-3px_8px_rgba(255,255,255,0.82),3px_3px_8px_rgba(163,177,198,0.22)]"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="1.8"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M7.5 10.5v8.25m0-8.25l3-3m-3 3l-3-3m7.5 3h7.125A1.875 1.875 0 0120.25 12.375v4.5A1.875 1.875 0 0118.375 18.75H12.75m0-8.25V6.375A1.875 1.875 0 0010.875 4.5H9.66a1.875 1.875 0 00-1.767 1.252L6.75 9v9.75h6"
-              />
-            </svg>
+             <HandThumbUpIcon class="h-4 w-4" />
 
             <span>Apoyos: {{ report.apoyos ?? 0 }}</span>
           </div>
