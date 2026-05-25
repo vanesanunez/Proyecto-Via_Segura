@@ -186,12 +186,14 @@ onMounted(() => {
       </button>
 
       <header class="mb-8">
-        <h1 class="text-2xl font-bold text-slate-800 sm:text-3xl">
-          Panel de administración
+        <h1
+          class="text-[30px] font-bold leading-tight text-slate-900 sm:text-[34px]"
+        >
+          Gestión de reportes
         </h1>
-        <p class="mt-2 text-sm text-slate-600 sm:text-base">
-          Desde acá vas a poder revisar el estado general de la app y gestionar
-          reportes.
+        <p class="mt-2 max-w-xl text-sm leading-7 text-slate-500 sm:text-base">
+          Supervisá métricas, priorizá apoyos y administrá los reportes de la
+          comunidad.
         </p>
       </header>
       <div
@@ -213,32 +215,76 @@ onMounted(() => {
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <article class="rounded-2xl bg-white p-5 shadow-sm">
-            <p class="text-sm text-slate-500">Total de reportes</p>
-            <p class="mt-2 text-3xl font-bold text-slate-800">
-              {{ stats.totalReports }}
-            </p>
+          <article
+            class="rounded-[26px] bg-[#E0E5EC] p-5 shadow-[-8px_-8px_16px_rgba(255,255,255,0.85),8px_8px_16px_rgba(163,177,198,0.35)]"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-sm font-medium text-slate-500">
+                  Total de reportes
+                </p>
+                <p class="mt-3 text-sm text-slate-400">Panel general</p>
+              </div>
+
+              <div
+                class="flex h-14 min-w-[56px] items-center justify-center rounded-full bg-[#eef4ff] px-3 text-2xl font-bold text-[#3082e3] shadow-[-4px_-4px_10px_rgba(255,255,255,0.85),4px_4px_10px_rgba(163,177,198,0.28)]"
+              >
+                {{ stats.totalReports }}
+              </div>
+            </div>
           </article>
 
-          <article class="rounded-2xl bg-white p-5 shadow-sm">
-            <p class="text-sm text-slate-500">Pendientes</p>
-            <p class="mt-2 text-3xl font-bold text-amber-600">
-              {{ stats.pendingReports }}
-            </p>
+          <article
+            class="rounded-[26px] bg-[#E0E5EC] p-5 shadow-[-8px_-8px_16px_rgba(255,255,255,0.85),8px_8px_16px_rgba(163,177,198,0.35)]"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-sm font-medium text-slate-500">Pendientes</p>
+                <p class="mt-3 text-sm text-slate-400">Requieren atención</p>
+              </div>
+
+              <div
+                class="flex h-14 min-w-[56px] items-center justify-center rounded-full bg-[#fff1ed] px-3 text-2xl font-bold text-[#f2826d] shadow-[-4px_-4px_10px_rgba(255,255,255,0.85),4px_4px_10px_rgba(163,177,198,0.28)]"
+              >
+                {{ stats.pendingReports }}
+              </div>
+            </div>
           </article>
 
-          <article class="rounded-2xl bg-white p-5 shadow-sm">
-            <p class="text-sm text-slate-500">Resueltos</p>
-            <p class="mt-2 text-3xl font-bold text-green-600">
-              {{ stats.resolvedReports }}
-            </p>
+          <article
+            class="rounded-[26px] bg-[#E0E5EC] p-5 shadow-[-8px_-8px_16px_rgba(255,255,255,0.85),8px_8px_16px_rgba(163,177,198,0.35)]"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-sm font-medium text-slate-500">Resueltos</p>
+                <p class="mt-3 text-sm text-slate-400">Ya gestionados</p>
+              </div>
+
+              <div
+                class="flex h-14 min-w-[56px] items-center justify-center rounded-full bg-green-100 px-3 text-2xl font-bold text-green-600 shadow-[-4px_-4px_10px_rgba(255,255,255,0.85),4px_4px_10px_rgba(163,177,198,0.28)]"
+              >
+                {{ stats.resolvedReports }}
+              </div>
+            </div>
           </article>
 
-          <article class="rounded-2xl bg-white p-5 shadow-sm">
-            <p class="text-sm text-slate-500">Usuarios registrados</p>
-            <p class="mt-2 text-3xl font-bold text-slate-800">
-              {{ stats.totalUsers }}
-            </p>
+          <article
+            class="rounded-[26px] bg-[#E0E5EC] p-5 shadow-[-8px_-8px_16px_rgba(255,255,255,0.85),8px_8px_16px_rgba(163,177,198,0.35)]"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-sm font-medium text-slate-500">
+                  Usuarios registrados
+                </p>
+                <p class="mt-3 text-sm text-slate-400">Comunidad activa</p>
+              </div>
+
+              <div
+                class="flex h-14 min-w-[56px] items-center justify-center rounded-full bg-[#eef4ff] px-3 text-2xl font-bold text-[#3082e3] shadow-[-4px_-4px_10px_rgba(255,255,255,0.85),4px_4px_10px_rgba(163,177,198,0.28)]"
+              >
+                {{ stats.totalUsers }}
+              </div>
+            </div>
           </article>
         </div>
 
@@ -367,23 +413,58 @@ onMounted(() => {
                     </select>
                   </div>
 
-                  <div class="grid gap-2 sm:grid-cols-2">
+                  <div class="flex items-center justify-end gap-3">
                     <button
                       type="button"
                       @click="
                         $router.push(`/admin/reportes/${report.id}/editar`)
                       "
-                      class="w-full rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+                      title="Editar reporte"
+                      aria-label="Editar reporte"
+                      class="flex h-11 w-11 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3] shadow-[-4px_-4px_10px_rgba(255,255,255,0.85),4px_4px_10px_rgba(163,177,198,0.28)] transition hover:-translate-y-0.5 hover:bg-blue-50 active:scale-95"
                     >
-                      Editar reporte
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.8"
+                        stroke="currentColor"
+                        class="h-5 w-5"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M19.5 7.125L16.875 4.5"
+                        />
+                      </svg>
                     </button>
 
                     <button
                       type="button"
                       @click="handleDeleteReport(report.id)"
-                      class="w-full rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200"
+                      title="Eliminar reporte"
+                      aria-label="Eliminar reporte"
+                      class="flex h-11 w-11 items-center justify-center rounded-full bg-[#fff1ed] text-[#e67661] shadow-[-4px_-4px_10px_rgba(255,255,255,0.85),4px_4px_10px_rgba(163,177,198,0.28)] transition hover:-translate-y-0.5 hover:bg-red-50 active:scale-95"
                     >
-                      Eliminar reporte
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.8"
+                        stroke="currentColor"
+                        class="h-5 w-5"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M6 7.5h12m-9.75 0V6a1.5 1.5 0 011.5-1.5h4.5A1.5 1.5 0 0115.75 6v1.5m-7.5 0v10.125A2.625 2.625 0 0010.875 20.25h2.25A2.625 2.625 0 0015.75 17.625V7.5m-4.5 3v6m3-6v6"
+                        />
+                      </svg>
                     </button>
                   </div>
                 </div>
