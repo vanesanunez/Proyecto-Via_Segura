@@ -119,50 +119,69 @@ watch(
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto px-4 py-8 relative">
-    <!-- Barra superior con título + botón Filtros -->
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-semibold">Reportes</h1>
+  <div class="max-w-3xl mx-auto px-4 pt-6 pb-24 relative">
+    <!-- Header -->
+    <div class="mb-6 flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-[30px] font-bold leading-tight text-slate-900">
+          Reportes
+        </h1>
+        <p class="mt-2 max-w-[18rem] text-sm leading-6 text-slate-500">
+          Consultá reclamos de la comunidad y sumate a los que también te preocupan.
+        </p>
+      </div>
 
       <button
         type="button"
         @click="showFilterSheet = true"
-        class="flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-100 active:scale-[.97] transition"
+        class="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#E0E5EC] px-4 py-2.5 text-sm font-medium text-slate-700
+               shadow-[-5px_-5px_10px_rgba(255,255,255,0.85),5px_5px_10px_rgba(163,177,198,0.28)]
+               transition hover:text-[#3082e3] active:scale-[0.97]"
       >
-        <!-- Icono de filtro -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L14 13.414V19a1 1 0 
-         01-1.447.894l-4-2A1 1 0 018 17V13.414L3.293 6.707A1 1 0 013 6V4z"
-          />
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L14 13.414V19a1 1 0 01-1.447.894l-4-2A1 1 0 018 17V13.414L3.293 6.707A1 1 0 013 6V4z" />
         </svg>
-
         <span>Filtros</span>
       </button>
-      <div
-        v-if="infoMsg"
-        class="mb-4 rounded-xl bg-[#eef4ff] px-4 py-3 text-sm text-[#3082e3]"
-      >
-        {{ infoMsg }}
-      </div>
     </div>
 
-    <div v-if="errorMsg" class="mb-4 text-red-600">{{ errorMsg }}</div>
-    <div v-if="loading" class="mb-4 text-gray-500">Cargando…</div>
-    <div v-if="!loading && reports.length === 0" class="text-gray-600">
-      No tenés reportes todavía.
+    <!-- Mensajes -->
+    <div
+      v-if="infoMsg"
+      class="mb-4 rounded-2xl bg-[#eef4ff] px-4 py-3 text-sm text-[#3082e3]
+             shadow-[-4px_-4px_10px_rgba(255,255,255,0.82),4px_4px_10px_rgba(163,177,198,0.18)]"
+    >
+      {{ infoMsg }}
     </div>
 
-    <ul class="space-y-4 mb-6">
+    <div
+      v-if="errorMsg"
+      class="mb-4 rounded-2xl bg-[#fff1ed] px-4 py-3 text-sm text-[#e67661]
+             shadow-[-4px_-4px_10px_rgba(255,255,255,0.82),4px_4px_10px_rgba(163,177,198,0.18)]"
+    >
+      {{ errorMsg }}
+    </div>
+
+    <div
+      v-if="loading"
+      class="mb-4 rounded-2xl bg-[#E0E5EC] px-4 py-3 text-sm text-slate-500
+             shadow-[-4px_-4px_10px_rgba(255,255,255,0.82),4px_4px_10px_rgba(163,177,198,0.18)]"
+    >
+      Cargando reportes...
+    </div>
+
+    <div
+      v-if="!loading && reports.length === 0"
+      class="rounded-2xl bg-[#E0E5EC] px-4 py-4 text-sm text-slate-500
+             shadow-[-4px_-4px_10px_rgba(255,255,255,0.82),4px_4px_10px_rgba(163,177,198,0.18)]"
+    >
+      No hay reportes para mostrar con este filtro.
+    </div>
+
+    <!-- Lista -->
+    <ul class="space-y-5 mb-8">
       <ReportCard
         v-for="r in reports"
         :key="r.id"
@@ -175,15 +194,19 @@ watch(
     </ul>
 
     <!-- Paginación -->
-    <nav v-if="totalPages > 1" class="flex items-center justify-center gap-2">
+    <nav
+      v-if="totalPages > 1"
+      class="flex items-center justify-center gap-2"
+    >
       <button
         @click="goTo(page - 1)"
         :disabled="page === 1"
-        class="px-3 py-1 rounded border"
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg
+               shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.22)] transition"
         :class="
           page === 1
-            ? 'text-gray-300 border-gray-200'
-            : 'hover:bg-gray-100 border-gray-300'
+            ? 'text-slate-300 cursor-not-allowed'
+            : 'text-slate-700 hover:text-[#3082e3] active:scale-[0.97]'
         "
       >
         ‹
@@ -193,11 +216,11 @@ watch(
         v-for="p in totalPages"
         :key="p"
         @click="goTo(p)"
-        class="px-3 py-1 rounded border"
+        class="flex h-10 min-w-[40px] items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
         :class="
           p === page
-            ? 'bg-blue-600 text-white border-blue-600'
-            : 'border-gray-300 hover:bg-gray-100'
+            ? 'bg-[#3082e3] text-white shadow-sm'
+            : 'bg-[#E0E5EC] text-slate-700 shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.22)] hover:text-[#3082e3] active:scale-[0.97]'
         "
       >
         {{ p }}
@@ -206,82 +229,105 @@ watch(
       <button
         @click="goTo(page + 1)"
         :disabled="page === totalPages"
-        class="px-3 py-1 rounded border"
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg
+               shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.22)] transition"
         :class="
           page === totalPages
-            ? 'text-gray-300 border-gray-200'
-            : 'hover:bg-gray-100 border-gray-300'
+            ? 'text-slate-300 cursor-not-allowed'
+            : 'text-slate-700 hover:text-[#3082e3] active:scale-[0.97]'
         "
       >
         ›
       </button>
     </nav>
 
-    <!-- Botón volver a inicio -->
+    <!-- Botón volver -->
     <router-link
       to="/"
-      class="bg-[#3082e3] text-white py-2 px-4 rounded w-1/2 mx-auto text-center mb-3 hover:bg-[#085baf] mt-8 block"
+      class="mx-auto mt-8 flex w-fit items-center justify-center rounded-2xl bg-[#3082e3] px-6 py-3 text-sm font-semibold text-white
+             shadow-sm transition hover:bg-[#085baf] active:scale-[0.98]"
     >
       Volver a la página de inicio
     </router-link>
 
-    <!-- FONDO OSCURO FILTROS -->
+    <!-- Fondo oscuro filtros -->
     <div
       v-if="showFilterSheet"
-      class="fixed inset-0 bg-black/40 z-40"
+      class="fixed inset-0 z-40 bg-black/35 backdrop-blur-[1px]"
       @click="showFilterSheet = false"
     ></div>
 
-    <!-- BOTTOM SHEET DE FILTROS (TODO JUNTO) -->
+    <!-- Bottom sheet filtros -->
     <div
       v-if="showFilterSheet"
-      class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-xl z-50 p-4 pb-6 animate-slide-up"
+      class="fixed bottom-0 left-0 z-50 w-full rounded-t-[28px] bg-[#E0E5EC] p-4 pb-6
+             shadow-[0_-8px_24px_rgba(15,23,42,0.12)] animate-slide-up"
     >
-      <div class="flex justify-center mb-2">
-        <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+      <div class="mb-3 flex justify-center">
+        <div class="h-1.5 w-14 rounded-full bg-slate-300"></div>
       </div>
 
-      <h2 class="text-lg font-semibold text-gray-800 mb-3">Filtros</h2>
+      <h2 class="text-xl font-bold text-slate-900">Filtros</h2>
+      <p class="mt-1 text-sm text-slate-500">Elegí cómo querés visualizar los reportes.</p>
 
-      <div class="mb-4">
-        <p class="text-m font-medium text-gray-700 mb-2">Mostrar</p>
-        <div class="space-y-1 text-sm">
-          <label class="flex items-center gap-2">
+      <div class="mt-5">
+        <p class="mb-3 text-sm font-semibold text-slate-700">Mostrar</p>
+
+        <div class="space-y-2">
+          <label
+            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
+                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
+          >
             <input type="radio" value="recent" v-model="filterMode" />
-            <span class="text-lg">Más recientes</span>
+            <span>Más recientes</span>
           </label>
 
-          <label class="flex items-center gap-2">
+          <label
+            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
+                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
+          >
             <input type="radio" value="oldest" v-model="filterMode" />
-            <span class="text-lg">Más antiguos</span>
+            <span>Más antiguos</span>
           </label>
 
-          <label class="flex items-center gap-2">
+          <label
+            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
+                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
+          >
             <input type="radio" value="pending" v-model="filterMode" />
-            <span class="text-lg">Pendientes de resolución</span>
+            <span>Pendientes de resolución</span>
           </label>
 
-          <label class="flex items-center gap-2">
+          <label
+            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
+                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
+          >
             <input type="radio" value="resolved" v-model="filterMode" />
-            <span class="text-lg">Resueltos</span>
+            <span>Resueltos</span>
           </label>
 
-          <label class="flex items-center gap-2">
+          <label
+            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
+                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
+          >
             <input type="radio" value="most_supported" v-model="filterMode" />
-            <span class="text-lg">Más apoyados</span>
+            <span>Más apoyados</span>
           </label>
 
-          <label class="flex items-center gap-2">
+          <label
+            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
+                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
+          >
             <input type="radio" value="least_supported" v-model="filterMode" />
-            <span class="text-lg">Menos apoyados</span>
+            <span>Menos apoyados</span>
           </label>
         </div>
       </div>
 
-      <div class="flex gap-2 mt-2">
+      <div class="mt-5 flex gap-3">
         <button
           type="button"
-          class="flex-1 bg-[#3082e3] text-white py-2 rounded-lg text-m font-medium hover:bg-[#085baf] active:scale-[.98] transition"
+          class="flex-1 rounded-2xl bg-[#3082e3] py-3 text-sm font-semibold text-white transition hover:bg-[#085baf] active:scale-[0.98]"
           @click="showFilterSheet = false"
         >
           Aplicar filtros
@@ -289,7 +335,7 @@ watch(
 
         <button
           type="button"
-          class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-m font-medium hover:bg-gray-200 active:scale-[.98]"
+          class="flex-1 rounded-2xl bg-white py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 active:scale-[0.98]"
           @click="filterMode = 'recent'"
         >
           Limpiar
