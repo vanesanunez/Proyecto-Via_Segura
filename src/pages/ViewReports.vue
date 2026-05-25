@@ -1,6 +1,11 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
-import { fetchReportsPageWithCount } from "../services/reports";
+import {
+  fetchReportsPageWithCount,
+  joinReport,
+  fetchUserSupportedReportIds,
+} from "../services/reports";
+import { subscribeToUserState } from "../services/auth";
 import ReportCard from "../components/ReportCard.vue";
 
 const reports = ref([]);
@@ -9,31 +14,85 @@ const pageSize = 3;
 const total = ref(0);
 const loading = ref(false);
 const errorMsg = ref("");
+const infoMsg = ref("");
 
-// Un solo filtro combinado
-const filterMode = ref("recent"); // "recent" | "oldest" | "pending" | "resolved" | "most_supported" | "least_supported"
+const filterMode = ref("recent");
 const showFilterSheet = ref(false);
 
+const user = ref({ id: null, email: null });
+const supportedReportIds = ref([]);
+const supportingId = ref(null);
+
+subscribeToUserState((newUserData) => {
+  user.value = newUserData;
+});
+
 const totalPages = computed(() =>
-  Math.max(1, Math.ceil(total.value / pageSize))
+  Math.max(1, Math.ceil(total.value / pageSize)),
 );
 
 async function loadPage() {
   loading.value = true;
   errorMsg.value = "";
+
   try {
     const { data, count } = await fetchReportsPageWithCount({
       page: page.value,
       pageSize,
       mode: filterMode.value,
     });
+
     reports.value = data;
     total.value = count;
+
+    if (user.value.id) {
+      const ids = data.map((r) => r.id);
+      supportedReportIds.value = await fetchUserSupportedReportIds(
+        user.value.id,
+        ids,
+      );
+    } else {
+      supportedReportIds.value = [];
+    }
   } catch (e) {
     console.error(e);
     errorMsg.value = "No se pudieron cargar los reportes.";
   } finally {
     loading.value = false;
+  }
+}
+
+async function handleSupport(report) {
+  if (!user.value.id) {
+    errorMsg.value = "Tenés que iniciar sesión para sumarte al reporte.";
+    return;
+  }
+
+  supportingId.value = report.id;
+  errorMsg.value = "";
+  infoMsg.value = "";
+
+  try {
+    const updated = await joinReport(report.id, user.value.id);
+
+    reports.value = reports.value.map((r) =>
+      r.id === report.id ? { ...r, apoyos: updated.apoyos } : r,
+    );
+
+    supportedReportIds.value = [...supportedReportIds.value, report.id];
+    infoMsg.value = "Te sumaste al reporte.";
+  } catch (e) {
+    if (e.code === "already_supported") {
+      infoMsg.value = "Ya te habías sumado a este reporte.";
+      if (!supportedReportIds.value.includes(report.id)) {
+        supportedReportIds.value = [...supportedReportIds.value, report.id];
+      }
+    } else {
+      console.error(e);
+      errorMsg.value = "No se pudo registrar tu apoyo.";
+    }
+  } finally {
+    supportingId.value = null;
   }
 }
 
@@ -44,14 +103,19 @@ function goTo(p) {
 
 onMounted(loadPage);
 
-// si cambio de página, recargo
 watch(page, loadPage);
 
-// si cambia el modo de filtro, vuelvo a la página 1 y recargo
 watch(filterMode, () => {
   page.value = 1;
   loadPage();
 });
+
+watch(
+  () => user.value.id,
+  () => {
+    loadPage();
+  },
+);
 </script>
 
 <template>
@@ -60,17 +124,36 @@ watch(filterMode, () => {
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-semibold">Reportes</h1>
 
-      <button type="button" @click="showFilterSheet = true"
-        class="flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-100 active:scale-[.97] transition">
+      <button
+        type="button"
+        @click="showFilterSheet = true"
+        class="flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-100 active:scale-[.97] transition"
+      >
         <!-- Icono de filtro -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-          stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L14 13.414V19a1 1 0 
-         01-1.447.894l-4-2A1 1 0 018 17V13.414L3.293 6.707A1 1 0 013 6V4z" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L14 13.414V19a1 1 0 
+         01-1.447.894l-4-2A1 1 0 018 17V13.414L3.293 6.707A1 1 0 013 6V4z"
+          />
         </svg>
 
         <span>Filtros</span>
       </button>
+      <div
+        v-if="infoMsg"
+        class="mb-4 rounded-xl bg-[#eef4ff] px-4 py-3 text-sm text-[#3082e3]"
+      >
+        {{ infoMsg }}
+      </div>
     </div>
 
     <div v-if="errorMsg" class="mb-4 text-red-600">{{ errorMsg }}</div>
@@ -80,45 +163,80 @@ watch(filterMode, () => {
     </div>
 
     <ul class="space-y-4 mb-6">
-      <ReportCard v-for="r in reports" :key="r.id" :report="r" :to="`/report/${r.id}`" />
+      <ReportCard
+        v-for="r in reports"
+        :key="r.id"
+        :report="r"
+        :to="`/report/${r.id}`"
+        :supporting="supportingId === r.id"
+        :already-supported="supportedReportIds.includes(r.id)"
+        @support="handleSupport"
+      />
     </ul>
 
     <!-- Paginación -->
     <nav v-if="totalPages > 1" class="flex items-center justify-center gap-2">
-      <button @click="goTo(page - 1)" :disabled="page === 1" class="px-3 py-1 rounded border" :class="page === 1
-          ? 'text-gray-300 border-gray-200'
-          : 'hover:bg-gray-100 border-gray-300'
-        ">
+      <button
+        @click="goTo(page - 1)"
+        :disabled="page === 1"
+        class="px-3 py-1 rounded border"
+        :class="
+          page === 1
+            ? 'text-gray-300 border-gray-200'
+            : 'hover:bg-gray-100 border-gray-300'
+        "
+      >
         ‹
       </button>
 
-      <button v-for="p in totalPages" :key="p" @click="goTo(p)" class="px-3 py-1 rounded border" :class="p === page
-          ? 'bg-blue-600 text-white border-blue-600'
-          : 'border-gray-300 hover:bg-gray-100'
-        ">
+      <button
+        v-for="p in totalPages"
+        :key="p"
+        @click="goTo(p)"
+        class="px-3 py-1 rounded border"
+        :class="
+          p === page
+            ? 'bg-blue-600 text-white border-blue-600'
+            : 'border-gray-300 hover:bg-gray-100'
+        "
+      >
         {{ p }}
       </button>
 
-      <button @click="goTo(page + 1)" :disabled="page === totalPages" class="px-3 py-1 rounded border" :class="page === totalPages
-          ? 'text-gray-300 border-gray-200'
-          : 'hover:bg-gray-100 border-gray-300'
-        ">
+      <button
+        @click="goTo(page + 1)"
+        :disabled="page === totalPages"
+        class="px-3 py-1 rounded border"
+        :class="
+          page === totalPages
+            ? 'text-gray-300 border-gray-200'
+            : 'hover:bg-gray-100 border-gray-300'
+        "
+      >
         ›
       </button>
     </nav>
 
     <!-- Botón volver a inicio -->
-    <router-link to="/"
-      class="bg-[#3082e3] text-white py-2 px-4 rounded w-1/2 mx-auto text-center mb-3 hover:bg-[#085baf] mt-8 block">
+    <router-link
+      to="/"
+      class="bg-[#3082e3] text-white py-2 px-4 rounded w-1/2 mx-auto text-center mb-3 hover:bg-[#085baf] mt-8 block"
+    >
       Volver a la página de inicio
     </router-link>
 
     <!-- FONDO OSCURO FILTROS -->
-    <div v-if="showFilterSheet" class="fixed inset-0 bg-black/40 z-40" @click="showFilterSheet = false"></div>
+    <div
+      v-if="showFilterSheet"
+      class="fixed inset-0 bg-black/40 z-40"
+      @click="showFilterSheet = false"
+    ></div>
 
     <!-- BOTTOM SHEET DE FILTROS (TODO JUNTO) -->
-    <div v-if="showFilterSheet"
-      class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-xl z-50 p-4 pb-6 animate-slide-up">
+    <div
+      v-if="showFilterSheet"
+      class="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-xl z-50 p-4 pb-6 animate-slide-up"
+    >
       <div class="flex justify-center mb-2">
         <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
       </div>
@@ -161,15 +279,19 @@ watch(filterMode, () => {
       </div>
 
       <div class="flex gap-2 mt-2">
-        <button type="button"
+        <button
+          type="button"
           class="flex-1 bg-[#3082e3] text-white py-2 rounded-lg text-m font-medium hover:bg-[#085baf] active:scale-[.98] transition"
-          @click="showFilterSheet = false">
+          @click="showFilterSheet = false"
+        >
           Aplicar filtros
         </button>
 
-        <button type="button"
+        <button
+          type="button"
           class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-m font-medium hover:bg-gray-200 active:scale-[.98]"
-          @click="filterMode = 'recent'">
+          @click="filterMode = 'recent'"
+        >
           Limpiar
         </button>
       </div>

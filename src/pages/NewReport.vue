@@ -122,7 +122,7 @@ async function findSimilarReports() {
 
 async function joinExistingReport(reporte) {
   try {
-    await joinReport(reporte.id);
+    await joinReport(reporte.id, user.value.id);
 
     showBottomSheet.value = false; // cierro lista
     showSuccessSheet.value = true; // abro modal centrado de éxito

@@ -2,44 +2,118 @@
 const props = defineProps({
   report: { type: Object, required: true },
   to: { type: String, default: null },
-})
+  supporting: { type: Boolean, default: false },
+  alreadySupported: { type: Boolean, default: false },
+});
+
+const emit = defineEmits(["support"]);
+
+function getStatusClasses(status) {
+  switch (status) {
+    case "Resuelto":
+      return "bg-green-100 text-green-700";
+    case "En curso":
+      return "bg-blue-100 text-blue-700";
+    case "Pendiente":
+    default:
+      return "bg-[#fff1ed] text-[#e67661]";
+  }
+}
+
+function handleSupport() {
+  emit("support", props.report);
+}
 </script>
 
 <template>
   <li
-    class="max-w-2xl mx-auto rounded-xl border-2 border-[#3082e3] bg-white p-4 md:p-5 flex items-center justify-between 
-         shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-[#3082e3] hover:bg-blue-50/40 
-         transition-all duration-300 ease-out"
+    class="max-w-2xl mx-auto rounded-[22px] bg-[#E0E5EC] p-4 md:p-5
+           shadow-[-6px_-6px_12px_rgba(255,255,255,0.82),6px_6px_12px_rgba(163,177,198,0.28)]
+           transition-all duration-300 ease-out hover:-translate-y-0.5"
   >
     <div class="flex items-start gap-3 w-full">
       <img
         :src="report.imagen"
         alt="Imagen del reporte"
-        class="w-12 h-12 md:w-14 md:h-14 rounded-lg object-cover bg-gray-100 shrink-0"
+        class="w-14 h-14 md:w-16 md:h-16 rounded-[14px] object-cover bg-gray-100 shrink-0"
       />
 
       <div class="min-w-0 flex-1">
         <div class="flex items-center gap-2 flex-wrap">
-          <p class="text-xs text-gray-500">
+          <p class="text-xs text-slate-500">
             {{ new Date(report.created_at).toLocaleString() }}
           </p>
+
           <span
-            class="text-[10px] uppercase tracking-wide bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full"
+            class="text-[10px] uppercase tracking-wide bg-[#eef4ff] text-[#3082e3] px-2.5 py-1 rounded-full"
           >
             {{ report.categoria }}
           </span>
+
+          <span
+            class="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+            :class="getStatusClasses(report.estado)"
+          >
+            {{ report.estado || "Pendiente" }}
+          </span>
         </div>
-         <p class="font-semibold text-sm md:text-base mt-1 truncate">
+
+        <p class="font-semibold text-sm md:text-base mt-2 truncate text-slate-900">
           {{ report.email }}
         </p>
-        <p class="font-semibold text-sm md:text-base mt-1 truncate">
+
+        <p class="font-semibold text-sm md:text-base mt-1 text-slate-900 line-clamp-2">
           {{ report.descripcion }}
         </p>
-        <p class="text-gray-500 text-xs truncate">
+
+        <p class="text-slate-500 text-xs mt-1 line-clamp-1">
           {{ report.ubicacion }}
         </p>
+
+        <div class="mt-3 flex items-center justify-between gap-3 flex-wrap">
+          <div
+            class="inline-flex items-center gap-2 rounded-full bg-[#eef4ff] px-3 py-1.5 text-xs font-medium text-[#3082e3]
+                   shadow-[-3px_-3px_8px_rgba(255,255,255,0.82),3px_3px_8px_rgba(163,177,198,0.22)]"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M7.5 10.5v8.25m0-8.25l3-3m-3 3l-3-3m7.5 3h7.125A1.875 1.875 0 0120.25 12.375v4.5A1.875 1.875 0 0118.375 18.75H12.75m0-8.25V6.375A1.875 1.875 0 0010.875 4.5H9.66a1.875 1.875 0 00-1.767 1.252L6.75 9v9.75h6"
+              />
+            </svg>
+
+            <span>Apoyos: {{ report.apoyos ?? 0 }}</span>
+          </div>
+
+          <button
+            type="button"
+            @click="handleSupport"
+            :disabled="alreadySupported || supporting"
+            class="rounded-full px-3 py-1.5 text-xs font-semibold transition active:scale-[0.98]"
+            :class="
+              alreadySupported
+                ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                : 'bg-[#3082e3] text-white hover:bg-[#085baf]'
+            "
+          >
+            {{
+              supporting
+                ? 'Sumando...'
+                : alreadySupported
+                  ? 'Ya te sumaste'
+                  : 'Sumarme al reporte'
+            }}
+          </button>
+        </div>
       </div>
     </div>
-
   </li>
 </template>

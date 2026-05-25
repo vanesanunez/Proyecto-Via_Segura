@@ -165,9 +165,26 @@ export async function searchSimilarReports({ categoria, ubicacion }) {
 }
 
 // Suma 1 apoyo al reporte indicado
-export async function joinReport(reportId) {
+export async function joinReport(reportId, userId) {
   try {
-    // 1) leer apoyos actuales desde la base
+    const { error: insertError } = await supabase
+      .from("report_supports")
+      .insert({
+        report_id: reportId,
+        user_id: userId,
+      });
+
+    if (insertError) {
+      if (insertError.code === "23505") {
+        const err = new Error("already_supported");
+        err.code = "already_supported";
+        throw err;
+      }
+
+      console.error("Error registrando apoyo:", insertError);
+      throw insertError;
+    }
+
     const { data: current, error: readError } = await supabase
       .from("reports")
       .select("apoyos")
@@ -181,7 +198,6 @@ export async function joinReport(reportId) {
 
     const currentApoyos = current?.apoyos ?? 0;
 
-    // 2) actualizar con +1
     const { data: updated, error: updateError } = await supabase
       .from("reports")
       .update({ apoyos: currentApoyos + 1 })
@@ -194,11 +210,28 @@ export async function joinReport(reportId) {
       throw updateError;
     }
 
-    return updated; // por si después quuiero usar el valor nuevo
+    return updated;
   } catch (e) {
     console.error("Fallo inesperado sumando apoyo:", e);
     throw e;
   }
+}
+
+export async function fetchUserSupportedReportIds(userId, reportIds = []) {
+  if (!userId || reportIds.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("report_supports")
+    .select("report_id")
+    .eq("user_id", userId)
+    .in("report_id", reportIds);
+
+  if (error) {
+    console.error("[reports.js fetchUserSupportedReportIds] Error:", error);
+    throw error;
+  }
+
+  return (data ?? []).map((item) => item.report_id);
 }
 
 export async function fetchAdminReports({
