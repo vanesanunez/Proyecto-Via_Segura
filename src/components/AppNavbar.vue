@@ -290,6 +290,14 @@ export default {
                   >Información útil</RouterLink
                 >
               </li>
+              <li>
+                <RouterLink
+                  @click="drawer = false"
+                  to="/puntos-seguros"
+                  class="block px-3 py-2 rounded-lg hover:bg-[#d6e8fb] transition"
+                  >Puntos seguros</RouterLink
+                >
+              </li>
               <li v-if="user.role === 'admin'">
                 <RouterLink
                   @click="drawer = false"
