@@ -144,7 +144,8 @@ export async function updateAuthUserProfile(data) {
 
     updateUser({
       ...updatedData,
-      photoURL: updatedData.photo_url,
+      // conservar foto actual si no se subió una nueva
+      photoURL: updatedData.photo_url || user.photoURL,
     });
 
   } catch (error) {
