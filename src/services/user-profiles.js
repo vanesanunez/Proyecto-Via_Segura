@@ -13,9 +13,47 @@ export async function createUserProfile(data) {
 }
 
 export async function updateUserProfile(id, data) {
+  let profileData = { ...data };
+
+  // =========================
+  // SUBIR FOTO SI EXISTE
+  // =========================
+  if (data.photoFile) {
+    const file = data.photoFile;
+
+    const fileExt = file.name.split(".").pop();
+
+    const filePath = `profiles/${id}-${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, file, {
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error(
+        "[user-profiles.js updateUserProfile] Error al subir imagen: ",
+        uploadError
+      );
+      throw uploadError;
+    }
+
+    // Obtener URL pública
+    const { data: publicUrlData } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(filePath);
+
+    profileData.photo_url = publicUrlData.publicUrl;
+  }
+
+  // IMPORTANTE:
+  // eliminar photoFile antes del update SQL
+  delete profileData.photoFile;
+
   const { error } = await supabase
     .from("user_profiles")
-    .update(data)
+    .update(profileData)
     .eq("id", id);
 
   if (error) {
@@ -25,7 +63,8 @@ export async function updateUserProfile(id, data) {
     );
     throw error;
   }
-  return data;
+
+  return profileData;
 }
 
 export async function getUserProfileById(id) {
@@ -41,8 +80,10 @@ export async function getUserProfileById(id) {
     );
     throw error;
   }
+
   return data[0];
 }
+
 export async function fetchAllUserProfiles() {
   const { data, error } = await supabase
     .from("user_profiles")

@@ -13,7 +13,9 @@ let user = {
   lastname: null,
   dni: null,
   role: null,
+  photoURL: null,
 };
+
 //Array para guardar la lista de observers que deben ser notificados de los cambios en "user"
 let observers = [];
 
@@ -22,7 +24,7 @@ loadInitialUserState();
 
 //apenas levanta la aplicación pregunta si hay un usuario en localstorage que figure como autenticado
 if (localStorage.getItem("user")) {
-  user = JSON.parse(localStorage.getItem("user")); //si hay usuario lo parseo y guardo en la variable "user"
+  user = JSON.parse(localStorage.getItem("user"));
 }
 
 //Carga la información del usuario autenticado,si es que existe alguno
@@ -36,7 +38,6 @@ async function loadInitialUserState() {
     email: data.user.email,
   });
 
-  //traemos los datos faltantes (los que agregué después, nombre,apellido y dni)
   loadUserExtendedProfile();
 }
 
@@ -44,7 +45,6 @@ async function loadUserExtendedProfile() {
   try {
     const profileData = await getUserProfileById(user.id);
 
-    // Si aún no hay perfil en la tabla, salgo sin romper nada
     if (!profileData) {
       console.warn(
         "[auth.js loadUserExtendedProfile] No se encontró perfil para el usuario:",
@@ -58,9 +58,9 @@ async function loadUserExtendedProfile() {
       lastname: profileData.lastname,
       dni: profileData.dni,
       role: profileData.role,
+      photoURL: profileData.photo_url,
     });
-   // console.log("[auth.js] perfil extendido cargado:", profileData);
-    //console.log("[auth.js] role detectado:", profileData.role);
+
   } catch (error) {
     console.error(
       "[auth.js loadUserExtendedProfile] Error al traer perfil extendido del usuario: ",
@@ -70,12 +70,8 @@ async function loadUserExtendedProfile() {
 }
 
 export async function register(email, name, lastname, dni, password) {
-  //método signUp() de auth de supabase
   const { data, error } = await supabase.auth.signUp({
     email,
-    name,
-    lastname,
-    dni,
     password,
   });
 
@@ -91,12 +87,12 @@ export async function register(email, name, lastname, dni, password) {
       lastname,
       dni,
       email,
+      photo_url: null,
     });
   } catch (errorProfile) {
     throw errorProfile;
   }
 
-  //guardar los datos del usuario autenticado notificar a los observers del cambio
   updateUser({
     id: data.user.id,
     email: data.user.email,
@@ -104,7 +100,6 @@ export async function register(email, name, lastname, dni, password) {
 }
 
 export async function login(email, password) {
-  //método signInWithPassword() de auth de supabase
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -115,7 +110,6 @@ export async function login(email, password) {
     throw error;
   }
 
-  //guardar los datos del usuario autenticado notificar a los observers del cambio
   updateUser({
     id: data.user.id,
     email: data.user.email,
@@ -136,18 +130,23 @@ export async function logout() {
     lastname: null,
     dni: null,
     role: null,
+    photoURL: null,
   });
 }
 
 /**
  *
- * @param {{ email: string, name: string, lastname: string}} data
+ * @param {{ email: string, name: string, lastname: string, photoFile?: File }} data
  */
 export async function updateAuthUserProfile(data) {
   try {
-    await updateUserProfile(user.id, data);
+    const updatedData = await updateUserProfile(user.id, data);
 
-    updateUser(data);
+    updateUser({
+      ...updatedData,
+      photoURL: updatedData.photo_url,
+    });
+
   } catch (error) {
     console.error(
       "[auth.js updateAuthUserProfile] Error al actualizar perfil: ",
@@ -159,44 +158,22 @@ export async function updateAuthUserProfile(data) {
 
 //Métodos para el observer//
 
-/**
- * Suscribe un obseerver que se va a ejecutar cada vez que los datos del usuario autenticado cambien.
- * El observer  debe ser una función (callback) que recibe como argumento el objeto con los datos del usuario.
- * Retorna una nueva función que permite cancelar la suscripción.
- *
- * @param {({id: string|null, email:string|null}) => void} callback
- */
 export function subscribeToUserState(callback) {
-  //Agregamos el callback al stack de observers
   observers.push(callback);
 
-  //ejecutamos el callback para pasarle los datos actuales
   notify(callback);
 
-  //retornamos una nueva función que elimina el callback de la lista de observers
   return () => (observers = observers.filter((obs) => obs !== callback));
 }
 
-/**
- * invoca un observer y le pasa los datos del usuario
- * @param {({id: string|null, email:string|null}) => void} callback
- */
 export function notify(callback) {
   callback({ ...user });
 }
 
-/**
- * notifica a todos los observers cada vez que ocurra un cambio (en la variable "user")
- */
 function notifyAll() {
   observers.forEach((callback) => notify(callback));
-  //observers.forEach(notify);
 }
 
-/**
- * función para notificar a todos los observers de lso cambios del subject
- * @param {{id?: string||null, email?: string|null}} data
- */
 function updateUser(data) {
   user = {
     ...user,
