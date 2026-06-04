@@ -241,7 +241,7 @@ export async function fetchAdminReports({
 } = {}) {
   let query = supabase
     .from("reports")
-    .select("id, categoria, ubicacion, estado, apoyos, email, created_at");
+    .select("id, categoria,descripcion, ubicacion, estado, apoyos, email, created_at");
 
   if (status === "pending") {
     query = query.eq("estado", "Pendiente");
