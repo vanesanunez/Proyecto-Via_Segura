@@ -77,7 +77,7 @@ const cards = [
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
                   <span
-                    class="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                    class="text-[11px] font-semibold px-3 py-1 rounded-full"
                     :class="card.pillClass"
                   >
                     {{ card.subtitle }}
