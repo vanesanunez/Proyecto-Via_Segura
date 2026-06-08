@@ -7,7 +7,11 @@ import {
   deleteReport,
 } from "../services/reports";
 import { useRouter } from "vue-router";
-import { PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/solid";
+import {
+  PencilSquareIcon,
+  TrashIcon,
+  ChevronDownIcon,
+} from "@heroicons/vue/24/solid";
 
 const router = useRouter();
 
@@ -362,10 +366,10 @@ onMounted(() => {
 
         <!-- gestión -->
         <section
-          class="mt-6 rounded-[24px] bg-[#E0E5EC] p-5 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
+          class="mt-6 rounded-[24px] border border-slate-100 bg-white p-5 shadow-[0_10px_24px_rgba(148,163,184,0.12)]"
         >
           <div
-            class="mb-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between"
+            class="mb-5 flex flex-col gap-5 md:flex-row md:items-end md:justify-between"
           >
             <div>
               <div class="flex items-center gap-2 flex-wrap">
@@ -385,34 +389,50 @@ onMounted(() => {
               </p>
             </div>
 
-            <div class="grid gap-3 md:grid-cols-2">
+            <div class="grid gap-4 md:grid-cols-2">
+              <!-- Ordenar por -->
               <div class="w-full">
-                <label class="mb-1.5 block text-sm font-medium text-slate-500">
+                <label class="mb-2 block text-sm font-medium text-slate-500">
                   Ordenar por
                 </label>
-                <select
-                  :value="reportOrder"
-                  @change="handleOrderChange"
-                  class="w-full rounded-2xl border-0 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.16)] focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25 md:w-56"
-                >
-                  <option value="recent">Más recientes</option>
-                  <option value="most_supported">Más apoyados</option>
-                </select>
+
+                <div class="relative">
+                  <select
+                    :value="reportOrder"
+                    @change="handleOrderChange"
+                    class="w-full appearance-none rounded-2xl border-0 bg-white px-4 py-3 pr-12 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.16)] focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25 md:w-56"
+                  >
+                    <option value="recent">Más recientes</option>
+                    <option value="most_supported">Más apoyados</option>
+                  </select>
+
+                  <ChevronDownIcon
+                    class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                  />
+                </div>
               </div>
 
+              <!-- Estado -->
               <div class="w-full">
-                <label class="mb-1.5 block text-sm font-medium text-slate-500">
+                <label class="mb-2 block text-sm font-medium text-slate-500">
                   Estado
                 </label>
-                <select
-                  :value="reportStatusFilter"
-                  @change="handleStatusFilterChange"
-                  class="w-full rounded-2xl border-0 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.16)] focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25 md:w-56"
-                >
-                  <option value="all">Todos</option>
-                  <option value="pending">Pendientes</option>
-                  <option value="resolved">Resueltos</option>
-                </select>
+
+                <div class="relative">
+                  <select
+                    :value="reportStatusFilter"
+                    @change="handleStatusFilterChange"
+                    class="w-full appearance-none rounded-2xl border-0 bg-white px-4 py-3 pr-12 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.16)] focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25 md:w-56"
+                  >
+                    <option value="all">Todos</option>
+                    <option value="pending">Pendientes</option>
+                    <option value="resolved">Resueltos</option>
+                  </select>
+
+                  <ChevronDownIcon
+                    class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -495,15 +515,21 @@ onMounted(() => {
                       Cambiar estado
                     </label>
 
-                    <select
-                      :value="report.estado"
-                      @change="handleStatusChange(report.id, $event)"
-                      :disabled="updatingReportId === report.id"
-                      class="w-full rounded-2xl border-0 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.16)] focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25 disabled:opacity-60"
-                    >
-                      <option value="Pendiente">Pendiente</option>
-                      <option value="Resuelto">Resuelto</option>
-                    </select>
+                    <div class="relative">
+                      <select
+                        :value="report.estado"
+                        @change="handleStatusChange(report.id, $event)"
+                        :disabled="updatingReportId === report.id"
+                        class="w-full appearance-none rounded-2xl border-0 bg-white px-4 py-3 pr-12 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.16)] focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25 disabled:opacity-60"
+                      >
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Resuelto">Resuelto</option>
+                      </select>
+
+                      <ChevronDownIcon
+                        class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                      />
+                    </div>
                   </div>
 
                   <div class="flex items-center justify-end gap-3">
