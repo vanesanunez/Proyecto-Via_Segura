@@ -144,14 +144,35 @@ onMounted(() => {
 
       <!-- header -->
       <header class="mb-6">
-        <h1 class="text-[30px] font-bold leading-[1.08] text-[#0f172a]">
-          Chat
-        </h1>
+        <section
+          class="rounded-[26px] bg-[#3082e3] px-5 py-5 text-white shadow-[0_12px_28px_rgba(48,130,227,0.28)]"
+        >
+          <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span
+                  class="text-[11px] font-semibold px-3 py-1 rounded-full bg-white/20 text-white"
+                >
+                  Moderación de chat
+                </span>
+              </div>
 
-        <p class="mt-3 max-w-[320px] text-[15px] leading-[1.7] text-slate-500">
-          Revisá mensajes del chat global y moderá el contenido cuando sea
-          necesario.
-        </p>
+              <h1 class="mt-3 text-[22px] font-bold leading-tight">
+                Chat global
+              </h1>
+
+              <p class="mt-2 text-[15px] leading-[1.6] text-white/85">
+                Revisá mensajes y moderá contenido.
+              </p>
+            </div>
+
+            <div
+              class="flex h-14 min-w-[56px] items-center justify-center rounded-full bg-white text-2xl font-bold text-[#3082e3] shadow-[0_8px_20px_rgba(15,23,42,0.12)]"
+            >
+              {{ messages.length }}
+            </div>
+          </div>
+        </section>
       </header>
 
       <!-- success -->
@@ -179,37 +200,7 @@ onMounted(() => {
       </div>
 
       <template v-else>
-        <!-- resumen -->
-        <section
-          class="mb-5 rounded-[24px] bg-[#E0E5EC] px-4 py-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
-        >
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <span
-                  class="text-[11px] font-semibold px-3 py-1 rounded-full bg-[#eef4ff] text-[#3082e3]"
-                >
-                  Moderación de chat
-                </span>
-              </div>
-
-              <h2 class="mt-3 text-[20px] font-bold text-slate-900">
-                Mensajes del chat global
-              </h2>
-
-              <p class="mt-2 text-[15px] leading-[1.7] text-slate-500">
-                Podés revisar mensajes y eliminar contenido si hace falta
-                moderar la comunidad.
-              </p>
-            </div>
-
-            <div
-              class="hidden sm:flex h-14 min-w-[56px] items-center justify-center rounded-full bg-[#eef4ff] px-4 text-2xl font-bold text-[#3082e3] shadow-[-4px_-4px_10px_rgba(255,255,255,0.85),4px_4px_10px_rgba(163,177,198,0.28)]"
-            >
-              {{ messages.length }}
-            </div>
-          </div>
-        </section>
+      
 
         <!-- empty -->
         <div
