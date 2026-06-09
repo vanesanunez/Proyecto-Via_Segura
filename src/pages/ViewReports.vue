@@ -1,4 +1,5 @@
 <script setup>
+import BottomNavigation from "../components/BottomNavigation.vue";
 import { ref, computed, onMounted, watch } from "vue";
 import {
   fetchReportsPageWithCount,
@@ -342,8 +343,9 @@ watch(
         </button>
       </div>
     </div>
+    <BottomNavigation />
   </div>
-</template>
+  </template>
 
 <style scoped>
 @keyframes slide-up {
