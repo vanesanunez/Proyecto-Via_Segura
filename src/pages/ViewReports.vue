@@ -261,8 +261,8 @@ watch(
     <!-- Bottom sheet filtros -->
     <div
       v-if="showFilterSheet"
-      class="fixed bottom-0 left-0 z-50 w-full rounded-t-[28px] bg-[#E0E5EC] p-4 pb-6
-             shadow-[0_-8px_24px_rgba(15,23,42,0.12)] animate-slide-up"
+      class="fixed bottom-0 left-0 z-[60] w-full rounded-t-[28px] bg-[#E0E5EC] p-4 pb-8
+         shadow-[0_-8px_24px_rgba(15,23,42,0.12)] animate-slide-up"
     >
       <div class="mb-3 flex justify-center">
         <div class="h-1.5 w-14 rounded-full bg-slate-300"></div>
@@ -343,7 +343,7 @@ watch(
         </button>
       </div>
     </div>
-    <BottomNavigation />
+    <BottomNavigation v-if="!showFilterSheet" />
   </div>
   </template>
 
