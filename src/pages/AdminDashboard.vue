@@ -1,5 +1,6 @@
 <script setup>
 import { useRouter } from "vue-router";
+import BottomNavigation from "../components/BottomNavigation.vue";
 
 const router = useRouter();
 
@@ -36,7 +37,7 @@ const cards = [
 </script>
 
 <template>
-  <section class="min-h-screen bg-white px-4 pt-4 pb-8">
+  <section class="min-h-screen bg-white px-4 pt-4 pb-28">
     <div class="mx-auto w-full max-w-[430px]">
       <header class="mb-6">
         <h1 class="text-[30px] font-bold leading-[1.08] text-[#0f172a]">
@@ -63,7 +64,6 @@ const cards = [
                    active:scale-[0.985]"
           >
             <div class="flex items-start gap-4">
-              <!-- Icono -->
               <div
                 class="flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] bg-[#E0E5EC]
                        text-[28px] font-bold
@@ -73,7 +73,6 @@ const cards = [
                 {{ card.icon }}
               </div>
 
-              <!-- Contenido -->
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
                   <span
@@ -109,4 +108,6 @@ const cards = [
       </div>
     </div>
   </section>
+
+  <BottomNavigation />
 </template>
