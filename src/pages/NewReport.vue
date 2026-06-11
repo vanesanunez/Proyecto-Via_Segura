@@ -506,9 +506,6 @@ function startNewReport() {
           Enviar reporte
         </button>
 
-        <p class="text-center text-sm text-slate-500">
-          Cuando completes el reporte, vas a estar aportando una señal clara y útil para la comunidad.
-        </p>
       </div>
     </form>
 
