@@ -313,21 +313,7 @@ if (unsubscribeChat) {
 
                 <div class="flex gap-3 mt-5">
 
-                    <div class="
-                    bg-white/15
-                    backdrop-blur-sm
-                    rounded-2xl
-                    px-4
-                    py-3
-                    ">
-                        <p class="text-white text-lg font-bold">
-                            {{ messages.length }}
-                        </p>
-
-                        <p class="text-xs" style="color: rgba(255,255,255,.7)">
-                            Mensajes
-                        </p>
-                    </div>
+                  
 
                     <div class="
                     bg-white/15
@@ -340,9 +326,6 @@ if (unsubscribeChat) {
                             Activo
                         </p>
 
-                        <p class="text-xs" style="color: rgba(255,255,255,.7)">
-                            Comunidad
-                        </p>
                     </div>
 
                 </div>
@@ -364,10 +347,7 @@ if (unsubscribeChat) {
             shadow-sm
             ">
 
-                <p class="font-semibold text-[#2a2a2a]">
-                    Comunidad activa
-                </p>
-
+               
                 <p class="
                 text-sm
                 text-gray-500
