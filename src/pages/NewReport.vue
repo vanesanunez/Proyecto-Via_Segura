@@ -18,6 +18,8 @@ import {
   PencilSquareIcon,
   PhotoIcon,
   ArrowRightIcon,
+  LightBulbIcon,
+  ShieldCheckIcon,
 } from "@heroicons/vue/24/solid";
 
 // --- Datos del formulario ---
@@ -31,7 +33,7 @@ const router = useRouter();
 
 // nombre del archivo para mostrar
 const selectedFileName = computed(() =>
-  imagen.value ? imagen.value.name : ""
+  imagen.value ? imagen.value.name : "",
 );
 
 // --- Estados ---
@@ -86,8 +88,10 @@ const onboardingContent = computed(() => {
       icon: MapPinIcon,
       eyebrow: "Paso 1",
       title: "Marcá bien el lugar",
-      text: "Ubicá el problema con precisión para que otras personas puedan encontrarlo rápido.",
+      text: "Ubicá el problema con precisión.",
+      helper: "Tu aporte ayuda a la comunidad",
       button: "Siguiente",
+      tone: "blue",
     };
   }
 
@@ -96,8 +100,10 @@ const onboardingContent = computed(() => {
       icon: TagIcon,
       eyebrow: "Paso 2",
       title: "Elegí la categoría",
-      text: "Seleccioná el tipo de problema y revisá si ya existe un reclamo similar en esa zona.",
+      text: "Indicá el tipo de problema.",
+      helper: "Así evitás reclamos duplicados",
       button: "Siguiente",
+      tone: "coral",
     };
   }
 
@@ -106,8 +112,10 @@ const onboardingContent = computed(() => {
       icon: PencilSquareIcon,
       eyebrow: "Paso 3",
       title: "Contá qué pasó",
-      text: "Describilo en pocas palabras, de forma clara y directa.",
+      text: "Describilo claro y breve.",
+      helper: "La información útil mejora la respuesta",
       button: "Siguiente",
+      tone: "blue",
     };
   }
 
@@ -115,8 +123,10 @@ const onboardingContent = computed(() => {
     icon: PhotoIcon,
     eyebrow: "Paso 4",
     title: "Subí una foto",
-    text: "La imagen es obligatoria porque ayuda a validar mejor el reporte.",
+    text: "Ayuda a validar el reporte.",
+    helper: "La foto es obligatoria",
     button: "Empezar",
+    tone: "coral",
   };
 });
 
@@ -266,7 +276,8 @@ function startNewReport() {
         <h1 class="mt-3 text-[28px] font-bold leading-tight">Nuevo reporte</h1>
 
         <p class="mt-2 text-[15px] leading-[1.6] text-white/85">
-          Creá un reporte claro y útil para ayudar a visibilizar lo que pasa en tu zona.
+          Creá un reporte claro y útil para ayudar a visibilizar lo que pasa en
+          tu zona.
         </p>
       </div>
 
@@ -436,7 +447,8 @@ function startNewReport() {
           v-if="hasSimilarReports"
           class="mt-3 rounded-2xl bg-yellow-50 px-4 py-3 text-sm leading-normal text-yellow-700"
         >
-          Encontramos reportes similares en esta zona. Sumate a uno existente en lugar de crear uno nuevo.
+          Encontramos reportes similares en esta zona. Sumate a uno existente en
+          lugar de crear uno nuevo.
         </p>
       </section>
 
@@ -505,75 +517,158 @@ function startNewReport() {
         >
           Enviar reporte
         </button>
-
       </div>
     </form>
 
     <!-- ONBOARDING -->
-    <div
-      v-if="showOnboarding"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 px-4 backdrop-blur-[2px]"
+  <transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
     >
       <div
-        class="relative w-full max-w-sm overflow-hidden rounded-[30px] bg-white shadow-[0_18px_40px_rgba(15,23,42,0.22)]"
+        v-if="showOnboarding"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4 backdrop-blur-[2px]"
       >
-        <div class="h-24 bg-gradient-to-br from-[#3082e3] to-[#5aa0f0]"></div>
-
-        <button
-          type="button"
-          @click="skipOnboarding"
-          class="absolute right-4 top-4 rounded-full bg-white/85 px-3 py-1 text-xs font-medium text-slate-600 transition hover:bg-white"
+        <div
+          class="relative w-full max-w-sm overflow-hidden rounded-[30px] bg-white px-5 pb-6 pt-5 shadow-[0_22px_48px_rgba(15,23,42,0.20)]"
         >
-          Saltar
-        </button>
+          <!-- top -->
+          <div class="flex items-center justify-between gap-3">
+            <div
+              class="inline-flex items-center gap-2 rounded-full bg-[#eef4ff] px-4 py-2 text-[14px] font-semibold text-[#3082e3]"
+            >
+              <LightBulbIcon class="h-5 w-5" />
+              <span>Consejos para crear tu reporte</span>
+            </div>
 
-        <div class="-mt-10 px-5 pb-5">
-          <div
-            class="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-white text-[#3082e3] shadow-[0_12px_24px_rgba(48,130,227,0.18)]"
-          >
-            <component :is="onboardingContent.icon" class="h-10 w-10" />
+            <button
+              type="button"
+              @click="skipOnboarding"
+              class="text-[15px] font-medium text-slate-400 transition hover:text-slate-600"
+            >
+              Saltar
+            </button>
           </div>
 
-          <div class="mt-4 text-left">
-            <span
-              class="inline-flex rounded-full bg-[#eef4ff] px-3 py-1 text-[11px] font-semibold text-[#3082e3]"
-            >
-              {{ onboardingContent.eyebrow }}
-            </span>
+          <!-- ilustración -->
+          <div class="relative mx-auto mt-6 h-[190px] w-full max-w-[290px]">
+            <!-- fondo redondo -->
+            <div
+              class="absolute left-1/2 top-1/2 h-[150px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#eef4ff]"
+            ></div>
 
-            <h2 class="mt-3 text-[22px] font-bold leading-tight text-slate-900">
+            <!-- nubecitas -->
+            <div
+              class="absolute left-6 top-10 h-3 w-7 rounded-full bg-[#dbeafe] opacity-80"
+            ></div>
+            <div
+              class="absolute left-11 top-12 h-3 w-3 rounded-full bg-[#dbeafe] opacity-80"
+            ></div>
+            <div
+              class="absolute right-8 top-12 h-3 w-7 rounded-full bg-[#dbeafe] opacity-80"
+            ></div>
+            <div
+              class="absolute right-12 top-14 h-3 w-3 rounded-full bg-[#dbeafe] opacity-80"
+            ></div>
+
+            <!-- rayitas -->
+            <div
+              class="absolute right-8 top-4 h-5 w-[2px] rotate-12 rounded-full bg-[#60a5fa]"
+            ></div>
+            <div
+              class="absolute right-3 top-10 h-[2px] w-4 rounded-full bg-[#60a5fa]"
+            ></div>
+
+            <!-- hojas -->
+            <div class="absolute bottom-8 left-6 flex gap-1">
+              <div
+                class="h-10 w-6 rotate-[-24deg] rounded-full bg-[#b7e3a1]"
+              ></div>
+              <div
+                class="h-8 w-5 rotate-[16deg] rounded-full bg-[#8ed081]"
+              ></div>
+            </div>
+
+            <!-- base -->
+            <div
+              class="absolute bottom-3 left-1/2 h-[32px] w-[180px] -translate-x-1/2 rounded-[16px] bg-white shadow-[0_10px_22px_rgba(148,163,184,0.20)]"
+            ></div>
+            <div
+              class="absolute bottom-6 left-1/2 h-[8px] w-[152px] -translate-x-1/2 rounded-full bg-[#e5e7eb]"
+            ></div>
+            <div
+              class="absolute bottom-6 left-[74px] h-[8px] w-9 rounded bg-[#d9f99d]"
+            ></div>
+            <div
+              class="absolute bottom-6 left-[118px] h-[8px] w-9 rounded bg-[#bbf7d0]"
+            ></div>
+            <div
+              class="absolute bottom-6 left-[162px] h-[8px] w-9 rounded bg-[#d9f99d]"
+            ></div>
+
+            <!-- icono principal -->
+            <component
+              :is="onboardingContent.icon"
+              class="absolute left-1/2 top-1/2 h-[95px] w-[95px] -translate-x-1/2 -translate-y-1/2 text-[#3082e3] drop-shadow-[0_12px_18px_rgba(48,130,227,0.18)]"
+            />
+
+            <!-- badge coral -->
+            <div
+              class="absolute bottom-10 right-6 flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#f2826d] shadow-[0_12px_18px_rgba(242,130,109,0.26)]"
+            >
+              <ShieldCheckIcon class="h-7 w-7 text-white" />
+            </div>
+          </div>
+
+          <!-- contenido -->
+          <div class="mt-3 text-left">
+            <h2 class="text-[22px] font-bold leading-tight text-slate-900">
               {{ onboardingContent.title }}
             </h2>
 
-            <p class="mt-2 text-[15px] leading-[1.6] text-slate-500">
+            <p class="mt-3 text-[16px] leading-[1.65] text-slate-600">
               {{ onboardingContent.text }}
             </p>
+
+            <div
+              class="mt-5 inline-flex items-center gap-2 rounded-full bg-[#eef4ff] px-4 py-3 text-[15px] font-medium text-[#3082e3]"
+            >
+              <span class="text-[#f2826d] text-lg">❤</span>
+              <span>{{ onboardingContent.helper }}</span>
+            </div>
           </div>
 
-          <div class="mt-5 flex justify-center gap-1.5">
-            <span
-              v-for="i in 4"
-              :key="i"
-              class="h-2.5 rounded-full transition-all duration-300"
-              :class="
-                i === onboardingStep
-                  ? 'w-6 bg-[#3082e3]'
-                  : 'w-2.5 bg-slate-300'
-              "
-            />
-          </div>
+          <!-- footer -->
+          <div class="mt-6 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+              <span
+                v-for="i in 4"
+                :key="i"
+                class="rounded-full transition-all duration-300"
+                :class="
+                  i === onboardingStep
+                    ? 'h-3 w-3 bg-[#3082e3]'
+                    : 'h-3 w-3 bg-slate-300'
+                "
+              ></span>
+            </div>
 
-          <button
-            type="button"
-            @click="nextOnboarding"
-            class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#3082e3] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#085baf] active:scale-[0.98]"
-          >
-            {{ onboardingContent.button }}
-            <ArrowRightIcon class="h-4 w-4" />
-          </button>
+            <button
+              type="button"
+              @click="nextOnboarding"
+              class="inline-flex items-center gap-2 rounded-[16px] bg-[#3082e3] px-6 py-3 text-[16px] font-semibold text-white shadow-[0_10px_22px_rgba(48,130,227,0.28)] transition hover:bg-[#236fcd] active:scale-[0.98]"
+            >
+              {{ onboardingContent.button }}
+              <ArrowRightIcon class="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </transition>
 
     <!-- MODAL POPUP: similares -->
     <div
@@ -596,7 +691,8 @@ function startNewReport() {
         </div>
 
         <p class="mb-4 text-sm leading-snug text-gray-700">
-          Encontramos reportes similares en esta zona. Podés sumarte a uno existente para darle más fuerza y prioridad.
+          Encontramos reportes similares en esta zona. Podés sumarte a uno
+          existente para darle más fuerza y prioridad.
         </p>
 
         <div class="space-y-2">
@@ -648,7 +744,8 @@ function startNewReport() {
         </h2>
 
         <p class="mb-2 text-center text-sm leading-relaxed text-gray-700">
-          Gracias por contribuir a la seguridad de tu zona. Tu apoyo se registró correctamente.
+          Gracias por contribuir a la seguridad de tu zona. Tu apoyo se registró
+          correctamente.
         </p>
 
         <div class="mt-1 w-full space-y-3">
@@ -695,7 +792,8 @@ function startNewReport() {
       </div>
 
       <p class="mb-3 text-sm leading-normal text-gray-700">
-        Ya existen reportes parecidos en esta zona. Podés sumarte a uno de ellos para darle más fuerza al reclamo.
+        Ya existen reportes parecidos en esta zona. Podés sumarte a uno de ellos
+        para darle más fuerza al reclamo.
       </p>
 
       <ul class="max-h-64 space-y-3 overflow-y-auto">
@@ -722,7 +820,8 @@ function startNewReport() {
       </ul>
 
       <p class="mt-3 text-center text-sm text-gray-500">
-        Si ninguno coincide exactamente, podés cerrar esta ventana y completar un reporte nuevo.
+        Si ninguno coincide exactamente, podés cerrar esta ventana y completar
+        un reporte nuevo.
       </p>
     </div>
   </div>
