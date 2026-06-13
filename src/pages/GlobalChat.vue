@@ -303,13 +303,13 @@ if (unsubscribeChat) {
                 );
             ">
 
-                <h1 class="text-white text-2xl font-bold">
+                <h1 class="text-white text-xl font-bold">
                     Comunidad Vía Segura
                 </h1>
-
+<!-- 
                 <p class="text-sm mt-2" style="color: rgba(255,255,255,.75)">
                     Compartí alertas, consejos y ayudá a mejorar tu comunidad.
-                </p>
+                </p> -->
 
                 <div class="flex gap-3 mt-5">
 
@@ -319,10 +319,10 @@ if (unsubscribeChat) {
                     bg-white/15
                     backdrop-blur-sm
                     rounded-2xl
-                    px-4
-                    py-3
+                    px-3
+                    py-2
                     ">
-                        <p class="text-white text-lg font-bold">
+                        <p class="text-white text-xs font-bold">
                             Activo
                         </p>
 
