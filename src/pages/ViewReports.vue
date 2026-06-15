@@ -271,14 +271,7 @@ watch(
         </button>
       </nav>
 
-      <!-- Botón volver -->
-      <router-link
-        to="/"
-        class="mx-auto mt-8 flex w-fit items-center justify-center rounded-2xl bg-[#3082e3] px-6 py-3 text-sm font-semibold text-white
-               shadow-sm transition hover:bg-[#085baf] active:scale-[0.98]"
-      >
-        Volver a la página de inicio
-      </router-link>
+     
     </div>
 
     <!-- Fondo oscuro filtros -->
