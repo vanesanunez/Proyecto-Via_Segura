@@ -53,6 +53,8 @@ const showSimilarHintModal = ref(false);
 // --- Datos del usuario ---
 const user = ref({ id: null, email: null });
 
+const isSubmitting = ref(false);
+
 subscribeToUserState((newUserData) => {
   user.value = newUserData;
 });
@@ -214,7 +216,10 @@ async function joinExistingReport(reporte) {
 }
 
 async function handleSubmit() {
+  if (isSubmitting.value) return;
+
   try {
+    isSubmitting.value = true;
     errorMessage.value = "";
 
     if (similares.value.length > 0) {
@@ -252,6 +257,8 @@ async function handleSubmit() {
   } catch (error) {
     console.error("[handleSubmit]", error);
     errorMessage.value = "No se pudo enviar el reporte. Intentalo de nuevo.";
+  } finally {
+    isSubmitting.value = false;
   }
 }
 
@@ -522,16 +529,16 @@ function startNewReport() {
       <div class="space-y-3 pt-1">
         <button
           type="submit"
-          :disabled="hasSimilarReports"
+          :disabled="hasSimilarReports || isSubmitting"
           class="w-full rounded-2xl bg-[#3082e3] px-4 py-3 text-base font-semibold text-white transition hover:bg-[#085baf] disabled:cursor-not-allowed disabled:bg-gray-300"
         >
-          Enviar reporte
+          {{ isSubmitting ? "Enviando..." : "Enviar reporte" }}
         </button>
       </div>
     </form>
 
     <!-- ONBOARDING -->
-  <transition
+    <transition
       enter-active-class="transition duration-300 ease-out"
       enter-from-class="opacity-0 scale-95"
       enter-to-class="opacity-100 scale-100"
