@@ -51,6 +51,19 @@ const paginatedReports = computed(() => {
   return adminReports.value.slice(start, end);
 });
 
+const visiblePages = computed(() => {
+  if (totalPages.value <= 3) {
+    return Array.from({ length: totalPages.value }, (_, i) => i + 1);
+  }
+
+  if (page.value <= 2) return [1, 2, 3];
+  if (page.value >= totalPages.value - 1) {
+    return [totalPages.value - 2, totalPages.value - 1, totalPages.value];
+  }
+
+  return [page.value - 1, page.value, page.value + 1];
+});
+
 function goTo(p) {
   if (p < 1 || p > totalPages.value) return;
   page.value = p;
@@ -226,8 +239,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="min-h-screen bg-white px-4 pt-4 pb-8">
-    <div class="mx-auto w-full max-w-[430px] md:max-w-6xl">
+  <section class="min-h-screen overflow-x-hidden bg-white px-4 pt-4 pb-24">
+    <div class="mx-auto w-full max-w-[390px]">
       <!-- volver -->
       <button
         type="button"
@@ -290,12 +303,12 @@ onMounted(() => {
 
       <template v-else>
         <!-- métricas -->
-        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="grid gap-3">
           <article
             class="rounded-[24px] bg-[#E0E5EC] p-5 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
           >
-            <div class="flex items-start justify-between gap-4">
-              <div>
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0 flex-1">
                 <p class="text-sm font-medium text-slate-500">
                   Total de reportes
                 </p>
@@ -313,8 +326,8 @@ onMounted(() => {
           <article
             class="rounded-[24px] bg-[#E0E5EC] p-5 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
           >
-            <div class="flex items-start justify-between gap-4">
-              <div>
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0 flex-1">
                 <p class="text-sm font-medium text-slate-500">Pendientes</p>
                 <p class="mt-3 text-sm text-slate-400">Requieren atención</p>
               </div>
@@ -330,8 +343,8 @@ onMounted(() => {
           <article
             class="rounded-[24px] bg-[#E0E5EC] p-5 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
           >
-            <div class="flex items-start justify-between gap-4">
-              <div>
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0 flex-1">
                 <p class="text-sm font-medium text-slate-500">Resueltos</p>
                 <p class="mt-3 text-sm text-slate-400">Ya gestionados</p>
               </div>
@@ -347,8 +360,8 @@ onMounted(() => {
           <article
             class="rounded-[24px] bg-[#E0E5EC] p-5 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
           >
-            <div class="flex items-start justify-between gap-4">
-              <div>
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0 flex-1">
                 <p class="text-sm font-medium text-slate-500">
                   Usuarios registrados
                 </p>
@@ -455,7 +468,7 @@ onMounted(() => {
               <article
                 v-for="report in paginatedReports"
                 :key="report.id"
-                class="rounded-[24px] bg-[#E0E5EC] px-4 py-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
+                class="w-full overflow-hidden rounded-[24px] bg-[#E0E5EC] px-4 py-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
               >
                 <div class="flex items-start justify-between gap-3">
                   <div class="min-w-0 flex-1">
