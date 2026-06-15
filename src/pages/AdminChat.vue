@@ -15,7 +15,7 @@ const successMessage = ref("");
 const messages = ref([]);
 
 const page = ref(1);
-const pageSize = 4;
+const pageSize = 3;
 
 const isDeleteModalOpen = ref(false);
 const isSuccessModalOpen = ref(false);
