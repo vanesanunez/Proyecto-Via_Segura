@@ -32,6 +32,20 @@ const paginatedMessages = computed(() => {
   return messages.value.slice(start, end);
 });
 
+const visiblePages = computed(() => {
+  if (totalPages.value <= 3) {
+    return Array.from({ length: totalPages.value }, (_, i) => i + 1);
+  }
+
+  if (page.value <= 2) return [1, 2, 3];
+
+  if (page.value >= totalPages.value - 1) {
+    return [totalPages.value - 2, totalPages.value - 1, totalPages.value];
+  }
+
+  return [page.value - 1, page.value, page.value + 1];
+});
+
 function goTo(p) {
   if (p < 1 || p > totalPages.value) return;
   page.value = p;
@@ -116,8 +130,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="min-h-screen bg-white px-4 pt-4 pb-8">
-    <div class="mx-auto w-full max-w-[430px] md:max-w-5xl">
+  <section class="min-h-screen overflow-x-hidden bg-white px-4 pt-4 pb-24">
+    <div class="mx-auto w-full max-w-[390px]">
       <!-- volver -->
       <button
         type="button"
@@ -125,15 +139,13 @@ onMounted(() => {
         class="mb-6 inline-flex items-center gap-3 text-left transition group active:scale-95"
       >
         <span
-          class="flex h-10 w-10 items-center justify-center rounded-full bg-[#E0E5EC] text-xl font-bold text-[#3082e3] shadow-[-6px_-6px_12px_rgba(255,255,255,0.85),6px_6px_12px_rgba(163,177,198,0.35)] transition group-hover:text-[#085baf] group-active:text-[#085baf]"
+          class="flex h-10 w-10 items-center justify-center rounded-full bg-[#E0E5EC] text-xl font-bold text-[#3082e3] shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
         >
           ←
         </span>
 
         <span>
-          <span
-            class="block text-sm font-semibold text-slate-900 transition group-hover:text-[#3082e3] group-active:text-[#3082e3]"
-          >
+          <span class="block text-sm font-semibold text-slate-900">
             Volver al panel admin
           </span>
           <span class="block text-xs text-slate-500">
@@ -147,11 +159,11 @@ onMounted(() => {
         <section
           class="rounded-[26px] bg-[#3082e3] px-5 py-5 text-white shadow-[0_12px_28px_rgba(48,130,227,0.28)]"
         >
-          <div class="flex items-start justify-between gap-4">
+          <div class="flex items-center justify-between gap-4">
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2 flex-wrap">
                 <span
-                  class="text-[11px] font-semibold px-3 py-1 rounded-full bg-white/20 text-white"
+                  class="rounded-full bg-white/20 px-3 py-1 text-[11px] font-semibold text-white"
                 >
                   Moderación de chat
                 </span>
@@ -167,7 +179,7 @@ onMounted(() => {
             </div>
 
             <div
-              class="flex h-14 min-w-[56px] items-center justify-center rounded-full bg-white text-2xl font-bold text-[#3082e3] shadow-[0_8px_20px_rgba(15,23,42,0.12)]"
+              class="ml-3 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-xl font-bold text-[#3082e3] shadow-[0_8px_20px_rgba(15,23,42,0.12)]"
             >
               {{ messages.length }}
             </div>
@@ -200,8 +212,6 @@ onMounted(() => {
       </div>
 
       <template v-else>
-      
-
         <!-- empty -->
         <div
           v-if="messages.length === 0"
@@ -211,25 +221,25 @@ onMounted(() => {
         </div>
 
         <template v-else>
-          <!-- mobile -->
-          <div class="space-y-5 md:hidden">
+          <!-- lista -->
+          <div class="space-y-4">
             <article
               v-for="message in paginatedMessages"
               :key="message.id"
-              class="rounded-[24px] bg-[#E0E5EC] px-4 py-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
+              class="w-full overflow-hidden rounded-[24px] bg-[#E0E5EC] px-4 py-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
             >
               <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-2 flex-wrap">
                     <span
-                      class="text-[11px] font-semibold px-3 py-1 rounded-full bg-[#eef4ff] text-[#3082e3]"
+                      class="rounded-full bg-[#eef4ff] px-3 py-1 text-[11px] font-semibold text-[#3082e3]"
                     >
                       Chat global
                     </span>
                   </div>
 
                   <h3
-                    class="mt-3 text-[16px] font-bold text-slate-900 leading-snug break-all"
+                    class="mt-3 break-words text-[16px] font-bold leading-snug text-slate-900"
                   >
                     {{ message.email || "Sin email" }}
                   </h3>
@@ -244,90 +254,19 @@ onMounted(() => {
                   @click="openDeleteModal(message)"
                   title="Eliminar mensaje"
                   aria-label="Eliminar mensaje"
-                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#fff1ed] text-[#e67661] shadow-[-4px_-4px_10px_rgba(255,255,255,0.85),4px_4px_10px_rgba(163,177,198,0.28)] transition hover:-translate-y-0.5 hover:bg-red-50 active:scale-95"
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#fff1ed] text-[#e67661] shadow-[0_6px_16px_rgba(148,163,184,0.18)] transition hover:-translate-y-0.5 hover:bg-red-50 active:scale-95"
                 >
                   <TrashIcon class="h-5 w-5" />
                 </button>
               </div>
 
               <div class="mt-4 border-t border-white/60 pt-4">
-                <p class="text-sm leading-7 text-slate-700 break-words">
+                <p class="break-words text-sm leading-7 text-slate-700">
                   {{ message.body }}
                 </p>
               </div>
             </article>
           </div>
-
-          <!-- desktop -->
-          <section
-            class="hidden md:block rounded-[24px] bg-[#E0E5EC] p-5 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
-          >
-            <div class="overflow-x-auto">
-              <table class="min-w-full border-collapse">
-                <thead>
-                  <tr class="border-b border-white/70 text-left">
-                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">
-                      Usuario
-                    </th>
-                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">
-                      Mensaje
-                    </th>
-                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">
-                      Fecha
-                    </th>
-                    <th class="px-3 py-3 text-sm font-semibold text-slate-700">
-                      Acción
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr
-                    v-for="message in paginatedMessages"
-                    :key="message.id"
-                    class="border-b border-white/50 last:border-b-0"
-                  >
-                    <td class="px-3 py-3 text-sm text-slate-700 break-all">
-                      {{ message.email || "Sin email" }}
-                    </td>
-
-                    <td class="px-3 py-3 text-sm text-slate-700 break-words">
-                      {{ message.body }}
-                    </td>
-
-                    <td class="px-3 py-3 text-sm text-slate-700">
-                      {{ new Date(message.created_at).toLocaleString() }}
-                    </td>
-
-                    <td class="px-3 py-3">
-                      <button
-                        type="button"
-                        @click="openDeleteModal(message)"
-                        title="Eliminar mensaje"
-                        aria-label="Eliminar mensaje"
-                        class="flex h-10 w-10 items-center justify-center rounded-full bg-[#fff1ed] text-[#e67661] shadow-[-4px_-4px_10px_rgba(255,255,255,0.85),4px_4px_10px_rgba(163,177,198,0.28)] transition hover:-translate-y-0.5 hover:bg-red-50"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.8"
-                          stroke="currentColor"
-                          class="h-5 w-5"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6 7.5h12m-9.75 0V6a1.5 1.5 0 011.5-1.5h4.5A1.5 1.5 0 0115.75 6v1.5m-7.5 0v10.125A2.625 2.625 0 0010.875 20.25h2.25A2.625 2.625 0 0015.75 17.625V7.5m-4.5 3v6m3-6v6"
-                          />
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
 
           <!-- paginado -->
           <nav
@@ -337,10 +276,10 @@ onMounted(() => {
             <button
               @click="goTo(page - 1)"
               :disabled="page === 1"
-              class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.22)] transition"
+              class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg shadow-[0_6px_16px_rgba(148,163,184,0.18)] transition"
               :class="
                 page === 1
-                  ? 'text-slate-300 cursor-not-allowed'
+                  ? 'cursor-not-allowed text-slate-300'
                   : 'text-slate-700 hover:text-[#3082e3] active:scale-[0.97]'
               "
             >
@@ -348,14 +287,14 @@ onMounted(() => {
             </button>
 
             <button
-              v-for="p in totalPages"
+              v-for="p in visiblePages"
               :key="p"
               @click="goTo(p)"
               class="flex h-10 min-w-[40px] items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
               :class="
                 p === page
                   ? 'bg-[#3082e3] text-white shadow-sm'
-                  : 'bg-[#E0E5EC] text-slate-700 shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.22)] hover:text-[#3082e3] active:scale-[0.97]'
+                  : 'bg-[#E0E5EC] text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.18)] hover:text-[#3082e3] active:scale-[0.97]'
               "
             >
               {{ p }}
@@ -364,10 +303,10 @@ onMounted(() => {
             <button
               @click="goTo(page + 1)"
               :disabled="page === totalPages"
-              class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.22)] transition"
+              class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg shadow-[0_6px_16px_rgba(148,163,184,0.18)] transition"
               :class="
                 page === totalPages
-                  ? 'text-slate-300 cursor-not-allowed'
+                  ? 'cursor-not-allowed text-slate-300'
                   : 'text-slate-700 hover:text-[#3082e3] active:scale-[0.97]'
               "
             >
@@ -384,11 +323,11 @@ onMounted(() => {
       class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4 backdrop-blur-[2px]"
     >
       <div
-        class="w-full max-w-md rounded-[28px] bg-[#E0E5EC] p-6 shadow-[-10px_-10px_20px_rgba(255,255,255,0.9),10px_10px_20px_rgba(163,177,198,0.38)]"
+        class="w-full max-w-sm rounded-[28px] bg-[#E0E5EC] p-6 shadow-[-10px_-10px_20px_rgba(255,255,255,0.9),10px_10px_20px_rgba(163,177,198,0.38)]"
       >
         <div class="flex items-start gap-4">
           <div
-            class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#fff1ed] text-[#e67661] shadow-[-4px_-4px_10px_rgba(255,255,255,0.85),4px_4px_10px_rgba(163,177,198,0.28)]"
+            class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#fff1ed] text-[#e67661] shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
           >
             <TrashIcon class="h-6 w-6" />
           </div>
@@ -397,15 +336,14 @@ onMounted(() => {
             <h3 class="text-xl font-bold text-slate-900">Eliminar mensaje</h3>
 
             <p class="mt-2 text-sm leading-6 text-slate-500">
-              ¿Seguro que querés eliminar este mensaje del chat? Esta acción no
-              se puede deshacer.
+              ¿Seguro que querés eliminar este mensaje del chat? Esta acción no se puede deshacer.
             </p>
 
             <div
               v-if="messageToDelete"
               class="mt-4 rounded-2xl bg-white/60 px-4 py-3 text-sm text-slate-600"
             >
-              <p class="break-all">
+              <p class="break-words">
                 <span class="font-semibold text-slate-800">Usuario:</span>
                 {{ messageToDelete.email || "Sin email" }}
               </p>
@@ -451,7 +389,7 @@ onMounted(() => {
         class="w-full max-w-sm rounded-[28px] bg-[#E0E5EC] p-6 text-center shadow-[-10px_-10px_20px_rgba(255,255,255,0.9),10px_10px_20px_rgba(163,177,198,0.38)]"
       >
         <div
-          class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3] shadow-[-4px_-4px_10px_rgba(255,255,255,0.85),4px_4px_10px_rgba(163,177,198,0.28)]"
+          class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3] shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
