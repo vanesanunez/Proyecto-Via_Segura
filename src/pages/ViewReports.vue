@@ -32,6 +32,20 @@ const totalPages = computed(() =>
   Math.max(1, Math.ceil(total.value / pageSize)),
 );
 
+const visiblePages = computed(() => {
+  if (totalPages.value <= 3) {
+    return Array.from({ length: totalPages.value }, (_, i) => i + 1);
+  }
+
+  if (page.value <= 2) return [1, 2, 3];
+
+  if (page.value >= totalPages.value - 1) {
+    return [totalPages.value - 2, totalPages.value - 1, totalPages.value];
+  }
+
+  return [page.value - 1, page.value, page.value + 1];
+});
+
 async function loadPage() {
   loading.value = true;
   errorMsg.value = "";
@@ -43,11 +57,11 @@ async function loadPage() {
       mode: filterMode.value,
     });
 
-    reports.value = data;
-    total.value = count;
+    reports.value = data ?? [];
+    total.value = count ?? 0;
 
     if (user.value.id) {
-      const ids = data.map((r) => r.id);
+      const ids = reports.value.map((r) => r.id);
       supportedReportIds.value = await fetchUserSupportedReportIds(
         user.value.id,
         ids,
@@ -80,11 +94,15 @@ async function handleSupport(report) {
       r.id === report.id ? { ...r, apoyos: updated.apoyos } : r,
     );
 
-    supportedReportIds.value = [...supportedReportIds.value, report.id];
+    if (!supportedReportIds.value.includes(report.id)) {
+      supportedReportIds.value = [...supportedReportIds.value, report.id];
+    }
+
     infoMsg.value = "Te sumaste al reporte.";
   } catch (e) {
     if (e.code === "already_supported") {
       infoMsg.value = "Ya te habías sumado a este reporte.";
+
       if (!supportedReportIds.value.includes(report.id)) {
         supportedReportIds.value = [...supportedReportIds.value, report.id];
       }
@@ -107,149 +125,161 @@ onMounted(loadPage);
 watch(page, loadPage);
 
 watch(filterMode, () => {
-  page.value = 1;
-  loadPage();
+  if (page.value !== 1) {
+    page.value = 1;
+  } else {
+    loadPage();
+  }
 });
 
 watch(
   () => user.value.id,
   () => {
-    loadPage();
+    if (page.value !== 1) {
+      page.value = 1;
+    } else {
+      loadPage();
+    }
   },
 );
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto px-4 pt-6 pb-24 relative">
-    <!-- Header -->
-    <div class="mb-6 flex items-start justify-between gap-4">
-      <div>
-        <h1 class="text-[30px] font-bold leading-tight text-slate-900">
-          Reportes
-        </h1>
-        <p class="mt-2 max-w-[18rem] text-sm leading-6 text-slate-500">
-          Consultá reclamos de la comunidad y sumate a los que también te preocupan.
-        </p>
+  <section class="min-h-screen overflow-x-hidden bg-white px-4 pt-6 pb-24">
+    <div class="mx-auto w-full max-w-[390px]">
+      <!-- Header -->
+      <div class="mb-6 flex flex-col gap-4">
+        <div>
+          <h1 class="text-[30px] font-bold leading-tight text-slate-900">
+            Reportes
+          </h1>
+          <p class="mt-2 max-w-[18rem] text-sm leading-6 text-slate-500">
+            Consultá reclamos de la comunidad y sumate a los que también te preocupan.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          @click="showFilterSheet = true"
+          class="inline-flex w-fit items-center gap-2 rounded-full bg-[#E0E5EC] px-4 py-2.5 text-sm font-medium text-slate-700
+                 shadow-[0_6px_16px_rgba(148,163,184,0.18)]
+                 transition hover:text-[#3082e3] active:scale-[0.97]"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L14 13.414V19a1 1 0 01-1.447.894l-4-2A1 1 0 018 17V13.414L3.293 6.707A1 1 0 013 6V4z"
+            />
+          </svg>
+          <span>Filtros</span>
+        </button>
       </div>
 
-      <button
-        type="button"
-        @click="showFilterSheet = true"
-        class="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#E0E5EC] px-4 py-2.5 text-sm font-medium text-slate-700
-               shadow-[-5px_-5px_10px_rgba(255,255,255,0.85),5px_5px_10px_rgba(163,177,198,0.28)]
-               transition hover:text-[#3082e3] active:scale-[0.97]"
+      <!-- Mensajes -->
+      <div
+        v-if="infoMsg"
+        class="mb-4 rounded-2xl bg-[#eef4ff] px-4 py-3 text-sm text-[#3082e3] shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-          stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L14 13.414V19a1 1 0 01-1.447.894l-4-2A1 1 0 018 17V13.414L3.293 6.707A1 1 0 013 6V4z" />
-        </svg>
-        <span>Filtros</span>
-      </button>
-    </div>
+        {{ infoMsg }}
+      </div>
 
-    <!-- Mensajes -->
-    <div
-      v-if="infoMsg"
-      class="mb-4 rounded-2xl bg-[#eef4ff] px-4 py-3 text-sm text-[#3082e3]
-             shadow-[-4px_-4px_10px_rgba(255,255,255,0.82),4px_4px_10px_rgba(163,177,198,0.18)]"
-    >
-      {{ infoMsg }}
-    </div>
-
-    <div
-      v-if="errorMsg"
-      class="mb-4 rounded-2xl bg-[#fff1ed] px-4 py-3 text-sm text-[#e67661]
-             shadow-[-4px_-4px_10px_rgba(255,255,255,0.82),4px_4px_10px_rgba(163,177,198,0.18)]"
-    >
-      {{ errorMsg }}
-    </div>
-
-    <div
-      v-if="loading"
-      class="mb-4 rounded-2xl bg-[#E0E5EC] px-4 py-3 text-sm text-slate-500
-             shadow-[-4px_-4px_10px_rgba(255,255,255,0.82),4px_4px_10px_rgba(163,177,198,0.18)]"
-    >
-      Cargando reportes...
-    </div>
-
-    <div
-      v-if="!loading && reports.length === 0"
-      class="rounded-2xl bg-[#E0E5EC] px-4 py-4 text-sm text-slate-500
-             shadow-[-4px_-4px_10px_rgba(255,255,255,0.82),4px_4px_10px_rgba(163,177,198,0.18)]"
-    >
-      No hay reportes para mostrar con este filtro.
-    </div>
-
-    <!-- Lista -->
-    <ul class="space-y-5 mb-8">
-      <ReportCard
-        v-for="r in reports"
-        :key="r.id"
-        :report="r"
-        :to="`/report/${r.id}`"
-        :supporting="supportingId === r.id"
-        :already-supported="supportedReportIds.includes(r.id)"
-        @support="handleSupport"
-      />
-    </ul>
-
-    <!-- Paginación -->
-    <nav
-      v-if="totalPages > 1"
-      class="flex items-center justify-center gap-2"
-    >
-      <button
-        @click="goTo(page - 1)"
-        :disabled="page === 1"
-        class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg
-               shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.22)] transition"
-        :class="
-          page === 1
-            ? 'text-slate-300 cursor-not-allowed'
-            : 'text-slate-700 hover:text-[#3082e3] active:scale-[0.97]'
-        "
+      <div
+        v-if="errorMsg"
+        class="mb-4 rounded-2xl bg-[#fff1ed] px-4 py-3 text-sm text-[#e67661] shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
       >
-        ‹
-      </button>
+        {{ errorMsg }}
+      </div>
 
-      <button
-        v-for="p in totalPages"
-        :key="p"
-        @click="goTo(p)"
-        class="flex h-10 min-w-[40px] items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
-        :class="
-          p === page
-            ? 'bg-[#3082e3] text-white shadow-sm'
-            : 'bg-[#E0E5EC] text-slate-700 shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.22)] hover:text-[#3082e3] active:scale-[0.97]'
-        "
+      <div
+        v-if="loading"
+        class="mb-4 rounded-2xl bg-[#E0E5EC] px-4 py-3 text-sm text-slate-500 shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
       >
-        {{ p }}
-      </button>
+        Cargando reportes...
+      </div>
 
-      <button
-        @click="goTo(page + 1)"
-        :disabled="page === totalPages"
-        class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg
-               shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.22)] transition"
-        :class="
-          page === totalPages
-            ? 'text-slate-300 cursor-not-allowed'
-            : 'text-slate-700 hover:text-[#3082e3] active:scale-[0.97]'
-        "
+      <div
+        v-if="!loading && reports.length === 0"
+        class="rounded-2xl bg-[#E0E5EC] px-4 py-4 text-sm text-slate-500 shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
       >
-        ›
-      </button>
-    </nav>
+        No hay reportes para mostrar con este filtro.
+      </div>
 
-    <!-- Botón volver -->
-    <router-link
-      to="/"
-      class="mx-auto mt-8 flex w-fit items-center justify-center rounded-2xl bg-[#3082e3] px-6 py-3 text-sm font-semibold text-white
-             shadow-sm transition hover:bg-[#085baf] active:scale-[0.98]"
-    >
-      Volver a la página de inicio
-    </router-link>
+      <!-- Lista -->
+      <ul class="mb-8 space-y-4">
+        <ReportCard
+          v-for="r in reports"
+          :key="r.id"
+          :report="r"
+          :to="`/report/${r.id}`"
+          :supporting="supportingId === r.id"
+          :already-supported="supportedReportIds.includes(r.id)"
+          @support="handleSupport"
+        />
+      </ul>
+
+      <!-- Paginación -->
+      <nav
+        v-if="totalPages > 1"
+        class="flex items-center justify-center gap-2"
+      >
+        <button
+          @click="goTo(page - 1)"
+          :disabled="page === 1"
+          class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg shadow-[0_6px_16px_rgba(148,163,184,0.18)] transition"
+          :class="
+            page === 1
+              ? 'cursor-not-allowed text-slate-300'
+              : 'text-slate-700 hover:text-[#3082e3] active:scale-[0.97]'
+          "
+        >
+          ‹
+        </button>
+
+        <button
+          v-for="p in visiblePages"
+          :key="p"
+          @click="goTo(p)"
+          class="flex h-10 min-w-[40px] items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
+          :class="
+            p === page
+              ? 'bg-[#3082e3] text-white shadow-sm'
+              : 'bg-[#E0E5EC] text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.18)] hover:text-[#3082e3] active:scale-[0.97]'
+          "
+        >
+          {{ p }}
+        </button>
+
+        <button
+          @click="goTo(page + 1)"
+          :disabled="page === totalPages"
+          class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg shadow-[0_6px_16px_rgba(148,163,184,0.18)] transition"
+          :class="
+            page === totalPages
+              ? 'cursor-not-allowed text-slate-300'
+              : 'text-slate-700 hover:text-[#3082e3] active:scale-[0.97]'
+          "
+        >
+          ›
+        </button>
+      </nav>
+
+      <!-- Botón volver -->
+      <router-link
+        to="/"
+        class="mx-auto mt-8 flex w-fit items-center justify-center rounded-2xl bg-[#3082e3] px-6 py-3 text-sm font-semibold text-white
+               shadow-sm transition hover:bg-[#085baf] active:scale-[0.98]"
+      >
+        Volver a la página de inicio
+      </router-link>
+    </div>
 
     <!-- Fondo oscuro filtros -->
     <div
@@ -261,64 +291,47 @@ watch(
     <!-- Bottom sheet filtros -->
     <div
       v-if="showFilterSheet"
-      class="fixed bottom-0 left-0 z-[60] w-full rounded-t-[28px] bg-[#E0E5EC] p-4 pb-8
-         shadow-[0_-8px_24px_rgba(15,23,42,0.12)] animate-slide-up"
+      class="fixed bottom-0 left-0 z-[60] w-full rounded-t-[28px] bg-[#E0E5EC] p-4 pb-8 shadow-[0_-8px_24px_rgba(15,23,42,0.12)] animate-slide-up"
     >
       <div class="mb-3 flex justify-center">
         <div class="h-1.5 w-14 rounded-full bg-slate-300"></div>
       </div>
 
       <h2 class="text-xl font-bold text-slate-900">Filtros</h2>
-      <p class="mt-1 text-sm text-slate-500">Elegí cómo querés visualizar los reportes.</p>
+      <p class="mt-1 text-sm text-slate-500">
+        Elegí cómo querés visualizar los reportes.
+      </p>
 
       <div class="mt-5">
         <p class="mb-3 text-sm font-semibold text-slate-700">Mostrar</p>
 
         <div class="space-y-2">
-          <label
-            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
-                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
-          >
+          <label class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.18)]">
             <input type="radio" value="recent" v-model="filterMode" />
             <span>Más recientes</span>
           </label>
 
-          <label
-            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
-                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
-          >
+          <label class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.18)]">
             <input type="radio" value="oldest" v-model="filterMode" />
             <span>Más antiguos</span>
           </label>
 
-          <label
-            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
-                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
-          >
+          <label class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.18)]">
             <input type="radio" value="pending" v-model="filterMode" />
             <span>Pendientes de resolución</span>
           </label>
 
-          <label
-            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
-                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
-          >
+          <label class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.18)]">
             <input type="radio" value="resolved" v-model="filterMode" />
             <span>Resueltos</span>
           </label>
 
-          <label
-            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
-                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
-          >
+          <label class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.18)]">
             <input type="radio" value="most_supported" v-model="filterMode" />
             <span>Más apoyados</span>
           </label>
 
-          <label
-            class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700
-                   shadow-[-4px_-4px_8px_rgba(255,255,255,0.82),4px_4px_8px_rgba(163,177,198,0.18)]"
-          >
+          <label class="flex items-center gap-3 rounded-2xl bg-[#E0E5EC] px-3 py-3 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.18)]">
             <input type="radio" value="least_supported" v-model="filterMode" />
             <span>Menos apoyados</span>
           </label>
@@ -343,16 +356,16 @@ watch(
         </button>
       </div>
     </div>
+
     <BottomNavigation v-if="!showFilterSheet" />
-  </div>
-  </template>
+  </section>
+</template>
 
 <style scoped>
 @keyframes slide-up {
   from {
     transform: translateY(100%);
   }
-
   to {
     transform: translateY(0%);
   }
