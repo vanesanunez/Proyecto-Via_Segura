@@ -19,7 +19,7 @@ onMounted(() => {
       <div
         class="rounded-[30px] bg-[#eef4ff] p-6 text-center shadow-[0_18px_40px_rgba(15,23,42,0.12)]"
       >
-        <!-- icono -->
+        <!-- ícono -->
         <div
           class="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-white text-[#3082e3] shadow-[0_14px_28px_rgba(48,130,227,0.18)]"
         >
@@ -39,7 +39,7 @@ onMounted(() => {
           </svg>
         </div>
 
-        <!-- texto -->
+        <!-- texto principal -->
         <span
           class="mt-5 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-[#3082e3]"
         >
@@ -54,11 +54,11 @@ onMounted(() => {
           Tu reporte ya quedó registrado.
         </p>
 
-        <!-- impacto -->
+        <!-- tarjeta blanca interna -->
         <div
           class="mt-5 rounded-[22px] bg-white px-4 py-4 text-left shadow-[0_10px_24px_rgba(148,163,184,0.10)]"
         >
-          <div class="flex items-start gap-3">
+          <div class="flex items-center gap-3">
             <div
               class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#fff1ed] text-[#f2826d]"
             >
@@ -75,11 +75,9 @@ onMounted(() => {
             </div>
 
             <div class="min-w-0 flex-1">
-              <p class="text-sm font-semibold text-slate-900">
-                Ayudás a visibilizar un problema en tu zona
-              </p>
+              <p class="text-[18px] font-bold text-slate-900">+10 puntos</p>
               <p class="mt-1 text-sm leading-6 text-slate-500">
-                Cada reporte suma información útil para la comunidad.
+                Tu aporte suma a la comunidad.
               </p>
             </div>
           </div>
@@ -88,7 +86,7 @@ onMounted(() => {
         <!-- progreso -->
         <div class="mt-5 text-left">
           <div class="mb-2 flex items-center justify-between text-sm">
-            <span class="font-medium text-slate-700">Progreso inicial</span>
+            <span class="font-medium text-slate-700">Primer paso</span>
             <span class="text-slate-500">1/4 acciones</span>
           </div>
 
@@ -97,7 +95,7 @@ onMounted(() => {
           </div>
 
           <p class="mt-2 text-sm text-slate-500">
-            Primer paso completado.
+            Primer aporte completado.
           </p>
         </div>
 
