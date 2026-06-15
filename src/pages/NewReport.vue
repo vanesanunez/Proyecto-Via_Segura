@@ -190,13 +190,23 @@ async function findSimilarReports() {
 
 async function joinExistingReport(reporte) {
   try {
-    await joinReport(reporte.id, user.value.id);
+    errorSimilares.value = "";
 
-    showBottomSheet.value = false;
-    showSuccessSheet.value = true;
+    const result = await joinReport(reporte.id, user.value.id);
 
     const item = similares.value.find((r) => r.id === reporte.id);
-    if (item) item.apoyos = (item.apoyos || 0) + 1;
+    if (item && typeof result.apoyos === "number") {
+      item.apoyos = result.apoyos;
+    }
+
+    showBottomSheet.value = false;
+
+    if (result.status === "already_supported") {
+      errorSimilares.value = "Ya te habías sumado a este reclamo.";
+      return;
+    }
+
+    showSuccessSheet.value = true;
   } catch (e) {
     console.error("[joinExistingReport]", e);
     errorSimilares.value = "No se pudo sumar al reclamo.";

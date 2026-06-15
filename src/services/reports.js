@@ -167,6 +167,38 @@ export async function searchSimilarReports({ categoria, ubicacion }) {
 // Suma 1 apoyo al reporte indicado
 export async function joinReport(reportId, userId) {
   try {
+    // 1) verifico si ya existe el apoyo
+    const { data: existingSupport, error: existingError } = await supabase
+      .from("report_supports")
+      .select("id")
+      .eq("report_id", reportId)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (existingError) {
+      console.error("Error verificando apoyo existente:", existingError);
+      throw existingError;
+    }
+
+    // 2) si ya existe, no vuelvo a insertar
+    if (existingSupport) {
+      const { count, error: countError } = await supabase
+        .from("report_supports")
+        .select("*", { count: "exact", head: true })
+        .eq("report_id", reportId);
+
+      if (countError) {
+        console.error("Error contando apoyos:", countError);
+        throw countError;
+      }
+
+      return {
+        status: "already_supported",
+        apoyos: count ?? 0,
+      };
+    }
+
+    // 3) inserto el apoyo
     const { error: insertError } = await supabase
       .from("report_supports")
       .insert({
@@ -175,42 +207,38 @@ export async function joinReport(reportId, userId) {
       });
 
     if (insertError) {
-      if (insertError.code === "23505") {
-        const err = new Error("already_supported");
-        err.code = "already_supported";
-        throw err;
-      }
-
       console.error("Error registrando apoyo:", insertError);
       throw insertError;
     }
 
-    const { data: current, error: readError } = await supabase
-      .from("reports")
-      .select("apoyos")
-      .eq("id", reportId)
-      .single();
+    // 4) cuento apoyos reales
+    const { count, error: countError } = await supabase
+      .from("report_supports")
+      .select("*", { count: "exact", head: true })
+      .eq("report_id", reportId);
 
-    if (readError) {
-      console.error("Error leyendo apoyos actuales:", readError);
-      throw readError;
+    if (countError) {
+      console.error("Error contando apoyos:", countError);
+      throw countError;
     }
 
-    const currentApoyos = current?.apoyos ?? 0;
+    const totalApoyos = count ?? 0;
 
-    const { data: updated, error: updateError } = await supabase
+    // 5) sincronizo reports.apoyos con el total real
+    const { error: updateError } = await supabase
       .from("reports")
-      .update({ apoyos: currentApoyos + 1 })
-      .eq("id", reportId)
-      .select("apoyos")
-      .single();
+      .update({ apoyos: totalApoyos })
+      .eq("id", reportId);
 
     if (updateError) {
-      console.error("Error actualizando apoyos:", updateError);
+      console.error("Error actualizando apoyos en reports:", updateError);
       throw updateError;
     }
 
-    return updated;
+    return {
+      status: "supported",
+      apoyos: totalApoyos,
+    };
   } catch (e) {
     console.error("Fallo inesperado sumando apoyo:", e);
     throw e;
