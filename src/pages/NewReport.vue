@@ -1,3 +1,4 @@
+```vue
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
@@ -8,6 +9,10 @@ import {
   joinReport,
 } from "../services/reports";
 import { subscribeToUserState } from "../services/auth";
+import {
+  rewardUserForReport,
+  rewardUserForSupport,
+} from "../services/gamification";
 import MapSearchPicker from "../components/MapSearchPicker.vue";
 import {
   XMarkIcon,
@@ -21,8 +26,6 @@ import {
   LightBulbIcon,
   ShieldCheckIcon,
 } from "@heroicons/vue/24/solid";
-
-import { rewardUserForReport } from "../services/gamification";
 
 // --- Datos del formulario ---
 const categoria = ref("");
@@ -193,6 +196,11 @@ async function findSimilarReports() {
 }
 
 async function joinExistingReport(reporte) {
+  if (!user.value.id) {
+    errorSimilares.value = "Tenés que iniciar sesión para sumarte al reclamo.";
+    return;
+  }
+
   try {
     errorSimilares.value = "";
 
@@ -210,9 +218,24 @@ async function joinExistingReport(reporte) {
       return;
     }
 
+    try {
+      await rewardUserForSupport(user.value.id);
+    } catch (rewardError) {
+      console.error(
+        "[joinExistingReport] El apoyo se registró, pero no se pudo actualizar la gamificación:",
+        rewardError,
+      );
+    }
+
     showSuccessSheet.value = true;
   } catch (e) {
     console.error("[joinExistingReport]", e);
+
+    if (e.code === "already_supported") {
+      errorSimilares.value = "Ya te habías sumado a este reclamo.";
+      return;
+    }
+
     errorSimilares.value = "No se pudo sumar al reclamo.";
   }
 }
@@ -241,26 +264,36 @@ async function handleSubmit() {
         "Completá ubicación, categoría, descripción y foto para enviar el reporte.";
       return;
     }
-const imageUrl = await uploadImage(imagen.value);
 
-await saveReport({
-  categoria: categoria.value,
-  descripcion: descripcion.value,
-  ubicacion: ubicacion.value,
-  latitud: coords.value.lat,
-  longitud: coords.value.lng,
-  imagen: imageUrl,
-  user_id: user.value.id,
-  email: user.value.email,
-});
+    const imageUrl = await uploadImage(imagen.value);
 
-try {
-  await rewardUserForReport(user.value.id);
-} catch (rewardError) {
-  console.error("[handleSubmit] El reporte se guardó, pero no se pudo actualizar la gamificación:", rewardError);
-}
+    await saveReport({
+      categoria: categoria.value,
+      descripcion: descripcion.value,
+      ubicacion: ubicacion.value,
+      latitud: coords.value.lat,
+      longitud: coords.value.lng,
+      imagen: imageUrl,
+      user_id: user.value.id,
+      email: user.value.email,
+    });
 
-router.push("/report/confirmado");
+    try {
+      await rewardUserForReport(user.value.id);
+    } catch (rewardError) {
+      console.error(
+        "[handleSubmit] El reporte se guardó, pero no se pudo actualizar la gamificación:",
+        rewardError,
+      );
+    }
+
+    router.push("/report/confirmado");
+  } catch (error) {
+    console.error("[handleSubmit]", error);
+    errorMessage.value = "No se pudo enviar el reporte. Intentalo de nuevo.";
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 
 function startNewReport() {
@@ -554,7 +587,6 @@ function startNewReport() {
         <div
           class="relative w-full max-w-sm overflow-hidden rounded-[30px] bg-white px-5 pb-6 pt-5 shadow-[0_22px_48px_rgba(15,23,42,0.20)]"
         >
-          <!-- top -->
           <div class="flex items-center justify-between gap-3">
             <div
               class="inline-flex items-center gap-2 rounded-full bg-[#eef4ff] px-4 py-2 text-[14px] font-semibold text-[#3082e3]"
@@ -572,14 +604,11 @@ function startNewReport() {
             </button>
           </div>
 
-          <!-- ilustración -->
           <div class="relative mx-auto mt-6 h-[190px] w-full max-w-[290px]">
-            <!-- fondo redondo -->
             <div
               class="absolute left-1/2 top-1/2 h-[150px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#eef4ff]"
             ></div>
 
-            <!-- nubecitas -->
             <div
               class="absolute left-6 top-10 h-3 w-7 rounded-full bg-[#dbeafe] opacity-80"
             ></div>
@@ -593,7 +622,6 @@ function startNewReport() {
               class="absolute right-12 top-14 h-3 w-3 rounded-full bg-[#dbeafe] opacity-80"
             ></div>
 
-            <!-- rayitas -->
             <div
               class="absolute right-8 top-4 h-5 w-[2px] rotate-12 rounded-full bg-[#60a5fa]"
             ></div>
@@ -601,7 +629,6 @@ function startNewReport() {
               class="absolute right-3 top-10 h-[2px] w-4 rounded-full bg-[#60a5fa]"
             ></div>
 
-            <!-- hojas -->
             <div class="absolute bottom-8 left-6 flex gap-1">
               <div
                 class="h-10 w-6 rotate-[-24deg] rounded-full bg-[#b7e3a1]"
@@ -611,7 +638,6 @@ function startNewReport() {
               ></div>
             </div>
 
-            <!-- base -->
             <div
               class="absolute bottom-3 left-1/2 h-[32px] w-[180px] -translate-x-1/2 rounded-[16px] bg-white shadow-[0_10px_22px_rgba(148,163,184,0.20)]"
             ></div>
@@ -628,13 +654,11 @@ function startNewReport() {
               class="absolute bottom-6 left-[162px] h-[8px] w-9 rounded bg-[#d9f99d]"
             ></div>
 
-            <!-- icono principal -->
             <component
               :is="onboardingContent.icon"
               class="absolute left-1/2 top-1/2 h-[95px] w-[95px] -translate-x-1/2 -translate-y-1/2 text-[#3082e3] drop-shadow-[0_12px_18px_rgba(48,130,227,0.18)]"
             />
 
-            <!-- badge coral -->
             <div
               class="absolute bottom-10 right-6 flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#f2826d] shadow-[0_12px_18px_rgba(242,130,109,0.26)]"
             >
@@ -642,7 +666,6 @@ function startNewReport() {
             </div>
           </div>
 
-          <!-- contenido -->
           <div class="mt-3 text-left">
             <h2 class="text-[22px] font-bold leading-tight text-slate-900">
               {{ onboardingContent.title }}
@@ -660,7 +683,6 @@ function startNewReport() {
             </div>
           </div>
 
-          <!-- footer -->
           <div class="mt-6 flex items-center justify-between gap-4">
             <div class="flex items-center gap-2">
               <span
