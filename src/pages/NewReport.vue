@@ -22,6 +22,8 @@ import {
   ShieldCheckIcon,
 } from "@heroicons/vue/24/solid";
 
+import { rewardUserForReport } from "../services/gamification";
+
 // --- Datos del formulario ---
 const categoria = ref("");
 const descripcion = ref("");
@@ -239,27 +241,26 @@ async function handleSubmit() {
         "Completá ubicación, categoría, descripción y foto para enviar el reporte.";
       return;
     }
+const imageUrl = await uploadImage(imagen.value);
 
-    const imageUrl = await uploadImage(imagen.value);
+await saveReport({
+  categoria: categoria.value,
+  descripcion: descripcion.value,
+  ubicacion: ubicacion.value,
+  latitud: coords.value.lat,
+  longitud: coords.value.lng,
+  imagen: imageUrl,
+  user_id: user.value.id,
+  email: user.value.email,
+});
 
-    await saveReport({
-      categoria: categoria.value,
-      descripcion: descripcion.value,
-      ubicacion: ubicacion.value,
-      latitud: coords.value.lat,
-      longitud: coords.value.lng,
-      imagen: imageUrl,
-      user_id: user.value.id,
-      email: user.value.email,
-    });
+try {
+  await rewardUserForReport(user.value.id);
+} catch (rewardError) {
+  console.error("[handleSubmit] El reporte se guardó, pero no se pudo actualizar la gamificación:", rewardError);
+}
 
-    router.push("/report/confirmado");
-  } catch (error) {
-    console.error("[handleSubmit]", error);
-    errorMessage.value = "No se pudo enviar el reporte. Intentalo de nuevo.";
-  } finally {
-    isSubmitting.value = false;
-  }
+router.push("/report/confirmado");
 }
 
 function startNewReport() {

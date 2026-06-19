@@ -1,4 +1,5 @@
 <script setup>
+import { rewardUserForSupport } from "../services/gamification";
 import BottomNavigation from "../components/BottomNavigation.vue";
 import { ref, computed, onMounted, watch } from "vue";
 import {
@@ -88,28 +89,31 @@ async function handleSupport(report) {
   infoMsg.value = "";
 
   try {
-    const updated = await joinReport(report.id, user.value.id);
+    const result = await joinReport(report.id, user.value.id);
 
     reports.value = reports.value.map((r) =>
-      r.id === report.id ? { ...r, apoyos: updated.apoyos } : r,
+      r.id === report.id ? { ...r, apoyos: result.apoyos } : r,
     );
 
     if (!supportedReportIds.value.includes(report.id)) {
       supportedReportIds.value = [...supportedReportIds.value, report.id];
     }
 
+    if (result.status === "already_supported") {
+      infoMsg.value = "Ya te habías sumado a este reporte.";
+      return;
+    }
+
+    try {
+      await rewardUserForSupport(user.value.id);
+    } catch (rewardError) {
+      console.error("[handleSupport] El apoyo se registró, pero no se pudo actualizar la gamificación:", rewardError);
+    }
+
     infoMsg.value = "Te sumaste al reporte.";
   } catch (e) {
-    if (e.code === "already_supported") {
-      infoMsg.value = "Ya te habías sumado a este reporte.";
-
-      if (!supportedReportIds.value.includes(report.id)) {
-        supportedReportIds.value = [...supportedReportIds.value, report.id];
-      }
-    } else {
-      console.error(e);
-      errorMsg.value = "No se pudo registrar tu apoyo.";
-    }
+    console.error(e);
+    errorMsg.value = "No se pudo registrar tu apoyo.";
   } finally {
     supportingId.value = null;
   }

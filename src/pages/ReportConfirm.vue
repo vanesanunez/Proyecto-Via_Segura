@@ -1,6 +1,68 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import confetti from "canvas-confetti";
+import { subscribeToUserState } from "../services/auth";
+import { fetchUserGamification } from "../services/gamification";
+
+const user = ref({ id: null, email: null });
+
+const gamification = ref({
+  community_points: 0,
+  community_actions: 0,
+  reports_created: 0,
+  supports_given: 0,
+  first_badge_unlocked: false,
+});
+
+const loadingGamification = ref(true);
+
+subscribeToUserState((newUserData) => {
+  user.value = newUserData;
+});
+
+async function loadGamification() {
+  if (!user.value?.id) {
+    loadingGamification.value = false;
+    return;
+  }
+
+  loadingGamification.value = true;
+
+  try {
+    const data = await fetchUserGamification(user.value.id);
+    gamification.value = data;
+  } catch (error) {
+    console.error("[ReportConfirmado] Error cargando gamificación:", error);
+  } finally {
+    loadingGamification.value = false;
+  }
+}
+
+const progressSteps = computed(() =>
+  Math.min(gamification.value.community_actions ?? 0, 4),
+);
+
+const progressPercent = computed(() => `${(progressSteps.value / 4) * 100}%`);
+
+const progressLabel = computed(() => {
+  if (gamification.value.first_badge_unlocked) {
+    return "Primera insignia desbloqueada";
+  }
+
+  return `${progressSteps.value}/4 acciones`;
+});
+
+const progressText = computed(() => {
+  if (gamification.value.first_badge_unlocked) {
+    return "Ya desbloqueaste tu primera insignia comunitaria.";
+  }
+
+  if (progressSteps.value === 1) {
+    return "Primer aporte completado.";
+  }
+
+  return "Seguís avanzando con cada aporte útil.";
+});
 
 onMounted(() => {
   confetti({
@@ -10,7 +72,16 @@ onMounted(() => {
     scalar: 0.9,
     origin: { y: 0.7 },
   });
+
+  loadGamification();
 });
+
+watch(
+  () => user.value?.id,
+  (id) => {
+    if (id) loadGamification();
+  },
+);
 </script>
 
 <template>
@@ -19,7 +90,6 @@ onMounted(() => {
       <div
         class="rounded-[30px] bg-[#eef4ff] p-6 text-center shadow-[0_18px_40px_rgba(15,23,42,0.12)]"
       >
-        <!-- ícono -->
         <div
           class="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] bg-white text-[#3082e3] shadow-[0_14px_28px_rgba(48,130,227,0.18)]"
         >
@@ -39,7 +109,6 @@ onMounted(() => {
           </svg>
         </div>
 
-        <!-- texto principal -->
         <span
           class="mt-5 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-[#3082e3]"
         >
@@ -54,7 +123,6 @@ onMounted(() => {
           Tu reporte ya quedó registrado.
         </p>
 
-        <!-- tarjeta blanca interna -->
         <div
           class="mt-5 rounded-[22px] bg-white px-4 py-4 text-left shadow-[0_10px_24px_rgba(148,163,184,0.10)]"
         >
@@ -75,31 +143,42 @@ onMounted(() => {
             </div>
 
             <div class="min-w-0 flex-1">
-              <p class="text-[18px] font-bold text-slate-900">+10 puntos</p>
+              <p class="text-[18px] font-bold text-slate-900">+12 puntos</p>
               <p class="mt-1 text-sm leading-6 text-slate-500">
-                Tu aporte suma a la comunidad.
+                Total acumulado:
+                <span class="font-semibold text-slate-700">
+                  {{
+                    loadingGamification
+                      ? "..."
+                      : gamification.community_points ?? 0
+                  }}
+                  puntos
+                </span>
               </p>
             </div>
           </div>
         </div>
 
-        <!-- progreso -->
         <div class="mt-5 text-left">
           <div class="mb-2 flex items-center justify-between text-sm">
             <span class="font-medium text-slate-700">Primer paso</span>
-            <span class="text-slate-500">1/4 acciones</span>
+            <span class="text-slate-500">
+              {{ loadingGamification ? "..." : progressLabel }}
+            </span>
           </div>
 
           <div class="h-2 overflow-hidden rounded-full bg-white/80">
-            <div class="h-full w-1/4 rounded-full bg-[#3082e3]"></div>
+            <div
+              class="h-full rounded-full bg-[#3082e3] transition-all duration-500"
+              :style="{ width: loadingGamification ? '0%' : progressPercent }"
+            ></div>
           </div>
 
           <p class="mt-2 text-sm text-slate-500">
-            Primer aporte completado.
+            {{ loadingGamification ? "Cargando progreso..." : progressText }}
           </p>
         </div>
 
-        <!-- acciones -->
         <div class="mt-6 space-y-3">
           <router-link
             to="/reportes"
