@@ -1,16 +1,19 @@
+```vue
 <script>
 import { RouterLink } from 'vue-router';
 import { subscribeToUserState } from '../services/auth';
 import MainLoader from '../components/MainLoader.vue';
 import { fetchUserReportsPageWithCount } from '../services/reports';
+import { fetchUserGamification } from '../services/gamification';
 import ReportCard from '../components/ReportCard.vue';
 import BottomNavigation from '../components/BottomNavigation.vue';
+import { TrophyIcon } from '@heroicons/vue/24/solid';
 
 let unsubAuth = () => {};
 
 export default {
   name: 'MyProfile',
-  components: { MainLoader, ReportCard, BottomNavigation },
+  components: { MainLoader, ReportCard, BottomNavigation, TrophyIcon },
   data() {
     return {
       user: {
@@ -22,17 +25,41 @@ export default {
         photoURL: null,
       },
       loading: false,
+
       myReports: [],
       myPage: 1,
       myPageSize: 3,
       myTotal: 0,
       myLoading: false,
       myError: '',
+
+      gamification: {
+        community_points: 0,
+        community_actions: 0,
+        reports_created: 0,
+        supports_given: 0,
+        first_badge_unlocked: false,
+      },
+      gamificationLoading: false,
+      gamificationError: '',
     };
   },
   computed: {
     totalPages() {
       return Math.max(1, Math.ceil(this.myTotal / this.myPageSize));
+    },
+    visibleMyPages() {
+      if (this.totalPages <= 3) {
+        return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+      }
+
+      if (this.myPage <= 2) return [1, 2, 3];
+
+      if (this.myPage >= this.totalPages - 1) {
+        return [this.totalPages - 2, this.totalPages - 1, this.totalPages];
+      }
+
+      return [this.myPage - 1, this.myPage, this.myPage + 1];
     },
     nombreCompleto() {
       const n = [this.user.name, this.user.lastname].filter(Boolean).join(' ');
@@ -42,6 +69,38 @@ export default {
       const n = this.user.name?.[0] || '';
       const l = this.user.lastname?.[0] || '';
       return (n + l).toUpperCase() || 'U';
+    },
+    progressSteps() {
+      return Math.min(this.gamification.community_actions ?? 0, 4);
+    },
+    progressPercent() {
+      return `${(this.progressSteps / 4) * 100}%`;
+    },
+    progressLabel() {
+      if (this.gamification.first_badge_unlocked) {
+        return 'Primera insignia desbloqueada';
+      }
+      return `${this.progressSteps}/4 acciones`;
+    },
+    progressText() {
+      if (this.gamification.first_badge_unlocked) {
+        return 'Ya desbloqueaste tu primera insignia comunitaria.';
+      }
+
+      if (this.progressSteps === 1) {
+        return 'Primer aporte completado.';
+      }
+
+      if (this.progressSteps === 0) {
+        return 'Todavía no registrás aportes.';
+      }
+
+      return 'Seguís avanzando con cada aporte útil.';
+    },
+    badgeText() {
+      return this.gamification.first_badge_unlocked
+        ? 'Desbloqueada'
+        : 'En progreso';
     },
   },
   methods: {
@@ -63,6 +122,24 @@ export default {
         this.myLoading = false;
       }
     },
+
+    async loadGamification() {
+      if (!this.user?.id) return;
+
+      this.gamificationLoading = true;
+      this.gamificationError = '';
+
+      try {
+        const data = await fetchUserGamification(this.user.id);
+        this.gamification = data;
+      } catch (e) {
+        console.error('[MyProfile] Error cargando gamificación:', e);
+        this.gamificationError = 'No se pudo cargar tu progreso.';
+      } finally {
+        this.gamificationLoading = false;
+      }
+    },
+
     goToMy(p) {
       if (p < 1 || p > this.totalPages) return;
       this.myPage = p;
@@ -75,6 +152,7 @@ export default {
       if (this.user?.id) {
         this.myPage = 1;
         this.loadMyReports();
+        this.loadGamification();
       }
     });
   },
@@ -200,6 +278,116 @@ export default {
         </div>
       </div>
 
+      <!-- ── IMPACTO EN LA COMUNIDAD ── -->
+      <div class="px-4 pb-4">
+        <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#9ca3af;">
+          Impacto en la comunidad
+        </p>
+
+        <div class="rounded-2xl border border-gray-100 bg-white p-4">
+          <div
+            v-if="gamificationError"
+            class="rounded-xl px-4 py-3 text-sm"
+            style="background:#fff1ed; color:#e67661;"
+          >
+            {{ gamificationError }}
+          </div>
+
+          <div v-else>
+            <!-- puntos -->
+            <div class="flex items-center gap-3">
+              <div
+                class="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+                style="background:#fff1ed; color:#f2826d;"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
+                  <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09A6.002 6.002 0 0 1 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                  />
+                </svg>
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <p class="text-lg font-bold text-slate-900">
+                  {{ gamificationLoading ? '...' : `${gamification.community_points ?? 0} puntos` }}
+                </p>
+                <p class="mt-0.5 text-sm text-slate-500">
+                  Tu participación suma valor a la comunidad.
+                </p>
+              </div>
+            </div>
+
+            <!-- barra -->
+            <div class="mt-5">
+              <div class="mb-2 flex items-center justify-between text-sm">
+                <span class="font-medium text-slate-700">Progreso</span>
+                <span class="text-slate-500">
+                  {{ gamificationLoading ? '...' : progressLabel }}
+                </span>
+              </div>
+
+              <div class="h-2 overflow-hidden rounded-full bg-slate-200">
+                <div
+                  class="h-full rounded-full bg-[#3082e3] transition-all duration-500"
+                  :style="{ width: gamificationLoading ? '0%' : progressPercent }"
+                ></div>
+              </div>
+
+              <p class="mt-2 text-sm text-slate-500">
+                {{ gamificationLoading ? 'Cargando progreso...' : progressText }}
+              </p>
+            </div>
+
+            <!-- stats -->
+            <div class="grid grid-cols-2 gap-3 mt-5">
+              <div class="rounded-2xl px-4 py-3" style="background:#eef4ff;">
+                <p class="text-xs" style="color:#6b7280;">Reportes creados</p>
+                <p class="mt-1 text-lg font-bold text-slate-900">
+                  {{ gamificationLoading ? '...' : gamification.reports_created ?? 0 }}
+                </p>
+              </div>
+
+              <div class="rounded-2xl px-4 py-3" style="background:#fff7ed;">
+                <p class="text-xs" style="color:#6b7280;">Apoyos dados</p>
+                <p class="mt-1 text-lg font-bold text-slate-900">
+                  {{ gamificationLoading ? '...' : gamification.supports_given ?? 0 }}
+                </p>
+              </div>
+            </div>
+
+            <!-- insignia -->
+            <div
+              class="mt-4 rounded-2xl px-4 py-3 flex items-center justify-between"
+              :style="
+                gamification.first_badge_unlocked
+                  ? 'background:#ecfdf5;'
+                  : 'background:#f8fafc;'
+              "
+            >
+              <div>
+                <p class="text-sm font-semibold text-slate-900">
+                  Primera insignia
+                </p>
+                <p class="mt-0.5 text-xs text-slate-500">
+                  {{ badgeText }}
+                </p>
+              </div>
+
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center"
+                :style="
+                  gamification.first_badge_unlocked
+                    ? 'background:#dcfce7; color:#16a34a;'
+                    : 'background:#e5e7eb; color:#6b7280;'
+                "
+              >
+                <TrophyIcon class="w-5 h-5" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ── MIS REPORTES ── -->
       <div class="px-4 pb-6">
         <div class="flex items-center justify-between mb-3">
@@ -250,7 +438,7 @@ export default {
           </button>
 
           <button
-            v-for="p in totalPages"
+            v-for="p in visibleMyPages"
             :key="p"
             @click="goToMy(p)"
             class="w-9 h-9 rounded-xl border text-sm font-semibold transition-colors"
@@ -285,3 +473,4 @@ export default {
 
   <BottomNavigation />
 </template>
+
