@@ -12,7 +12,9 @@ import {
   DocumentTextIcon,
   TrophyIcon,
   HeartIcon,
-  ChevronRightIcon,
+  SparklesIcon,
+  ShieldCheckIcon,
+  CheckBadgeIcon,
 } from '@heroicons/vue/24/solid';
 
 let unsubAuth = () => {};
@@ -28,7 +30,9 @@ export default {
     DocumentTextIcon,
     TrophyIcon,
     HeartIcon,
-    ChevronRightIcon,
+    SparklesIcon,
+    ShieldCheckIcon,
+    CheckBadgeIcon,
   },
   data() {
     return {
@@ -58,6 +62,9 @@ export default {
       },
       gamificationLoading: false,
       gamificationError: '',
+
+      showBadgeCelebration: false,
+      badgeAnimationTimer: null,
     };
   },
   computed: {
@@ -86,40 +93,142 @@ export default {
       const l = this.user.lastname?.[0] || '';
       return (n + l).toUpperCase() || 'U';
     },
-    progressSteps() {
-      return Math.min(this.gamification.community_actions ?? 0, 4);
+
+    totalActions() {
+      return this.gamification.community_actions ?? 0;
+    },
+    totalPoints() {
+      return this.gamification.community_points ?? 0;
+    },
+    totalReportsCreated() {
+      return this.gamification.reports_created ?? 0;
+    },
+    totalSupportsGiven() {
+      return this.gamification.supports_given ?? 0;
+    },
+
+    currentBadge() {
+      return this.getBadgeMeta(this.totalActions);
+    },
+
+    progressCurrent() {
+      if (this.currentBadge.nextTarget === null) return this.currentBadge.range;
+      return this.totalActions - this.currentBadge.base;
+    },
+    progressRange() {
+      return this.currentBadge.range;
     },
     progressPercent() {
-      return `${(this.progressSteps / 4) * 100}%`;
+      if (this.currentBadge.nextTarget === null) return '100%';
+      return `${Math.min(100, (this.progressCurrent / this.progressRange) * 100)}%`;
     },
     progressLabel() {
-      if (this.gamification.first_badge_unlocked) {
-        return 'Primera insignia desbloqueada';
+      if (this.currentBadge.nextTarget === null) {
+        return 'Nivel máximo';
       }
-      return `${this.progressSteps}/4 acciones`;
+      return `${this.totalActions}/${this.currentBadge.nextTarget} acciones`;
     },
     progressText() {
-      if (this.gamification.first_badge_unlocked) {
-        return 'Ya desbloqueaste tu primera insignia comunitaria.';
+      if (this.currentBadge.nextTarget === null) {
+        return 'Ya alcanzaste el nivel más alto de participación.';
       }
 
-      if (this.progressSteps === 0) {
-        return 'Todavía no registrás aportes.';
-      }
-
-      if (this.progressSteps === 1) {
-        return 'Primer aporte completado.';
-      }
-
-      return `Te falta ${4 - this.progressSteps} acción${4 - this.progressSteps === 1 ? '' : 'es'} para tu primera insignia.`;
-    },
-    badgeText() {
-      return this.gamification.first_badge_unlocked
-        ? 'Desbloqueada'
-        : 'En progreso';
+      const faltan = this.currentBadge.nextTarget - this.totalActions;
+      return `Te faltan ${faltan} acci${faltan === 1 ? 'ón' : 'ones'} para ${this.currentBadge.nextTitle}.`;
     },
   },
   methods: {
+    getBadgeMeta(actions) {
+      if (actions >= 20) {
+        return {
+          level: 4,
+          title: 'Referente barrial',
+          subtitle: 'Tu participación ya inspira a la comunidad.',
+          icon: CheckBadgeIcon,
+          iconWrap: 'bg-emerald-100 text-emerald-600',
+          base: 20,
+          nextTarget: null,
+          nextTitle: null,
+          range: 1,
+        };
+      }
+
+      if (actions >= 12) {
+        return {
+          level: 3,
+          title: 'Cuidadora urbana',
+          subtitle: 'Ya tenés un impacto fuerte en tu zona.',
+          icon: ShieldCheckIcon,
+          iconWrap: 'bg-cyan-100 text-cyan-600',
+          base: 12,
+          nextTarget: 20,
+          nextTitle: 'Referente barrial',
+          range: 8,
+        };
+      }
+
+      if (actions >= 8) {
+        return {
+          level: 2,
+          title: 'Colaboradora',
+          subtitle: 'Seguís sumando aportes valiosos.',
+          icon: SparklesIcon,
+          iconWrap: 'bg-violet-100 text-violet-600',
+          base: 8,
+          nextTarget: 12,
+          nextTitle: 'Cuidadora urbana',
+          range: 4,
+        };
+      }
+
+      if (actions >= 4) {
+        return {
+          level: 1,
+          title: 'Primera insignia desbloqueada',
+          subtitle: '¡Vas por muy buen camino!',
+          icon: TrophyIcon,
+          iconWrap: 'bg-amber-100 text-amber-600',
+          base: 4,
+          nextTarget: 8,
+          nextTitle: 'Colaboradora',
+          range: 4,
+        };
+      }
+
+      return {
+        level: 0,
+        title: 'Primera insignia en progreso',
+        subtitle: 'Te falta poco para desbloquearla.',
+        icon: StarIcon,
+        iconWrap: 'bg-blue-100 text-[#3082e3]',
+        base: 0,
+        nextTarget: 4,
+        nextTitle: 'tu primera insignia',
+        range: 4,
+      };
+    },
+
+    triggerBadgeAnimation(level) {
+      if (!this.user?.id) return;
+
+      const storageKey = `vs_badge_level_${this.user.id}`;
+      const savedLevel = Number(localStorage.getItem(storageKey) ?? 0);
+
+      if (level > savedLevel && level > 0) {
+        this.showBadgeCelebration = true;
+
+        if (this.badgeAnimationTimer) {
+          clearTimeout(this.badgeAnimationTimer);
+        }
+
+        this.badgeAnimationTimer = setTimeout(() => {
+          this.showBadgeCelebration = false;
+        }, 2600);
+      }
+
+      localStorage.setItem(storageKey, String(level));
+    },
+
     async loadMyReports() {
       if (!this.user?.id) return;
       this.myLoading = true;
@@ -148,6 +257,7 @@ export default {
       try {
         const data = await fetchUserGamification(this.user.id);
         this.gamification = data;
+        this.triggerBadgeAnimation(this.currentBadge.level);
       } catch (e) {
         console.error('[MyProfile] Error cargando gamificación:', e);
         this.gamificationError = 'No se pudo cargar tu progreso.';
@@ -174,6 +284,9 @@ export default {
   },
   unmounted() {
     unsubAuth();
+    if (this.badgeAnimationTimer) {
+      clearTimeout(this.badgeAnimationTimer);
+    }
   },
 };
 </script>
@@ -181,10 +294,9 @@ export default {
 <template>
   <div class="flex flex-col min-h-full bg-gray-50 font-['Inter'] pb-24" style="color:#2a2a2a;">
     <div v-if="!loading">
-      <!-- ── HERO CARD ── -->
+      <!-- HERO CARD -->
       <div class="px-4 pt-5 pb-4">
         <div class="rounded-2xl overflow-hidden" style="background: linear-gradient(135deg, #3082e3 0%, #1a5fbf 100%);">
-          <!-- Foto + nombre -->
           <div class="px-5 pt-6 pb-5 flex items-center gap-4">
             <div
               class="w-20 h-20 rounded-2xl overflow-hidden border-2 flex items-center justify-center shrink-0"
@@ -210,7 +322,6 @@ export default {
             </div>
           </div>
 
-          <!-- Stats strip -->
           <div class="grid grid-cols-3 border-t" style="border-color:rgba(255,255,255,0.15);">
             <div class="py-3.5 flex flex-col items-center gap-0.5 border-r" style="border-color:rgba(255,255,255,0.15);">
               <span class="text-xl font-bold text-white">{{ myTotal }}</span>
@@ -232,12 +343,11 @@ export default {
         </div>
       </div>
 
-      <!-- ── DATOS PERSONALES ── -->
+      <!-- DATOS PERSONALES -->
       <div class="px-4 pb-4">
         <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#9ca3af;">Datos personales</p>
 
         <div class="rounded-2xl border border-gray-100 overflow-hidden bg-white">
-          <!-- Email -->
           <div class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50">
             <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background:#eff6ff;">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#3082e3" stroke-width="2">
@@ -250,7 +360,6 @@ export default {
             </div>
           </div>
 
-          <!-- Nombre -->
           <div class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50">
             <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background:#eff6ff;">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#3082e3" stroke-width="2">
@@ -263,7 +372,6 @@ export default {
             </div>
           </div>
 
-          <!-- Apellido -->
           <div class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50">
             <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background:#eff6ff;">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#3082e3" stroke-width="2">
@@ -276,7 +384,6 @@ export default {
             </div>
           </div>
 
-          <!-- DNI -->
           <div class="flex items-center gap-3 px-4 py-3.5">
             <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background:#eff6ff;">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#3082e3" stroke-width="2">
@@ -291,13 +398,13 @@ export default {
         </div>
       </div>
 
-      <!-- ── IMPACTO EN LA COMUNIDAD ── -->
+      <!-- IMPACTO EN LA COMUNIDAD -->
       <div class="px-4 pb-4">
         <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#9ca3af;">
           Impacto en la comunidad
         </p>
 
-        <div class="rounded-[24px] border border-[#edf1f7] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
+        <div class="rounded-[22px] border border-[#edf1f7] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
           <div
             v-if="gamificationError"
             class="rounded-xl px-4 py-3 text-sm"
@@ -307,55 +414,66 @@ export default {
           </div>
 
           <div v-else>
-            <!-- header -->
+            <!-- Título -->
             <div class="flex items-center gap-2 mb-4">
               <UserGroupIcon class="w-5 h-5 text-[#3082e3]" />
-              <h3 class="text-[22px] font-bold text-slate-900 leading-tight">
+              <h3 class="text-[18px] font-bold text-slate-900 leading-tight">
                 Impacto en la comunidad
               </h3>
             </div>
 
-            <!-- puntos + ilustración -->
-            <div class="flex items-center justify-between gap-4 pb-5 border-b border-[#e8edf5]">
-              <div class="flex items-center gap-4 min-w-0">
-                <div class="w-[76px] h-[76px] rounded-full bg-[#eaf1ff] flex items-center justify-center shrink-0">
-                  <StarIcon class="w-9 h-9 text-[#3b82f6]" />
+            <!-- Aviso nueva insignia -->
+            <transition name="fade-pop">
+              <div
+                v-if="showBadgeCelebration"
+                class="mb-3 inline-flex items-center gap-2 rounded-full bg-[#eef4ff] px-3 py-1.5 text-xs font-semibold text-[#3082e3]"
+              >
+                <SparklesIcon class="w-4 h-4" />
+                Nueva insignia desbloqueada
+              </div>
+            </transition>
+
+            <!-- Puntos + dibujo -->
+            <div class="flex items-start justify-between gap-3 pb-4 border-b border-[#e8edf5]">
+              <div class="flex items-start gap-3 min-w-0">
+                <div class="w-14 h-14 rounded-full bg-[#eaf1ff] flex items-center justify-center shrink-0">
+                  <StarIcon class="w-7 h-7 text-[#3b82f6]" />
                 </div>
 
                 <div class="min-w-0">
-                  <p class="text-[54px] leading-none font-bold text-[#0f172a]">
-                    {{ gamificationLoading ? '...' : gamification.community_points ?? 0 }}
+                  <p class="text-[36px] leading-none font-extrabold text-[#0f172a]">
+                    {{ gamificationLoading ? '...' : totalPoints }}
                   </p>
-                  <p class="text-[20px] leading-none font-bold text-[#3082e3] mt-1">
+                  <p class="text-[16px] leading-none font-bold text-[#3082e3] mt-1">
                     puntos
                   </p>
-                  <p class="text-[13px] leading-5 text-slate-500 mt-3 max-w-[180px]">
+                  <p class="text-[12px] leading-5 text-slate-500 mt-2 max-w-[145px]">
                     Tu participación suma valor a la comunidad.
                   </p>
                 </div>
               </div>
 
-              <!-- mini ilustración -->
-              <div class="relative hidden sm:block w-[150px] h-[110px] shrink-0">
+              <!-- Dibujito edificio -->
+              <div class="relative w-[90px] h-[74px] shrink-0 opacity-90">
                 <div class="absolute inset-0 rounded-full bg-[#f7f9ff]"></div>
 
-                <div class="absolute top-5 right-9">
-                  <HeartIcon class="w-14 h-14 text-[#f2826d]" />
+                <div class="absolute top-1 right-4">
+                  <HeartIcon class="w-8 h-8 text-[#f2826d]" />
                 </div>
 
-                <div class="absolute bottom-2 left-4 w-7 h-10 rounded-t-md bg-[#dbe8ff]"></div>
-                <div class="absolute bottom-2 left-14 w-10 h-16 rounded-t-md bg-[#bfd5ff]"></div>
-                <div class="absolute bottom-2 left-27 w-8 h-13 rounded-t-md bg-[#cfe0ff]"></div>
-                <div class="absolute bottom-2 left-37 w-6 h-9 rounded-t-md bg-[#dbe8ff]"></div>
+                <div class="absolute bottom-1 left-2 w-4 h-6 rounded-t bg-[#dbe8ff]"></div>
+                <div class="absolute bottom-1 left-7 w-5 h-10 rounded-t bg-[#bfd5ff]"></div>
+                <div class="absolute bottom-1 left-14 w-4 h-7 rounded-t bg-[#dbe8ff]"></div>
+                <div class="absolute bottom-1 left-20 w-3 h-5 rounded-t bg-[#cfe0ff]"></div>
 
-                <div class="absolute top-6 left-3 w-8 h-3 rounded-full bg-[#edf3ff]"></div>
-                <div class="absolute top-10 left-0 w-5 h-2 rounded-full bg-[#edf3ff]"></div>
-                <div class="absolute top-12 right-2 w-7 h-3 rounded-full bg-[#edf3ff]"></div>
+                <div class="absolute top-2 left-1 w-5 h-2 rounded-full bg-[#edf3ff]"></div>
+                <div class="absolute top-6 left-0 w-3 h-1.5 rounded-full bg-[#edf3ff]"></div>
+                <div class="absolute top-8 right-1 w-4 h-2 rounded-full bg-[#edf3ff]"></div>
               </div>
             </div>
 
-            <!-- progreso -->
-            <div class="pt-5">
+            <!-- Progreso -->
+            <div class="pt-4">
               <div class="flex items-center justify-between text-sm mb-2">
                 <span class="font-semibold text-slate-800">Progreso</span>
                 <span class="font-semibold text-[#3082e3]">
@@ -363,84 +481,78 @@ export default {
                 </span>
               </div>
 
-              <div class="h-3 rounded-full bg-[#e8edf5] overflow-hidden">
+              <div class="h-2.5 rounded-full bg-[#e8edf5] overflow-hidden">
                 <div
                   class="h-full rounded-full bg-[#1f7bf2] transition-all duration-500"
                   :style="{ width: gamificationLoading ? '0%' : progressPercent }"
                 ></div>
               </div>
 
-              <p class="text-sm text-slate-500 mt-3">
+              <p class="text-xs text-slate-500 mt-2">
                 {{ gamificationLoading ? 'Cargando progreso...' : progressText }}
               </p>
             </div>
 
-            <!-- cards -->
-            <div class="grid grid-cols-2 gap-3 mt-5">
-              <div class="rounded-[18px] bg-[#f6f8fc] px-4 py-4 flex items-center gap-4">
-                <div class="w-16 h-16 rounded-full bg-[#dfeaff] flex items-center justify-center shrink-0">
-                  <div class="w-11 h-11 rounded-full bg-[#1f7bf2] flex items-center justify-center">
-                    <DocumentTextIcon class="w-6 h-6 text-white" />
+            <!-- Mini cards -->
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div class="rounded-[16px] bg-[#f6f8fc] px-3 py-3 flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-[#dfeaff] flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-full bg-[#1f7bf2] flex items-center justify-center">
+                    <DocumentTextIcon class="w-4 h-4 text-white" />
                   </div>
                 </div>
 
                 <div>
-                  <p class="text-[34px] leading-none font-bold text-[#0f172a]">
-                    {{ gamificationLoading ? '...' : gamification.reports_created ?? 0 }}
+                  <p class="text-[24px] leading-none font-bold text-[#0f172a]">
+                    {{ gamificationLoading ? '...' : totalReportsCreated }}
                   </p>
-                  <p class="text-[13px] leading-5 text-slate-700 mt-2">
+                  <p class="text-[11px] leading-4 text-slate-700 mt-1">
                     Reportes<br />creados
                   </p>
                 </div>
               </div>
 
-              <div class="rounded-[18px] bg-[#f6f8fc] px-4 py-4 flex items-center gap-4">
-                <div class="w-16 h-16 rounded-full bg-[#ffe3dd] flex items-center justify-center shrink-0">
-                  <div class="w-11 h-11 rounded-full bg-[#ff7f66] flex items-center justify-center">
-                    <UserGroupIcon class="w-6 h-6 text-white" />
+              <div class="rounded-[16px] bg-[#f6f8fc] px-3 py-3 flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-[#ffe3dd] flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-full bg-[#ff7f66] flex items-center justify-center">
+                    <UserGroupIcon class="w-4 h-4 text-white" />
                   </div>
                 </div>
 
                 <div>
-                  <p class="text-[34px] leading-none font-bold text-[#0f172a]">
-                    {{ gamificationLoading ? '...' : gamification.supports_given ?? 0 }}
+                  <p class="text-[24px] leading-none font-bold text-[#0f172a]">
+                    {{ gamificationLoading ? '...' : totalSupportsGiven }}
                   </p>
-                  <p class="text-[13px] leading-5 text-slate-700 mt-2">
+                  <p class="text-[11px] leading-4 text-slate-700 mt-1">
                     Apoyos<br />dados
                   </p>
                 </div>
               </div>
             </div>
 
-            <!-- insignia -->
-            <div class="mt-4 rounded-[20px] bg-[#eef4ff] border border-[#dbe7fb] px-4 py-4 flex items-center gap-4">
-              <div class="w-16 h-16 rounded-full bg-[#dfeaff] flex items-center justify-center shrink-0">
-                <TrophyIcon class="w-9 h-9 text-[#3b82f6]" />
+            <!-- Insignia -->
+            <div class="mt-4 rounded-[16px] bg-[#eef4ff] border border-[#dbe7fb] px-3 py-3 flex items-center gap-3">
+              <div
+                class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-500"
+                :class="[currentBadge.iconWrap, showBadgeCelebration ? 'badge-glow badge-pop' : '']"
+              >
+                <component :is="currentBadge.icon" class="w-6 h-6" />
               </div>
 
-              <div class="flex-1 min-w-0">
-                <p class="text-[18px] font-bold text-[#0f172a] leading-tight">
-                  Primera insignia
+              <div class="min-w-0">
+                <p class="text-[16px] font-bold text-[#0f172a] leading-tight">
+                  {{ currentBadge.title }}
                 </p>
-                <p class="text-[14px] font-semibold mt-1" :style="gamification.first_badge_unlocked ? 'color:#16a34a;' : 'color:#3082e3;'">
-                  {{ badgeText }}
-                </p>
-                <p class="text-[13px] text-slate-600 mt-1">
-                  {{
-                    gamification.first_badge_unlocked
-                      ? '¡Ya desbloqueaste tu primera insignia!'
-                      : '¡Vas por buen camino!'
-                  }}
+                <p class="text-[12px] text-slate-600 mt-1">
+                  {{ currentBadge.subtitle }}
                 </p>
               </div>
-
-              <ChevronRightIcon class="w-5 h-5 text-[#3082e3] shrink-0" />
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ── MIS REPORTES ── -->
+      <!-- MIS REPORTES -->
       <div class="px-4 pb-6">
         <div class="flex items-center justify-between mb-3">
           <p class="text-xs font-semibold uppercase tracking-wider" style="color:#9ca3af;">Mis reportes</p>
@@ -449,19 +561,18 @@ export default {
           </span>
         </div>
 
-        <!-- Error -->
         <div v-if="myError" class="rounded-xl px-4 py-3 text-sm mb-3" style="background:#fff1f0; color:#dc2626;">
           {{ myError }}
         </div>
 
-        <!-- Cargando -->
         <div v-if="myLoading" class="flex justify-center py-10">
           <div class="w-8 h-8 rounded-full border-2 animate-spin" style="border-color:#3082e3; border-top-color:transparent;"></div>
         </div>
 
-        <!-- Sin reportes -->
-        <div v-else-if="!myLoading && myReports.length === 0"
-          class="rounded-2xl border border-gray-100 bg-white flex flex-col items-center py-10 px-6 text-center gap-3">
+        <div
+          v-else-if="!myLoading && myReports.length === 0"
+          class="rounded-2xl border border-gray-100 bg-white flex flex-col items-center py-10 px-6 text-center gap-3"
+        >
           <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background:#f3f4f6;">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -471,12 +582,10 @@ export default {
           <p class="text-xs" style="color:#9ca3af;">Cuando lo hagas aparecerán aquí</p>
         </div>
 
-        <!-- Lista -->
         <ul v-else class="space-y-3 mb-5">
           <ReportCard v-for="r in myReports" :key="r.id" :report="r" :to="`/report/${r.id}`" />
         </ul>
 
-        <!-- Paginación -->
         <nav v-if="myTotal > myPageSize" class="flex items-center justify-center gap-2 mt-4">
           <button
             @click="goToMy(myPage - 1)"
@@ -515,7 +624,6 @@ export default {
       </div>
     </div>
 
-    <!-- Cargando perfil -->
     <div v-else class="flex-1 flex justify-center items-center">
       <MainLoader />
     </div>
@@ -524,4 +632,47 @@ export default {
   <BottomNavigation />
 </template>
 
+<style scoped>
+@keyframes badgePop {
+  0% {
+    transform: scale(0.85);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 
+@keyframes badgeGlow {
+  0% {
+    box-shadow: 0 0 0 rgba(59, 130, 246, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0.12);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.badge-pop {
+  animation: badgePop 0.45s ease-out;
+}
+
+.badge-glow {
+  animation: badgeGlow 1.2s ease-out 2;
+}
+
+.fade-pop-enter-active,
+.fade-pop-leave-active {
+  transition: all 0.25s ease;
+}
+
+.fade-pop-enter-from,
+.fade-pop-leave-to {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.96);
+}
+</style>
