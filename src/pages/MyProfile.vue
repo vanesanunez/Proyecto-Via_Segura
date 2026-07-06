@@ -1,4 +1,3 @@
-```vue
 <script>
 import { RouterLink } from 'vue-router';
 import { subscribeToUserState } from '../services/auth';
@@ -7,13 +6,30 @@ import { fetchUserReportsPageWithCount } from '../services/reports';
 import { fetchUserGamification } from '../services/gamification';
 import ReportCard from '../components/ReportCard.vue';
 import BottomNavigation from '../components/BottomNavigation.vue';
-import { TrophyIcon } from '@heroicons/vue/24/solid';
+import {
+  UserGroupIcon,
+  StarIcon,
+  DocumentTextIcon,
+  TrophyIcon,
+  HeartIcon,
+  ChevronRightIcon,
+} from '@heroicons/vue/24/solid';
 
 let unsubAuth = () => {};
 
 export default {
   name: 'MyProfile',
-  components: { MainLoader, ReportCard, BottomNavigation, TrophyIcon },
+  components: {
+    MainLoader,
+    ReportCard,
+    BottomNavigation,
+    UserGroupIcon,
+    StarIcon,
+    DocumentTextIcon,
+    TrophyIcon,
+    HeartIcon,
+    ChevronRightIcon,
+  },
   data() {
     return {
       user: {
@@ -87,15 +103,15 @@ export default {
         return 'Ya desbloqueaste tu primera insignia comunitaria.';
       }
 
-      if (this.progressSteps === 1) {
-        return 'Primer aporte completado.';
-      }
-
       if (this.progressSteps === 0) {
         return 'Todavía no registrás aportes.';
       }
 
-      return 'Seguís avanzando con cada aporte útil.';
+      if (this.progressSteps === 1) {
+        return 'Primer aporte completado.';
+      }
+
+      return `Te falta ${4 - this.progressSteps} acción${4 - this.progressSteps === 1 ? '' : 'es'} para tu primera insignia.`;
     },
     badgeText() {
       return this.gamification.first_badge_unlocked
@@ -164,17 +180,16 @@ export default {
 
 <template>
   <div class="flex flex-col min-h-full bg-gray-50 font-['Inter'] pb-24" style="color:#2a2a2a;">
-
     <div v-if="!loading">
-
       <!-- ── HERO CARD ── -->
       <div class="px-4 pt-5 pb-4">
         <div class="rounded-2xl overflow-hidden" style="background: linear-gradient(135deg, #3082e3 0%, #1a5fbf 100%);">
-
           <!-- Foto + nombre -->
           <div class="px-5 pt-6 pb-5 flex items-center gap-4">
-            <div class="w-20 h-20 rounded-2xl overflow-hidden border-2 flex items-center justify-center shrink-0"
-              style="border-color:rgba(255,255,255,0.3); background:rgba(255,255,255,0.15);">
+            <div
+              class="w-20 h-20 rounded-2xl overflow-hidden border-2 flex items-center justify-center shrink-0"
+              style="border-color:rgba(255,255,255,0.3); background:rgba(255,255,255,0.15);"
+            >
               <img v-if="user.photoURL" :src="user.photoURL" alt="Foto de perfil" class="w-full h-full object-cover" />
               <span v-else class="text-2xl font-bold text-white">{{ iniciales }}</span>
             </div>
@@ -222,7 +237,6 @@ export default {
         <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#9ca3af;">Datos personales</p>
 
         <div class="rounded-2xl border border-gray-100 overflow-hidden bg-white">
-
           <!-- Email -->
           <div class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50">
             <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background:#eff6ff;">
@@ -274,7 +288,6 @@ export default {
               <p class="text-sm font-medium">{{ user.dni || '—' }}</p>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -284,7 +297,7 @@ export default {
           Impacto en la comunidad
         </p>
 
-        <div class="rounded-2xl border border-gray-100 bg-white p-4">
+        <div class="rounded-[24px] border border-[#edf1f7] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
           <div
             v-if="gamificationError"
             class="rounded-xl px-4 py-3 text-sm"
@@ -294,95 +307,134 @@ export default {
           </div>
 
           <div v-else>
-            <!-- puntos -->
-            <div class="flex items-center gap-3">
-              <div
-                class="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
-                style="background:#fff1ed; color:#f2826d;"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
-                  <path
-                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09A6.002 6.002 0 0 1 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                  />
-                </svg>
+            <!-- header -->
+            <div class="flex items-center gap-2 mb-4">
+              <UserGroupIcon class="w-5 h-5 text-[#3082e3]" />
+              <h3 class="text-[22px] font-bold text-slate-900 leading-tight">
+                Impacto en la comunidad
+              </h3>
+            </div>
+
+            <!-- puntos + ilustración -->
+            <div class="flex items-center justify-between gap-4 pb-5 border-b border-[#e8edf5]">
+              <div class="flex items-center gap-4 min-w-0">
+                <div class="w-[76px] h-[76px] rounded-full bg-[#eaf1ff] flex items-center justify-center shrink-0">
+                  <StarIcon class="w-9 h-9 text-[#3b82f6]" />
+                </div>
+
+                <div class="min-w-0">
+                  <p class="text-[54px] leading-none font-bold text-[#0f172a]">
+                    {{ gamificationLoading ? '...' : gamification.community_points ?? 0 }}
+                  </p>
+                  <p class="text-[20px] leading-none font-bold text-[#3082e3] mt-1">
+                    puntos
+                  </p>
+                  <p class="text-[13px] leading-5 text-slate-500 mt-3 max-w-[180px]">
+                    Tu participación suma valor a la comunidad.
+                  </p>
+                </div>
               </div>
 
-              <div class="flex-1 min-w-0">
-                <p class="text-lg font-bold text-slate-900">
-                  {{ gamificationLoading ? '...' : `${gamification.community_points ?? 0} puntos` }}
-                </p>
-                <p class="mt-0.5 text-sm text-slate-500">
-                  Tu participación suma valor a la comunidad.
-                </p>
+              <!-- mini ilustración -->
+              <div class="relative hidden sm:block w-[150px] h-[110px] shrink-0">
+                <div class="absolute inset-0 rounded-full bg-[#f7f9ff]"></div>
+
+                <div class="absolute top-5 right-9">
+                  <HeartIcon class="w-14 h-14 text-[#f2826d]" />
+                </div>
+
+                <div class="absolute bottom-2 left-4 w-7 h-10 rounded-t-md bg-[#dbe8ff]"></div>
+                <div class="absolute bottom-2 left-14 w-10 h-16 rounded-t-md bg-[#bfd5ff]"></div>
+                <div class="absolute bottom-2 left-27 w-8 h-13 rounded-t-md bg-[#cfe0ff]"></div>
+                <div class="absolute bottom-2 left-37 w-6 h-9 rounded-t-md bg-[#dbe8ff]"></div>
+
+                <div class="absolute top-6 left-3 w-8 h-3 rounded-full bg-[#edf3ff]"></div>
+                <div class="absolute top-10 left-0 w-5 h-2 rounded-full bg-[#edf3ff]"></div>
+                <div class="absolute top-12 right-2 w-7 h-3 rounded-full bg-[#edf3ff]"></div>
               </div>
             </div>
 
-            <!-- barra -->
-            <div class="mt-5">
-              <div class="mb-2 flex items-center justify-between text-sm">
-                <span class="font-medium text-slate-700">Progreso</span>
-                <span class="text-slate-500">
+            <!-- progreso -->
+            <div class="pt-5">
+              <div class="flex items-center justify-between text-sm mb-2">
+                <span class="font-semibold text-slate-800">Progreso</span>
+                <span class="font-semibold text-[#3082e3]">
                   {{ gamificationLoading ? '...' : progressLabel }}
                 </span>
               </div>
 
-              <div class="h-2 overflow-hidden rounded-full bg-slate-200">
+              <div class="h-3 rounded-full bg-[#e8edf5] overflow-hidden">
                 <div
-                  class="h-full rounded-full bg-[#3082e3] transition-all duration-500"
+                  class="h-full rounded-full bg-[#1f7bf2] transition-all duration-500"
                   :style="{ width: gamificationLoading ? '0%' : progressPercent }"
                 ></div>
               </div>
 
-              <p class="mt-2 text-sm text-slate-500">
+              <p class="text-sm text-slate-500 mt-3">
                 {{ gamificationLoading ? 'Cargando progreso...' : progressText }}
               </p>
             </div>
 
-            <!-- stats -->
+            <!-- cards -->
             <div class="grid grid-cols-2 gap-3 mt-5">
-              <div class="rounded-2xl px-4 py-3" style="background:#eef4ff;">
-                <p class="text-xs" style="color:#6b7280;">Reportes creados</p>
-                <p class="mt-1 text-lg font-bold text-slate-900">
-                  {{ gamificationLoading ? '...' : gamification.reports_created ?? 0 }}
-                </p>
+              <div class="rounded-[18px] bg-[#f6f8fc] px-4 py-4 flex items-center gap-4">
+                <div class="w-16 h-16 rounded-full bg-[#dfeaff] flex items-center justify-center shrink-0">
+                  <div class="w-11 h-11 rounded-full bg-[#1f7bf2] flex items-center justify-center">
+                    <DocumentTextIcon class="w-6 h-6 text-white" />
+                  </div>
+                </div>
+
+                <div>
+                  <p class="text-[34px] leading-none font-bold text-[#0f172a]">
+                    {{ gamificationLoading ? '...' : gamification.reports_created ?? 0 }}
+                  </p>
+                  <p class="text-[13px] leading-5 text-slate-700 mt-2">
+                    Reportes<br />creados
+                  </p>
+                </div>
               </div>
 
-              <div class="rounded-2xl px-4 py-3" style="background:#fff7ed;">
-                <p class="text-xs" style="color:#6b7280;">Apoyos dados</p>
-                <p class="mt-1 text-lg font-bold text-slate-900">
-                  {{ gamificationLoading ? '...' : gamification.supports_given ?? 0 }}
-                </p>
+              <div class="rounded-[18px] bg-[#f6f8fc] px-4 py-4 flex items-center gap-4">
+                <div class="w-16 h-16 rounded-full bg-[#ffe3dd] flex items-center justify-center shrink-0">
+                  <div class="w-11 h-11 rounded-full bg-[#ff7f66] flex items-center justify-center">
+                    <UserGroupIcon class="w-6 h-6 text-white" />
+                  </div>
+                </div>
+
+                <div>
+                  <p class="text-[34px] leading-none font-bold text-[#0f172a]">
+                    {{ gamificationLoading ? '...' : gamification.supports_given ?? 0 }}
+                  </p>
+                  <p class="text-[13px] leading-5 text-slate-700 mt-2">
+                    Apoyos<br />dados
+                  </p>
+                </div>
               </div>
             </div>
 
             <!-- insignia -->
-            <div
-              class="mt-4 rounded-2xl px-4 py-3 flex items-center justify-between"
-              :style="
-                gamification.first_badge_unlocked
-                  ? 'background:#ecfdf5;'
-                  : 'background:#f8fafc;'
-              "
-            >
-              <div>
-                <p class="text-sm font-semibold text-slate-900">
+            <div class="mt-4 rounded-[20px] bg-[#eef4ff] border border-[#dbe7fb] px-4 py-4 flex items-center gap-4">
+              <div class="w-16 h-16 rounded-full bg-[#dfeaff] flex items-center justify-center shrink-0">
+                <TrophyIcon class="w-9 h-9 text-[#3b82f6]" />
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <p class="text-[18px] font-bold text-[#0f172a] leading-tight">
                   Primera insignia
                 </p>
-                <p class="mt-0.5 text-xs text-slate-500">
+                <p class="text-[14px] font-semibold mt-1" :style="gamification.first_badge_unlocked ? 'color:#16a34a;' : 'color:#3082e3;'">
                   {{ badgeText }}
+                </p>
+                <p class="text-[13px] text-slate-600 mt-1">
+                  {{
+                    gamification.first_badge_unlocked
+                      ? '¡Ya desbloqueaste tu primera insignia!'
+                      : '¡Vas por buen camino!'
+                  }}
                 </p>
               </div>
 
-              <div
-                class="w-10 h-10 rounded-full flex items-center justify-center"
-                :style="
-                  gamification.first_badge_unlocked
-                    ? 'background:#dcfce7; color:#16a34a;'
-                    : 'background:#e5e7eb; color:#6b7280;'
-                "
-              >
-                <TrophyIcon class="w-5 h-5" />
-              </div>
+              <ChevronRightIcon class="w-5 h-5 text-[#3082e3] shrink-0" />
             </div>
           </div>
         </div>
@@ -461,16 +513,15 @@ export default {
           </button>
         </nav>
       </div>
-
     </div>
 
     <!-- Cargando perfil -->
     <div v-else class="flex-1 flex justify-center items-center">
       <MainLoader />
     </div>
-
   </div>
 
   <BottomNavigation />
 </template>
+
 
