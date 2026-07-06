@@ -1,4 +1,3 @@
-```vue
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
@@ -26,6 +25,7 @@ import {
   LightBulbIcon,
   ShieldCheckIcon,
 } from "@heroicons/vue/24/solid";
+import BottomNavigation from "../components/BottomNavigation.vue";
 
 // --- Datos del formulario ---
 const categoria = ref("");
@@ -865,6 +865,9 @@ function startNewReport() {
       </p>
     </div>
   </div>
+
+
+  <BottomNavigation />
 </template>
 
 <style scoped>
