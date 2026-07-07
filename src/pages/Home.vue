@@ -17,7 +17,7 @@ import {
   ChatBubbleLeftRightIcon,
   HeartIcon,
   MapPinIcon,
-  HandRaisedIcon,
+   SparklesIcon,
 } from "@heroicons/vue/24/solid";
 
 export default {
@@ -35,7 +35,7 @@ export default {
     ChatBubbleLeftRightIcon,
     HeartIcon,
     MapPinIcon,
-    HandRaisedIcon,
+    SparklesIcon,
   },
   data() {
     return {
@@ -157,11 +157,11 @@ export default {
       <!-- saludo -->
      <div class="mb-5">
   <div class="flex items-center gap-2">
-    <h2 class="text-[18px] font-bold leading-tight text-[#2a2a2a]">
-      Hola, {{ greetingName }}
-    </h2>
-    <HandRaisedIcon class="h-5 w-5 text-[#f2826d]" />
-  </div>
+  <h2 class="text-[18px] font-bold leading-tight text-[#2a2a2a]">
+    Hola, {{ greetingName }}
+  </h2>
+  <SparklesIcon class="h-5 w-5 text-[#f2826d]" />
+</div>
 
   <p class="mt-1 max-w-[18rem] text-sm leading-6 text-slate-500">
     Tu comunidad te ayuda a moverte con más tranquilidad.
