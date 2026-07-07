@@ -150,23 +150,24 @@ export default {
 </script>
 
 <template>
-  <AppH1 class="hidden">Inicio - Vía Segura</AppH1>
-
-  <section class="min-h-screen bg-[#f7f9f6] pt-12 pb-28">
+   <section class="min-h-screen bg-[#f7f9f6] pt-12 pb-28">
     <main class="mx-auto w-full max-w-[390px] px-4">
       <!-- saludo -->
-     <div class="mb-5">
- <div class="flex items-center gap-2">
-  <h2 class="text-[18px] font-bold leading-tight text-[#2a2a2a]">
-    Hola, {{ greetingName }}
-  </h2>
-  <FaceSmileIcon class="h-5 w-5 text-[#f2826d]" />
-</div>
+    <div class="mb-5">
+  <p class="text-[15px] font-medium text-slate-500">
+    Hola,
+  </p>
 
-  <p class="mt-1 max-w-[18rem] text-sm leading-6 text-slate-500">
+  <h1 class="mt-1 text-[28px] font-bold leading-tight text-[#3082e3]">
+    {{ greetingName }}
+  </h1>
+
+  <p class="mt-2 max-w-[18rem] text-sm leading-6 text-slate-500">
     Tu comunidad te ayuda a moverte con más tranquilidad.
   </p>
 </div>
+
+  
 
 <!-- hero -->
 <section
