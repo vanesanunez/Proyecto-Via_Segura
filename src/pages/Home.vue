@@ -17,6 +17,7 @@ import {
   ChatBubbleLeftRightIcon,
   HeartIcon,
   MapPinIcon,
+  HandRaisedIcon,
 } from "@heroicons/vue/24/solid";
 
 export default {
@@ -34,6 +35,7 @@ export default {
     ChatBubbleLeftRightIcon,
     HeartIcon,
     MapPinIcon,
+    HandRaisedIcon,
   },
   data() {
     return {
@@ -153,116 +155,47 @@ export default {
   <section class="min-h-screen bg-[#f7f9f6] pt-12 pb-28">
     <main class="mx-auto w-full max-w-[390px] px-4">
       <!-- saludo -->
-      <div class="mb-5">
-        <h2 class="text-[18px] font-bold leading-tight text-[#2a2a2a]">
-          Hola, {{ greetingName }} 👋
-        </h2>
-        <p class="mt-1 max-w-[18rem] text-sm leading-6 text-slate-500">
-          Tu comunidad te ayuda a moverte con más tranquilidad.
-        </p>
-      </div>
-
-      <!-- hero -->
-      <section
-  class="overflow-hidden rounded-[26px] border border-[#d6e8fb] bg-[#eef4ff] px-4 py-4 shadow-[0_10px_24px_rgba(148,163,184,0.10)]"
-     >
-  <div class="grid grid-cols-[1fr_1.15fr] items-center gap-3">
-    <!-- texto -->
-    <div class="pr-1">
-      <h3 class="text-[20px] font-bold leading-tight text-[#1f2b5b]">
-        ¿Ves un problema en tu zona?
-      </h3>
-
-      <p class="mt-3 text-[15px] leading-6 text-slate-600">
-        Reportalo y ayudá a otras personas.
-      </p>
-
-      <router-link
-        to="/report/nuevo"
-        class="mt-4 inline-flex items-center justify-center rounded-full bg-[#3082e3] px-5 py-3 text-sm font-semibold text-white whitespace-nowrap transition hover:bg-[#085baf] active:scale-[0.98]"
-      >
-        Hacer un reporte
-      </router-link>
-    </div>
-
-    <!-- ilustración -->
-    <div class="relative h-[170px]">
-      <div class="absolute inset-0 rounded-[22px] bg-white/25"></div>
-
-      <!-- nubes -->
-      <div class="absolute top-4 left-8 h-3 w-8 rounded-full bg-white/70"></div>
-      <div class="absolute top-8 left-2 h-2.5 w-5 rounded-full bg-white/60"></div>
-      <div class="absolute top-2 right-7 h-3 w-9 rounded-full bg-white/70"></div>
-
-      <!-- edificios -->
-      <div class="absolute bottom-8 left-5 flex items-end gap-1">
-        <div class="h-10 w-4 rounded-t bg-[#dbe8ff]"></div>
-        <div class="h-14 w-5 rounded-t bg-[#bfd5ff]"></div>
-        <div class="h-11 w-4 rounded-t bg-[#dbe8ff]"></div>
-        <div class="h-16 w-6 rounded-t bg-[#9fc2fb]"></div>
-        <div class="h-12 w-4 rounded-t bg-[#cfe0ff]"></div>
-        <div class="h-9 w-4 rounded-t bg-[#bfd5ff]"></div>
-      </div>
-
-      <!-- casita -->
-      <div class="absolute bottom-8 right-8">
-        <div class="relative">
-          <div class="h-9 w-8 rounded-t bg-[#dbe8ff]"></div>
-          <div
-            class="absolute -top-2 left-0 h-0 w-0 border-l-[16px] border-r-[16px] border-b-[12px] border-l-transparent border-r-transparent border-b-[#bfd5ff]"
-          ></div>
-        </div>
-      </div>
-
-      <!-- árboles -->
-      <div class="absolute bottom-8 left-[102px]">
-        <div class="h-7 w-7 rounded-full bg-[#31b285]"></div>
-        <div class="mx-auto h-3 w-1 bg-slate-500"></div>
-      </div>
-
-      <div class="absolute bottom-8 right-2">
-        <div class="h-8 w-8 rounded-full bg-[#31b285]"></div>
-        <div class="mx-auto h-3 w-1 bg-slate-500"></div>
-      </div>
-
-      <!-- piso / mapa -->
-      <div
-        class="absolute bottom-0 left-0 right-0 h-20 rounded-t-[26px] bg-[#f5f3ef]"
-      ></div>
-
-      <svg
-        class="absolute bottom-0 left-0 right-0 h-20 w-full"
-        viewBox="0 0 190 80"
-        fill="none"
-      >
-        <path
-          d="M0 72 C30 48, 55 78, 86 52 C112 30, 145 74, 190 40"
-          stroke="#d9d9d9"
-          stroke-width="6"
-        />
-        <path
-          d="M88 60 C103 49, 118 38, 137 22"
-          stroke="#3082e3"
-          stroke-width="4"
-          stroke-linecap="round"
-          stroke-dasharray="8 8"
-        />
-      </svg>
-
-      <!-- pin -->
-      <div class="absolute bottom-[48px] left-[88px]">
-        <div class="relative">
-          <div class="h-12 w-12 rounded-full bg-[#f2826d]"></div>
-          <div
-            class="absolute left-1/2 top-[28px] h-5 w-5 -translate-x-1/2 rotate-45 bg-[#f2826d]"
-          ></div>
-          <div
-            class="absolute left-1/2 top-[9px] h-4 w-4 -translate-x-1/2 rounded-full bg-white"
-          ></div>
-        </div>
-      </div>
-    </div>
+     <div class="mb-5">
+  <div class="flex items-center gap-2">
+    <h2 class="text-[18px] font-bold leading-tight text-[#2a2a2a]">
+      Hola, {{ greetingName }}
+    </h2>
+    <HandRaisedIcon class="h-5 w-5 text-[#f2826d]" />
   </div>
+
+  <p class="mt-1 max-w-[18rem] text-sm leading-6 text-slate-500">
+    Tu comunidad te ayuda a moverte con más tranquilidad.
+  </p>
+</div>
+
+<!-- hero -->
+<section
+  class="relative overflow-hidden rounded-[26px] border border-[#d6e8fb] bg-[#eef4ff] px-4 py-5 shadow-[0_10px_24px_rgba(148,163,184,0.10)] min-h-[210px]"
+>
+  <!-- texto -->
+  <div class="relative z-10 max-w-[155px]">
+    <h3 class="text-[20px] font-bold leading-tight text-[#1f2b5b]">
+      ¿Ves un problema en tu zona?
+    </h3>
+
+    <p class="mt-3 text-[15px] leading-6 text-slate-600">
+      Reportalo y ayudá a otras personas.
+    </p>
+
+    <router-link
+      to="/report/nuevo"
+      class="mt-4 inline-flex items-center justify-center rounded-full bg-[#3082e3] px-5 py-3 text-sm font-semibold text-white whitespace-nowrap transition hover:bg-[#085baf] active:scale-[0.98]"
+    >
+      Hacer un reporte
+    </router-link>
+  </div>
+
+  <!-- ilustración integrada -->
+  <img
+    src="/hero-home.png"
+    alt="Ilustración principal de Vía Segura"
+    class="pointer-events-none absolute bottom-0 right-0 z-0 w-[68%] max-w-[260px] object-contain"
+  />
 </section>
        
 
