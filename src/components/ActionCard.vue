@@ -40,7 +40,7 @@ const cardClasses = computed(() => {
   const selected = accentMap[props.accent] || accentMap.blue;
 
   return [
-    "group relative min-h-[112px] rounded-[20px] px-4 py-4 transition-all duration-200 active:scale-[0.98]",
+    "group relative w-full min-h-[124px] rounded-[20px] px-4 py-4 transition-all duration-200 active:scale-[0.98]",
     selected.wrapper,
   ].join(" ");
 });
@@ -56,37 +56,38 @@ const iconWrapClasses = computed(() => {
 
 <template>
   <router-link :to="to" :class="cardClasses">
-    <div class="flex h-full items-start justify-between gap-3">
-      <div class="flex gap-3">
-        <div :class="iconWrapClasses">
-          <slot name="icon" />
-        </div>
+    <!-- flecha separada para que no achique el texto -->
+    <div
+      class="absolute right-3 top-3 text-slate-400 transition group-hover:text-[#3082e3]"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </div>
 
-        <div class="min-w-0">
-          <h4 class="text-[15px] font-bold leading-5 text-[#2a2a2a]">
-            {{ title }}
-          </h4>
-
-          <p
-            v-if="description"
-            class="mt-1 text-[13px] leading-5 text-slate-500"
-          >
-            {{ description }}
-          </p>
-        </div>
+    <div class="flex h-full items-start gap-3 pr-6">
+      <div :class="iconWrapClasses">
+        <slot name="icon" />
       </div>
 
-      <div class="pt-1 text-slate-400 transition group-hover:text-[#3082e3]">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
+      <div class="min-w-0 flex-1">
+        <h4 class="text-[15px] font-bold leading-5 text-[#2a2a2a]">
+          {{ title }}
+        </h4>
+
+        <p
+          v-if="description"
+          class="mt-1 text-[13px] leading-5 text-slate-500"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
+          {{ description }}
+        </p>
       </div>
     </div>
   </router-link>
