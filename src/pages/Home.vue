@@ -151,15 +151,11 @@ export default {
 
 <template>
    <section class="min-h-screen bg-[#f7f9f6] pt-12 pb-28">
-    <main class="mx-auto w-full max-w-[390px] px-4">
+   <main class="mx-auto w-full max-w-[430px] px-3">
       <!-- saludo -->
     <div class="mb-5">
-  <p class="text-[15px] font-medium text-slate-500">
-    Hola,
-  </p>
-
-  <h1 class="mt-1 text-[28px] font-bold leading-tight text-[#3082e3]">
-    {{ greetingName }}
+  <h1 class="text-[28px] font-bold leading-tight text-[#2a2a2a]">
+    Hola, <span class="text-[#3082e3]">{{ greetingName }}</span>
   </h1>
 
   <p class="mt-2 max-w-[18rem] text-sm leading-6 text-slate-500">
@@ -175,9 +171,9 @@ export default {
 >
   <!-- texto -->
   <div class="relative z-10 max-w-[155px]">
-    <h3 class="text-[20px] font-bold leading-tight text-[#1f2b5b]">
+    <h2 class="text-[20px] font-bold leading-tight text-[#1f2b5b]">
       ¿Ves un problema en tu zona?
-    </h3>
+    </h2>
 
     <p class="mt-3 text-[15px] leading-6 text-slate-600">
       Reportalo y ayudá a otras personas.
@@ -202,12 +198,11 @@ export default {
 
       <!-- acciones rápidas -->
       <section class="mt-6">
-        <h3 class="text-[16px] font-bold text-[#2a2a2a]">Acciones rápidas</h3>
+        <h2 class="text-[16px] font-bold text-[#2a2a2a]">Acciones rápidas</h2>
 
         <div class="mt-3 grid grid-cols-2 gap-3">
           <ActionCard
             title="Ver reportes"
-            description="Explorá lo que pasa en tu comunidad."
             to="/reportes"
             accent="blue"
           >
@@ -217,8 +212,7 @@ export default {
           </ActionCard>
 
           <ActionCard
-            title="Contactos de confianza"
-            description="Personas en quienes podés confiar."
+           title="Contactos de confianza"
             to="/contactos"
             accent="coral"
           >
@@ -229,7 +223,6 @@ export default {
 
           <ActionCard
             title="Recorrido seguro"
-            description="Planificá tu ruta y viajá más tranquila."
             to="/compartir"
             accent="green"
           >
@@ -239,8 +232,8 @@ export default {
           </ActionCard>
 
           <ActionCard
-            title="Chat comunitario"
-            description="Conversá y ayudá a tu comunidad."
+            title="Chat
+             comunitario"
             to="/chat"
             accent="blue-soft"
           >
@@ -251,7 +244,6 @@ export default {
 
           <ActionCard
             title="Info útil"
-            description="Consejos y recursos para moverte mejor."
             to="/info"
             accent="yellow"
           >
@@ -262,7 +254,6 @@ export default {
 
           <ActionCard
             title="Puntos seguros"
-            description="Lugares de ayuda cerca tuyo."
             to="/puntos-seguros"
             accent="blue-soft"
           >
@@ -343,7 +334,7 @@ export default {
       <!-- reportes recientes -->
       <section class="mt-6">
         <div class="mb-3 flex items-center justify-between">
-          <h3 class="text-[16px] font-bold text-[#2a2a2a]">Reportes recientes</h3>
+          <h2 class="text-[16px] font-bold text-[#2a2a2a]">Reportes recientes</h2>
           <router-link
             to="/reportes"
             class="text-sm font-semibold text-[#3082e3] hover:text-[#085baf]"

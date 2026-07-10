@@ -3,7 +3,6 @@ import { computed } from "vue";
 
 const props = defineProps({
   title: { type: String, required: true },
-  description: { type: String, default: "" },
   to: { type: String, required: true },
   accent: { type: String, default: "blue" },
 });
@@ -40,54 +39,44 @@ const cardClasses = computed(() => {
   const selected = accentMap[props.accent] || accentMap.blue;
 
   return [
-    "group relative w-full min-h-[124px] rounded-[20px] px-4 py-4 transition-all duration-200 active:scale-[0.98]",
+    "group relative w-full min-h-[92px] rounded-[20px] px-4 py-4 transition-all duration-200 active:scale-[0.98]",
     selected.wrapper,
   ].join(" ");
 });
 
 const iconWrapClasses = computed(() => {
   const selected = accentMap[props.accent] || accentMap.blue;
+
   return [
-    "flex h-11 w-11 items-center justify-center rounded-[14px] shrink-0",
+    "flex h-10 w-10 items-center justify-center rounded-[14px] shrink-0",
     selected.iconWrap,
   ].join(" ");
 });
+
+const isLongTitle = computed(() => props.title.length >= 16);
+
+const titleClasses = computed(() =>
+  isLongTitle.value
+    ? "text-[13px] leading-[1.15] font-bold text-[#2a2a2a]"
+    : "text-[15px] leading-[1.15] font-bold text-[#2a2a2a]",
+);
 </script>
 
 <template>
   <router-link :to="to" :class="cardClasses">
-    <!-- flecha separada para que no achique el texto -->
-    <div
-      class="absolute right-3 top-3 text-slate-400 transition group-hover:text-[#3082e3]"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-      </svg>
-    </div>
-
-    <div class="flex h-full items-start gap-3 pr-6">
+    <div class="flex h-full items-center gap-3">
       <div :class="iconWrapClasses">
         <slot name="icon" />
       </div>
 
       <div class="min-w-0 flex-1">
-        <h4 class="text-[15px] font-bold leading-5 text-[#2a2a2a]">
-          {{ title }}
-        </h4>
-
-        <p
-          v-if="description"
-          class="mt-1 text-[13px] leading-5 text-slate-500"
+        <h3
+          :class="titleClasses"
+          class="whitespace-normal"
+          style="text-wrap: balance"
         >
-          {{ description }}
-        </p>
+          {{ title }}
+        </h3>
       </div>
     </div>
   </router-link>
