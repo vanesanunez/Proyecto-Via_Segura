@@ -150,82 +150,76 @@ export default {
 </script>
 
 <template>
-   <section class="min-h-screen bg-[#f7f9f6] pt-12 pb-28">
-   <main class="mx-auto w-full max-w-[430px] px-3">
+  <section class="min-h-screen bg-[#f7f9f6] pt-12 pb-28">
+    <main class="mx-auto w-full max-w-[430px] px-3">
       <!-- saludo -->
-    <div class="mb-5">
-  <h1 class="text-[28px] font-bold leading-tight text-[#2a2a2a]">
-    Hola, <span class="text-[#3082e3]">{{ greetingName }}</span>
-  </h1>
+      <div class="mb-5">
+        <h1 class="text-[28px] font-bold leading-tight text-[#2a2a2a]">
+          Hola, <span class="text-[#3082e3]">{{ greetingName }}</span>
+        </h1>
 
-  <p class="mt-2 max-w-[18rem] text-sm leading-6 text-slate-500">
-    Tu comunidad te ayuda a moverte con más tranquilidad.
-  </p>
-</div>
+        <p class="mt-2 max-w-[18rem] text-sm leading-6 text-slate-500">
+          Tu comunidad te ayuda a moverte con más tranquilidad.
+        </p>
+      </div>
 
-  
+      <!-- hero -->
+      <section
+        class="relative overflow-hidden rounded-[26px] border border-[#d6e8fb] bg-[#eef4ff] px-4 py-5 shadow-[0_10px_24px_rgba(148,163,184,0.10)] min-h-[210px]"
+      >
+        <!-- texto -->
+        <div class="relative z-10 max-w-[155px]">
+          <h2 class="text-[20px] font-bold leading-tight text-[#1f2b5b]">
+            ¿Ves un problema en tu zona?
+          </h2>
 
-<!-- hero -->
-<section
-  class="relative overflow-hidden rounded-[26px] border border-[#d6e8fb] bg-[#eef4ff] px-4 py-5 shadow-[0_10px_24px_rgba(148,163,184,0.10)] min-h-[210px]"
->
-  <!-- texto -->
-  <div class="relative z-10 max-w-[155px]">
-    <h2 class="text-[20px] font-bold leading-tight text-[#1f2b5b]">
-      ¿Ves un problema en tu zona?
-    </h2>
+          <p class="mt-3 text-[15px] leading-6 text-slate-600">
+            Reportalo y ayudá a otras personas.
+          </p>
 
-    <p class="mt-3 text-[15px] leading-6 text-slate-600">
-      Reportalo y ayudá a otras personas.
-    </p>
+          <router-link
+            to="/report/nuevo"
+            class="mt-4 inline-flex items-center justify-center rounded-full bg-[#3082e3] px-5 py-3 text-sm font-semibold text-white whitespace-nowrap transition hover:bg-[#085baf] active:scale-[0.98]"
+          >
+            Hacer un reporte
+          </router-link>
+        </div>
 
-    <router-link
-      to="/report/nuevo"
-      class="mt-4 inline-flex items-center justify-center rounded-full bg-[#3082e3] px-5 py-3 text-sm font-semibold text-white whitespace-nowrap transition hover:bg-[#085baf] active:scale-[0.98]"
-    >
-      Hacer un reporte
-    </router-link>
-  </div>
-
-  <!-- ilustración integrada -->
-  <img
-    src="/hero-home.png"
-    alt="Ilustración principal de Vía Segura"
-    class="pointer-events-none absolute bottom-0 right-0 z-0 w-[68%] max-w-[260px] object-contain"
-  />
-</section>
-       
+        <!-- ilustración integrada -->
+        <img
+          src="/hero-home.png"
+          alt="Ilustración principal de Vía Segura"
+          class="pointer-events-none absolute bottom-0 right-0 z-0 w-[68%] max-w-[260px] object-contain"
+        />
+      </section>
 
       <!-- acciones rápidas -->
       <section class="mt-6">
         <h2 class="text-[16px] font-bold text-[#2a2a2a]">Acciones rápidas</h2>
 
         <div class="mt-3 grid grid-cols-2 gap-3">
-          <ActionCard
-            title="Ver reportes"
-            to="/reportes"
-            accent="blue"
-          >
+          <ActionCard title="Ver reportes" to="/reportes" accent="blue">
             <template #icon>
               <EyeIcon class="h-6 w-6 text-[#3082e3]" />
             </template>
           </ActionCard>
 
           <ActionCard
-           title="Contactos de confianza"
+            title="Contactos de confianza"
             to="/contactos"
             accent="coral"
           >
             <template #icon>
-              <UsersIcon class="h-6 w-6 text-[#f2826d]" />
+              <UsersIcon class="h-5 w-5 text-[#f2826d]" />
+            </template>
+
+            <template #title>
+              <span class="block">Contactos</span>
+              <span class="block whitespace-nowrap -ml-2">de confianza</span>
             </template>
           </ActionCard>
 
-          <ActionCard
-            title="Recorrido seguro"
-            to="/compartir"
-            accent="green"
-          >
+          <ActionCard title="Recorrido seguro" to="/compartir" accent="green">
             <template #icon>
               <MapIcon class="h-6 w-6 text-[#20b486]" />
             </template>
@@ -242,11 +236,7 @@ export default {
             </template>
           </ActionCard>
 
-          <ActionCard
-            title="Info útil"
-            to="/info"
-            accent="yellow"
-          >
+          <ActionCard title="Info útil" to="/info" accent="yellow">
             <template #icon>
               <InformationCircleIcon class="h-6 w-6 text-[#f2b321]" />
             </template>
@@ -282,10 +272,14 @@ export default {
             <div>
               <p class="text-sm font-bold text-[#2a2a2a]">Tu impacto</p>
               <div class="flex items-end gap-2">
-                <span class="text-[34px] font-extrabold leading-none text-[#3082e3]">
+                <span
+                  class="text-[34px] font-extrabold leading-none text-[#3082e3]"
+                >
                   {{ gamification.community_points ?? 0 }}
                 </span>
-                <span class="pb-1 text-sm font-semibold text-[#2a2a2a]">puntos</span>
+                <span class="pb-1 text-sm font-semibold text-[#2a2a2a]"
+                  >puntos</span
+                >
               </div>
             </div>
           </div>
@@ -293,10 +287,18 @@ export default {
           <!-- mini edificio -->
           <div class="relative h-[55px] w-[68px] shrink-0">
             <HeartIcon class="absolute -top-1 right-1 h-6 w-6 text-[#f2826d]" />
-            <div class="absolute bottom-0 left-1 h-6 w-3 rounded-t bg-[#cfe0ff]"></div>
-            <div class="absolute bottom-0 left-5 h-9 w-4 rounded-t bg-[#9fc2fb]"></div>
-            <div class="absolute bottom-0 left-10 h-7 w-3 rounded-t bg-[#bfd5ff]"></div>
-            <div class="absolute bottom-0 right-1 h-5 w-2 rounded-t bg-[#dbe8ff]"></div>
+            <div
+              class="absolute bottom-0 left-1 h-6 w-3 rounded-t bg-[#cfe0ff]"
+            ></div>
+            <div
+              class="absolute bottom-0 left-5 h-9 w-4 rounded-t bg-[#9fc2fb]"
+            ></div>
+            <div
+              class="absolute bottom-0 left-10 h-7 w-3 rounded-t bg-[#bfd5ff]"
+            ></div>
+            <div
+              class="absolute bottom-0 right-1 h-5 w-2 rounded-t bg-[#dbe8ff]"
+            ></div>
             <div class="absolute bottom-0 right-0">
               <div class="h-5 w-5 rounded-full bg-[#3eb489]"></div>
               <div class="mx-auto h-2 w-0.5 bg-slate-500"></div>
@@ -334,7 +336,9 @@ export default {
       <!-- reportes recientes -->
       <section class="mt-6">
         <div class="mb-3 flex items-center justify-between">
-          <h2 class="text-[16px] font-bold text-[#2a2a2a]">Reportes recientes</h2>
+          <h2 class="text-[16px] font-bold text-[#2a2a2a]">
+            Reportes recientes
+          </h2>
           <router-link
             to="/reportes"
             class="text-sm font-semibold text-[#3082e3] hover:text-[#085baf]"
@@ -364,7 +368,9 @@ export default {
             />
 
             <div class="p-3">
-              <h4 class="line-clamp-2 text-[14px] font-bold leading-5 text-[#2a2a2a]">
+              <h4
+                class="line-clamp-2 text-[14px] font-bold leading-5 text-[#2a2a2a]"
+              >
                 {{ report.descripcion }}
               </h4>
 
@@ -384,7 +390,9 @@ export default {
                 </span>
               </div>
 
-              <div class="mt-2 flex items-start gap-1.5 text-[11px] text-slate-500">
+              <div
+                class="mt-2 flex items-start gap-1.5 text-[11px] text-slate-500"
+              >
                 <MapPinIcon class="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <p class="line-clamp-2">{{ report.ubicacion }}</p>
               </div>

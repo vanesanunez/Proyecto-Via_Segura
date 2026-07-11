@@ -75,7 +75,7 @@ const titleClasses = computed(() =>
           class="whitespace-normal"
           style="text-wrap: balance"
         >
-          {{ title }}
+          <slot name="title">{{ title }}</slot>
         </h3>
       </div>
     </div>
