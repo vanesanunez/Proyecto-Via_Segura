@@ -215,7 +215,7 @@ export default {
 
             <template #title>
               <span class="block">Contactos</span>
-              <span class="block whitespace-nowrap -ml-2">de confianza</span>
+              <span class="block whitespace-nowrap -ml-1">de confianza</span>
             </template>
           </ActionCard>
 
