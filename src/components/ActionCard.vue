@@ -25,7 +25,7 @@ const accentMap = {
   },
   yellow: {
     wrapper:
-      "border border-[#f9e3dd] bg-white hover:border-[#f5cfc4] hover:shadow-[0_10px_22px_rgba(242,130,109,0.10)]",
+      "border border-[#f9e3dd] bg-white hover:border-[#f3c8bd] hover:shadow-[0_10px_22px_rgba(242,130,109,0.10)]",
     iconWrap: "bg-[#fff1ed]",
   },
   "blue-soft": {
