@@ -221,7 +221,7 @@ export default {
 
           <ActionCard title="Recorrido seguro" to="/compartir" accent="green">
             <template #icon>
-              <MapIcon class="h-6 w-6 text-[#20b486]" />
+             <MapIcon class="h-5 w-5 text-[#3082e3]" />
             </template>
           </ActionCard>
 
@@ -236,9 +236,9 @@ export default {
             </template>
           </ActionCard>
 
-          <ActionCard title="Info útil" to="/info" accent="yellow">
+          <ActionCard title="Info útil" to="/info" accent="blue-soft">
             <template #icon>
-              <InformationCircleIcon class="h-6 w-6 text-[#f2b321]" />
+              <InformationCircleIcon class="h-5 w-5 text-[#f2826d]" />
             </template>
           </ActionCard>
 

@@ -20,13 +20,13 @@ const accentMap = {
   },
   green: {
     wrapper:
-      "border border-[#dbf3ea] bg-white hover:border-[#c4ebdc] hover:shadow-[0_10px_22px_rgba(32,180,134,0.10)]",
-    iconWrap: "bg-[#eefaf5]",
+    "border border-[#d6e8fb] bg-white hover:border-[#c4dcfa] hover:shadow-[0_10px_22px_rgba(48,130,227,0.08)]",
+    iconWrap: "bg-[#eef4ff]",
   },
   yellow: {
     wrapper:
-      "border border-[#f8edd0] bg-white hover:border-[#f3dfa2] hover:shadow-[0_10px_22px_rgba(242,179,33,0.10)]",
-    iconWrap: "bg-[#fff8e7]",
+      "border border-[#f9e3dd] bg-white hover:border-[#f5cfc4] hover:shadow-[0_10px_22px_rgba(242,130,109,0.10)]",
+    iconWrap: "bg-[#fff1ed]",
   },
   "blue-soft": {
     wrapper:
