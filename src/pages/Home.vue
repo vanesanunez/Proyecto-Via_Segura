@@ -290,13 +290,11 @@ export default {
             </div>
           </div>
 
-          <div
-            class="flex h-[90px] w-[100px] shrink-0 items-center justify-end overflow-hidden"
-          >
+          <div class="relative h-[80px] w-[105px] shrink-0 overflow-visible">
             <img
               src="/impacto-comunidad.png"
               alt="Ilustración del impacto en la comunidad"
-              class="h-full w-full object-contain object-right"
+              class="absolute inset-0 h-full w-full scale-[1.55] object-contain object-center"
             />
           </div>
         </div>
