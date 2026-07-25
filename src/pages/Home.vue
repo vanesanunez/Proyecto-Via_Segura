@@ -291,7 +291,7 @@ export default {
           </div>
 
           <div
-            class="flex h-[78px] w-[100px] shrink-0 items-center justify-end overflow-hidden"
+            class="flex h-[90px] w-[100px] shrink-0 items-center justify-end overflow-hidden"
           >
             <img
               src="/impacto-comunidad.png"
