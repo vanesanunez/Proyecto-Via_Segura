@@ -221,7 +221,7 @@ export default {
 
           <ActionCard title="Recorrido seguro" to="/compartir" accent="green">
             <template #icon>
-             <MapIcon class="h-5 w-5 text-[#3082e3]" />
+              <MapIcon class="h-5 w-5 text-[#3082e3]" />
             </template>
           </ActionCard>
 
@@ -258,73 +258,67 @@ export default {
       <section
         class="mt-5 rounded-[24px] border border-[#d6e8fb] bg-[#eef4ff] px-4 py-4 shadow-[0_10px_24px_rgba(148,163,184,0.08)]"
       >
+        <!-- Puntos e ilustración -->
         <div class="flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
+            <!-- Ícono de corazón -->
             <div
-              class="relative flex h-14 w-14 items-center justify-center rounded-full bg-white/80 text-[#3082e3]"
+              class="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/80 text-[#3082e3]"
             >
               <div
                 class="absolute inset-1 rounded-full border border-dashed border-[#c7daf7]"
               ></div>
-              <HeartIcon class="h-7 w-7" />
+
+              <HeartIcon class="relative h-7 w-7" />
             </div>
 
+            <!-- Puntaje -->
             <div>
               <p class="text-sm font-bold text-[#2a2a2a]">Tu impacto</p>
+
               <div class="flex items-end gap-2">
                 <span
                   class="text-[34px] font-extrabold leading-none text-[#3082e3]"
                 >
                   {{ gamification.community_points ?? 0 }}
                 </span>
-                <span class="pb-1 text-sm font-semibold text-[#2a2a2a]"
-                  >puntos</span
-                >
+
+                <span class="pb-1 text-sm font-semibold text-[#2a2a2a]">
+                  puntos
+                </span>
               </div>
             </div>
           </div>
 
-          <!-- mini edificio -->
-          <div class="relative h-[55px] w-[68px] shrink-0">
-            <HeartIcon class="absolute -top-1 right-1 h-6 w-6 text-[#f2826d]" />
-            <div
-              class="absolute bottom-0 left-1 h-6 w-3 rounded-t bg-[#cfe0ff]"
-            ></div>
-            <div
-              class="absolute bottom-0 left-5 h-9 w-4 rounded-t bg-[#9fc2fb]"
-            ></div>
-            <div
-              class="absolute bottom-0 left-10 h-7 w-3 rounded-t bg-[#bfd5ff]"
-            ></div>
-            <div
-              class="absolute bottom-0 right-1 h-5 w-2 rounded-t bg-[#dbe8ff]"
-            ></div>
-            <div class="absolute bottom-0 right-0">
-              <div class="h-5 w-5 rounded-full bg-[#3eb489]"></div>
-              <div class="mx-auto h-2 w-0.5 bg-slate-500"></div>
-            </div>
+          <div
+            class="flex h-[78px] w-[100px] shrink-0 items-center justify-end overflow-hidden"
+          >
+            <img
+              src="/impacto-comunidad.png"
+              alt="Ilustración del impacto en la comunidad"
+              class="h-full w-full object-contain object-right"
+            />
           </div>
         </div>
 
-        <div class="mt-4 flex items-center justify-between gap-3">
-          <div class="flex-1">
-            <div class="mb-1 flex items-center justify-between">
-              <span class="text-sm font-semibold text-[#2a2a2a]">
-                {{ progressSteps }}/4 acciones
-              </span>
-            </div>
-
-            <div class="h-2.5 overflow-hidden rounded-full bg-white/80">
-              <div
-                class="h-full rounded-full bg-[#3082e3] transition-all duration-500"
-                :style="{ width: progressPercent }"
-              ></div>
-            </div>
-
-            <p class="mt-2 text-xs text-slate-600">
-              {{ badgeLabel }}
-            </p>
+        <!-- Progreso -->
+        <div class="mt-4">
+          <div class="mb-1 flex items-center justify-between">
+            <span class="text-sm font-semibold text-[#2a2a2a]">
+              {{ progressSteps }}/4 acciones
+            </span>
           </div>
+
+          <div class="h-2.5 overflow-hidden rounded-full bg-white/80">
+            <div
+              class="h-full rounded-full bg-[#3082e3] transition-all duration-500"
+              :style="{ width: progressPercent }"
+            ></div>
+          </div>
+
+          <p class="mt-2 text-xs text-slate-600">
+            {{ badgeLabel }}
+          </p>
         </div>
       </section>
 
