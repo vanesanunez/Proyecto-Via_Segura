@@ -14,9 +14,9 @@ const accentMap = {
     iconWrap: "bg-[#eef4ff]",
   },
   coral: {
-    wrapper:
-      "border border-[#f8dfd9] bg-white hover:border-[#f3c8bd] hover:shadow-[0_10px_22px_rgba(242,130,109,0.10)]",
-    iconWrap: "bg-[#fff1ed]",
+   wrapper:
+      "border border-[#dfe9f7] bg-white hover:border-[#c7daf7] hover:shadow-[0_10px_22px_rgba(148,163,184,0.10)]",
+    iconWrap: "bg-[#eef4ff]",
   },
   green: {
     wrapper:
@@ -25,8 +25,8 @@ const accentMap = {
   },
   yellow: {
     wrapper:
-      "border border-[#f9e3dd] bg-white hover:border-[#f3c8bd] hover:shadow-[0_10px_22px_rgba(242,130,109,0.10)]",
-    iconWrap: "bg-[#fff1ed]",
+       "border border-[#dfe9f7] bg-white hover:border-[#c7daf7] hover:shadow-[0_10px_22px_rgba(148,163,184,0.10)]",
+    iconWrap: "bg-[#eef4ff]",
   },
   "blue-soft": {
     wrapper:

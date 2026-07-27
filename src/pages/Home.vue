@@ -207,10 +207,10 @@ export default {
           <ActionCard
             title="Contactos de confianza"
             to="/contactos"
-            accent="coral"
+            accent="blue-soft"
           >
             <template #icon>
-              <UsersIcon class="h-5 w-5 text-[#f2826d]" />
+              <UsersIcon class="h-5 w-5 text-[#3082e3]" />
             </template>
 
             <template #title>
@@ -236,9 +236,9 @@ export default {
             </template>
           </ActionCard>
 
-          <ActionCard title="Info útil" to="/info" accent="blue-soft">
+          <ActionCard title="Info útil" to="/info-util" accent="blue-soft">
             <template #icon>
-              <InformationCircleIcon class="h-5 w-5 text-[#f2826d]" />
+              <InformationCircleIcon class="h-5 w-5 text-[#3082e3]" />
             </template>
           </ActionCard>
 
