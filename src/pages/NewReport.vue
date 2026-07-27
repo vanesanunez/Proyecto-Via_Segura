@@ -312,560 +312,577 @@ function startNewReport() {
 </script>
 
 <template>
-  <div class="mx-auto mt-4 max-w-xl px-4 pb-28">
-    <!-- Header / progreso -->
-    <header
-      class="rounded-[28px] bg-[#3082e3] px-5 py-5 text-white shadow-[0_12px_28px_rgba(48,130,227,0.24)]"
-    >
-      <div class="min-w-0">
-        <span
-          class="inline-flex rounded-full bg-white/20 px-3 py-1 text-[11px] font-semibold"
-        >
-          Reporte guiado
-        </span>
-
-        <h1 class="mt-3 text-[28px] font-bold leading-tight">Nuevo reporte</h1>
-
-        <p class="mt-2 text-[15px] leading-[1.6] text-white/85">
-          Creá un reporte claro y útil para ayudar a visibilizar lo que pasa en
-          tu zona.
-        </p>
-      </div>
-
-      <div class="mt-4">
-        <div
-          class="mb-2 flex items-center justify-between text-sm text-white/85"
-        >
-          <span>Progreso</span>
-          <span>{{ completedSteps }}/4 pasos</span>
-        </div>
-
-        <div class="h-2 overflow-hidden rounded-full bg-white/20">
-          <div
-            class="h-full rounded-full bg-white transition-all duration-300"
-            :style="{ width: `${progressPercent}%` }"
-          ></div>
-        </div>
-
-        <p class="mt-3 text-sm text-white/85">
-          Completá los pasos para enviar un reporte claro y validable.
-        </p>
-      </div>
-    </header>
-
-    <form @submit.prevent="handleSubmit" class="mt-5 space-y-4">
-      <!-- PASO 1 -->
-      <section
-        :class="[
-          'rounded-[24px] bg-[#E0E5EC] p-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)] transition-all',
-          showOnboarding && onboardingStep === 1 ? 'ring-2 ring-[#3082e3]' : '',
-        ]"
+  <div class="min-h-screen bg-[#f7f9f6] pb-28">
+    <div class="mx-auto max-w-xl px-4 pt-5">
+      <!-- Header / progreso -->
+      <header
+        class="rounded-[28px] bg-[#3082e3] px-5 py-5 text-white shadow-[0_12px_28px_rgba(48,130,227,0.24)]"
       >
-        <div class="flex items-center gap-2 flex-wrap">
+        <div class="min-w-0">
           <span
-            class="rounded-full bg-[#eef4ff] px-3 py-1 text-[11px] font-semibold text-[#3082e3]"
+            class="inline-flex rounded-full bg-white/20 px-3 py-1 text-[11px] font-semibold"
           >
-            Paso 1
+            Reporte guiado
           </span>
-          <span class="text-sm font-medium text-slate-500">
-            Ubicación precisa
-          </span>
+
+          <h1 class="mt-3 text-[28px] font-bold leading-tight">
+            Nuevo reporte
+          </h1>
+
+          <p class="mt-2 text-[15px] leading-[1.6] text-white/85">
+            Creá un reporte claro y útil para ayudar a visibilizar lo que pasa
+            en tu zona.
+          </p>
         </div>
-
-        <label class="mt-3 block text-[18px] font-bold text-slate-900">
-          Elegí el lugar del problema
-        </label>
-
-        <p class="mt-1 text-sm leading-6 text-slate-500">
-          Marcá el punto exacto para que otras personas puedan ubicarlo rápido.
-        </p>
 
         <div class="mt-4">
-          <MapSearchPicker
-            v-model="coords"
-            height="230px"
-            @resolved-address="ubicacion = $event"
-          />
-        </div>
+          <div
+            class="mb-2 flex items-center justify-between text-sm text-white/85"
+          >
+            <span>Progreso</span>
+            <span>{{ completedSteps }}/4 pasos</span>
+          </div>
 
-        <div
-          v-if="coords"
-          class="mt-3 rounded-2xl bg-white/70 px-4 py-3 text-sm text-slate-600"
+          <div class="h-2 overflow-hidden rounded-full bg-white/20">
+            <div
+              class="h-full rounded-full bg-white transition-all duration-300"
+              :style="{ width: `${progressPercent}%` }"
+            ></div>
+          </div>
+
+          <p class="mt-3 text-sm text-white/85">
+            Completá los pasos para enviar un reporte claro y validable.
+          </p>
+        </div>
+      </header>
+
+      <form @submit.prevent="handleSubmit" class="mt-5 space-y-4">
+        <!-- PASO 1 -->
+        <section
+          :class="[
+            'rounded-[24px] border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
+            showOnboarding && onboardingStep === 1
+              ? 'ring-2 ring-[#3082e3]'
+              : '',
+          ]"
         >
-          Punto confirmado:
-          {{ coords.lat?.toFixed(5) }}, {{ coords.lng?.toFixed(5) }}
-        </div>
-      </section>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span
+              class="rounded-full bg-[#eef4ff] px-3 py-1 text-[11px] font-semibold text-[#3082e3]"
+            >
+              Paso 1
+            </span>
+            <span class="text-sm font-medium text-slate-500">
+              Ubicación precisa
+            </span>
+          </div>
 
-      <!-- PASO 2 -->
-      <section
-        :class="[
-          'rounded-[24px] bg-[#E0E5EC] p-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)] transition-all',
-          showOnboarding && onboardingStep === 2 ? 'ring-2 ring-[#3082e3]' : '',
-        ]"
-      >
-        <div class="flex items-center gap-2 flex-wrap">
-          <span
-            class="rounded-full bg-[#eef4ff] px-3 py-1 text-[11px] font-semibold text-[#3082e3]"
-          >
-            Paso 2
-          </span>
-          <span class="text-sm font-medium text-slate-500">
-            Tipo de problema
-          </span>
-        </div>
-
-        <label class="mt-3 block text-[18px] font-bold text-slate-900">
-          Elegí una categoría
-        </label>
-
-        <p class="mt-1 text-sm leading-6 text-slate-500">
-          Esto ayuda a ordenar el reclamo y detectar si ya existe uno parecido.
-        </p>
-
-        <select
-          v-model="categoria"
-          class="mt-4 w-full rounded-2xl border-0 bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.16)] focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25"
-        >
-          <option disabled value="">Elegí una categoría</option>
-          <option>Iluminación</option>
-          <option>Infraestructura</option>
-          <option>Seguridad</option>
-        </select>
-
-        <div class="mt-4 flex justify-end">
-          <button
-            type="button"
-            @click="findSimilarReports"
-            :disabled="!canSearchSimilar"
-            class="text-sm font-medium underline underline-offset-2 transition"
-            :class="
-              canSearchSimilar
-                ? 'text-[#3082e3] hover:text-[#085baf]'
-                : 'cursor-not-allowed text-slate-400'
-            "
-          >
-            Ver si ya hay reclamos en esta zona
-          </button>
-        </div>
-
-        <p v-if="buscandoSimilares" class="mt-3 text-sm text-slate-500">
-          Buscando reportes similares...
-        </p>
-
-        <p
-          v-if="errorSimilares"
-          class="mt-3 rounded-2xl bg-white/70 px-4 py-3 text-sm text-slate-600"
-        >
-          {{ errorSimilares }}
-        </p>
-      </section>
-
-      <!-- PASO 3 -->
-      <section
-        :class="[
-          'rounded-[24px] bg-[#E0E5EC] p-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)] transition-all',
-          showOnboarding && onboardingStep === 3 ? 'ring-2 ring-[#3082e3]' : '',
-        ]"
-      >
-        <div class="flex items-center gap-2 flex-wrap">
-          <span
-            class="rounded-full bg-[#eef4ff] px-3 py-1 text-[11px] font-semibold text-[#3082e3]"
-          >
-            Paso 3
-          </span>
-          <span class="text-sm font-medium text-slate-500">
-            Qué está pasando
-          </span>
-        </div>
-
-        <label class="mt-3 block text-[18px] font-bold text-slate-900">
-          Describí el problema
-        </label>
-
-        <p class="mt-1 text-sm leading-6 text-slate-500">
-          Contalo claro y breve. No hace falta escribir mucho.
-        </p>
-
-        <textarea
-          v-model="descripcion"
-          :disabled="hasSimilarReports"
-          class="mt-4 min-h-[110px] w-full rounded-2xl border border-transparent bg-white px-4 py-3 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.16)] focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25 disabled:bg-gray-100 disabled:text-gray-500"
-          placeholder="Ejemplo: la calle está muy oscura y no se ve bien al caminar de noche."
-        ></textarea>
-
-        <p
-          v-if="hasSimilarReports"
-          class="mt-3 rounded-2xl bg-yellow-50 px-4 py-3 text-sm leading-normal text-yellow-700"
-        >
-          Encontramos reportes similares en esta zona. Sumate a uno existente en
-          lugar de crear uno nuevo.
-        </p>
-      </section>
-
-      <!-- PASO 4 -->
-      <section
-        :class="[
-          'rounded-[24px] bg-[#E0E5EC] p-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)] transition-all',
-          showOnboarding && onboardingStep === 4 ? 'ring-2 ring-[#3082e3]' : '',
-        ]"
-      >
-        <div class="flex items-center gap-2 flex-wrap">
-          <span
-            class="rounded-full bg-[#fff1ed] px-3 py-1 text-[11px] font-semibold text-[#f2826d]"
-          >
-            Paso 4
-          </span>
-          <span class="text-sm font-medium text-slate-500">
-            Evidencia visual
-          </span>
-        </div>
-
-        <label class="mt-3 block text-[18px] font-bold text-slate-900">
-          Subí una foto del lugar
-        </label>
-
-        <p class="mt-1 text-sm leading-6 text-slate-500">
-          La imagen es obligatoria porque ayuda a validar mejor el reporte.
-        </p>
-
-        <div class="mt-4 flex flex-col items-center">
-          <label
-            for="imageUpload"
-            class="cursor-pointer rounded-2xl bg-[#3082e3] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#085baf] active:scale-95"
-          >
-            Incluir imagen
+          <label class="mt-3 block text-[18px] font-bold text-slate-900">
+            Elegí el lugar del problema
           </label>
 
-          <input
-            id="imageUpload"
-            type="file"
-            accept="image/*"
-            class="hidden"
-            @change="onFileChange"
-          />
-
-          <p v-if="selectedFileName" class="mt-3 text-sm text-slate-600">
-            {{ selectedFileName }}
+          <p class="mt-1 text-sm leading-6 text-slate-500">
+            Marcá el punto exacto para que otras personas puedan ubicarlo
+            rápido.
           </p>
-        </div>
-      </section>
 
-      <!-- ERROR -->
-      <div
-        v-if="errorMessage"
-        class="rounded-2xl bg-[#fff1ed] px-4 py-3 text-sm font-medium text-[#e67661]"
-      >
-        {{ errorMessage }}
-      </div>
+          <div class="mt-4">
+            <MapSearchPicker
+              v-model="coords"
+              height="230px"
+              @resolved-address="ubicacion = $event"
+            />
+          </div>
 
-      <!-- CTA -->
-      <div class="space-y-3 pt-1">
-        <button
-          type="submit"
-          :disabled="hasSimilarReports || isSubmitting"
-          class="w-full rounded-2xl bg-[#3082e3] px-4 py-3 text-base font-semibold text-white transition hover:bg-[#085baf] disabled:cursor-not-allowed disabled:bg-gray-300"
+          <div
+            v-if="coords"
+            class="mt-3 rounded-2xl bg-white/70 px-4 py-3 text-sm text-slate-600"
+          >
+            Punto confirmado:
+            {{ coords.lat?.toFixed(5) }}, {{ coords.lng?.toFixed(5) }}
+          </div>
+        </section>
+
+        <!-- PASO 2 -->
+        <section
+          :class="[
+            'rounded-[24px] border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
+            showOnboarding && onboardingStep === 2
+              ? 'ring-2 ring-[#3082e3]'
+              : '',
+          ]"
         >
-          {{ isSubmitting ? "Enviando..." : "Enviar reporte" }}
-        </button>
-      </div>
-    </form>
-
-    <!-- ONBOARDING -->
-    <transition
-      enter-active-class="transition duration-300 ease-out"
-      enter-from-class="opacity-0 scale-95"
-      enter-to-class="opacity-100 scale-100"
-      leave-active-class="transition duration-200 ease-in"
-      leave-from-class="opacity-100 scale-100"
-      leave-to-class="opacity-0 scale-95"
-    >
-      <div
-        v-if="showOnboarding"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4 backdrop-blur-[2px]"
-      >
-        <div
-          class="relative w-full max-w-sm overflow-hidden rounded-[30px] bg-white px-5 pb-6 pt-5 shadow-[0_22px_48px_rgba(15,23,42,0.20)]"
-        >
-          <div class="flex items-center justify-between gap-3">
-            <div
-              class="inline-flex items-center gap-2 rounded-full bg-[#eef4ff] px-4 py-2 text-[14px] font-semibold text-[#3082e3]"
+          <div class="flex items-center gap-2 flex-wrap">
+            <span
+              class="rounded-full bg-[#eef4ff] px-3 py-1 text-[11px] font-semibold text-[#3082e3]"
             >
-              <LightBulbIcon class="h-5 w-5" />
-              <span>Consejos para crear tu reporte</span>
-            </div>
+              Paso 2
+            </span>
+            <span class="text-sm font-medium text-slate-500">
+              Tipo de problema
+            </span>
+          </div>
 
+          <label class="mt-3 block text-[18px] font-bold text-slate-900">
+            Elegí una categoría
+          </label>
+
+          <p class="mt-1 text-sm leading-6 text-slate-500">
+            Esto ayuda a ordenar el reclamo y detectar si ya existe uno
+            parecido.
+          </p>
+
+          <select
+            v-model="categoria"
+            class="mt-4 w-full rounded-2xl border border-[#d6e8fb] bg-[#f9fbfd] px-4 py-3 text-sm text-slate-700 transition focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25"
+          >
+            <option disabled value="">Elegí una categoría</option>
+            <option>Iluminación</option>
+            <option>Infraestructura</option>
+            <option>Seguridad</option>
+          </select>
+
+          <div class="mt-4 flex justify-end">
             <button
               type="button"
-              @click="skipOnboarding"
-              class="text-[15px] font-medium text-slate-400 transition hover:text-slate-600"
+              @click="findSimilarReports"
+              :disabled="!canSearchSimilar"
+              class="text-sm font-medium underline underline-offset-2 transition"
+              :class="
+                canSearchSimilar
+                  ? 'text-[#3082e3] hover:text-[#085baf]'
+                  : 'cursor-not-allowed text-slate-400'
+              "
             >
-              Saltar
+              Ver si ya hay reclamos en esta zona
             </button>
           </div>
 
-          <div class="relative mx-auto mt-6 h-[190px] w-full max-w-[290px]">
-            <div
-              class="absolute left-1/2 top-1/2 h-[150px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#eef4ff]"
-            ></div>
+          <p v-if="buscandoSimilares" class="mt-3 text-sm text-slate-500">
+            Buscando reportes similares...
+          </p>
 
-            <div
-              class="absolute left-6 top-10 h-3 w-7 rounded-full bg-[#dbeafe] opacity-80"
-            ></div>
-            <div
-              class="absolute left-11 top-12 h-3 w-3 rounded-full bg-[#dbeafe] opacity-80"
-            ></div>
-            <div
-              class="absolute right-8 top-12 h-3 w-7 rounded-full bg-[#dbeafe] opacity-80"
-            ></div>
-            <div
-              class="absolute right-12 top-14 h-3 w-3 rounded-full bg-[#dbeafe] opacity-80"
-            ></div>
+          <p
+            v-if="errorSimilares"
+            class="mt-3 rounded-2xl bg-white/70 px-4 py-3 text-sm text-slate-600"
+          >
+            {{ errorSimilares }}
+          </p>
+        </section>
 
-            <div
-              class="absolute right-8 top-4 h-5 w-[2px] rotate-12 rounded-full bg-[#60a5fa]"
-            ></div>
-            <div
-              class="absolute right-3 top-10 h-[2px] w-4 rounded-full bg-[#60a5fa]"
-            ></div>
+        <!-- PASO 3 -->
+        <section
+          :class="[
+            'rounded-[24px] border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
+            showOnboarding && onboardingStep === 3
+              ? 'ring-2 ring-[#3082e3]'
+              : '',
+          ]"
+        >
+          <div class="flex items-center gap-2 flex-wrap">
+            <span
+              class="rounded-full bg-[#eef4ff] px-3 py-1 text-[11px] font-semibold text-[#3082e3]"
+            >
+              Paso 3
+            </span>
+            <span class="text-sm font-medium text-slate-500">
+              Qué está pasando
+            </span>
+          </div>
 
-            <div class="absolute bottom-8 left-6 flex gap-1">
-              <div
-                class="h-10 w-6 rotate-[-24deg] rounded-full bg-[#b7e3a1]"
-              ></div>
-              <div
-                class="h-8 w-5 rotate-[16deg] rounded-full bg-[#8ed081]"
-              ></div>
-            </div>
+          <label class="mt-3 block text-[18px] font-bold text-slate-900">
+            Describí el problema
+          </label>
 
-            <div
-              class="absolute bottom-3 left-1/2 h-[32px] w-[180px] -translate-x-1/2 rounded-[16px] bg-white shadow-[0_10px_22px_rgba(148,163,184,0.20)]"
-            ></div>
-            <div
-              class="absolute bottom-6 left-1/2 h-[8px] w-[152px] -translate-x-1/2 rounded-full bg-[#e5e7eb]"
-            ></div>
-            <div
-              class="absolute bottom-6 left-[74px] h-[8px] w-9 rounded bg-[#d9f99d]"
-            ></div>
-            <div
-              class="absolute bottom-6 left-[118px] h-[8px] w-9 rounded bg-[#bbf7d0]"
-            ></div>
-            <div
-              class="absolute bottom-6 left-[162px] h-[8px] w-9 rounded bg-[#d9f99d]"
-            ></div>
+          <p class="mt-1 text-sm leading-6 text-slate-500">
+            Contalo claro y breve. No hace falta escribir mucho.
+          </p>
 
-            <component
-              :is="onboardingContent.icon"
-              class="absolute left-1/2 top-1/2 h-[95px] w-[95px] -translate-x-1/2 -translate-y-1/2 text-[#3082e3] drop-shadow-[0_12px_18px_rgba(48,130,227,0.18)]"
+          <textarea
+            v-model="descripcion"
+            :disabled="hasSimilarReports"
+            class="mt-4 min-h-[110px] w-full rounded-2xl border border-[#d6e8fb] bg-[#f9fbfd] px-4 py-3 text-sm text-slate-700 transition focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25 disabled:bg-gray-100 disabled:text-gray-500"
+            placeholder="Ejemplo: la calle está muy oscura y no se ve bien al caminar de noche."
+          ></textarea>
+
+          <p
+            v-if="hasSimilarReports"
+            class="mt-3 rounded-2xl bg-yellow-50 px-4 py-3 text-sm leading-normal text-yellow-700"
+          >
+            Encontramos reportes similares en esta zona. Sumate a uno existente
+            en lugar de crear uno nuevo.
+          </p>
+        </section>
+
+        <!-- PASO 4 -->
+        <section
+          :class="[
+            'rounded-[24px] border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
+            showOnboarding && onboardingStep === 4
+              ? 'ring-2 ring-[#3082e3]'
+              : '',
+          ]"
+        >
+          <div class="flex items-center gap-2 flex-wrap">
+            <span
+              class="rounded-full bg-[#fff1ed] px-3 py-1 text-[11px] font-semibold text-[#f2826d]"
+            >
+              Paso 4
+            </span>
+            <span class="text-sm font-medium text-slate-500">
+              Evidencia visual
+            </span>
+          </div>
+
+          <label class="mt-3 block text-[18px] font-bold text-slate-900">
+            Subí una foto del lugar
+          </label>
+
+          <p class="mt-1 text-sm leading-6 text-slate-500">
+            La imagen es obligatoria porque ayuda a validar mejor el reporte.
+          </p>
+
+          <div class="mt-4 flex flex-col items-center">
+            <label
+              for="imageUpload"
+              class="cursor-pointer rounded-2xl bg-[#3082e3] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#085baf] active:scale-95"
+            >
+              Incluir imagen
+            </label>
+
+            <input
+              id="imageUpload"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="onFileChange"
             />
 
-            <div
-              class="absolute bottom-10 right-6 flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#f2826d] shadow-[0_12px_18px_rgba(242,130,109,0.26)]"
-            >
-              <ShieldCheckIcon class="h-7 w-7 text-white" />
-            </div>
-          </div>
-
-          <div class="mt-3 text-left">
-            <h2 class="text-[22px] font-bold leading-tight text-slate-900">
-              {{ onboardingContent.title }}
-            </h2>
-
-            <p class="mt-3 text-[16px] leading-[1.65] text-slate-600">
-              {{ onboardingContent.text }}
+            <p v-if="selectedFileName" class="mt-3 text-sm text-slate-600">
+              {{ selectedFileName }}
             </p>
+          </div>
+        </section>
 
-            <div
-              class="mt-5 inline-flex items-center gap-2 rounded-full bg-[#eef4ff] px-4 py-3 text-[15px] font-medium text-[#3082e3]"
-            >
-              <span class="text-[#f2826d] text-lg">❤</span>
-              <span>{{ onboardingContent.helper }}</span>
+        <!-- ERROR -->
+        <div
+          v-if="errorMessage"
+          class="rounded-2xl bg-[#fff1ed] px-4 py-3 text-sm font-medium text-[#e67661]"
+        >
+          {{ errorMessage }}
+        </div>
+
+        <!-- CTA -->
+        <div class="space-y-3 pt-1">
+          <button
+            type="submit"
+            :disabled="hasSimilarReports || isSubmitting"
+            class="w-full rounded-2xl bg-[#3082e3] px-4 py-3 text-base font-semibold text-white transition hover:bg-[#085baf] disabled:cursor-not-allowed disabled:bg-gray-300"
+          >
+            {{ isSubmitting ? "Enviando..." : "Enviar reporte" }}
+          </button>
+        </div>
+      </form>
+
+      <!-- ONBOARDING -->
+      <transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="opacity-0 scale-95"
+        enter-to-class="opacity-100 scale-100"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-95"
+      >
+        <div
+          v-if="showOnboarding"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4 backdrop-blur-[2px]"
+        >
+          <div
+            class="relative w-full max-w-sm overflow-hidden rounded-[30px] bg-white px-5 pb-6 pt-5 shadow-[0_22px_48px_rgba(15,23,42,0.20)]"
+          >
+            <div class="flex items-center justify-between gap-3">
+              <div
+                class="inline-flex items-center gap-2 rounded-full bg-[#eef4ff] px-4 py-2 text-[14px] font-semibold text-[#3082e3]"
+              >
+                <LightBulbIcon class="h-5 w-5" />
+                <span>Consejos para crear tu reporte</span>
+              </div>
+
+              <button
+                type="button"
+                @click="skipOnboarding"
+                class="text-[15px] font-medium text-slate-400 transition hover:text-slate-600"
+              >
+                Saltar
+              </button>
+            </div>
+
+            <div class="relative mx-auto mt-6 h-[190px] w-full max-w-[290px]">
+              <div
+                class="absolute left-1/2 top-1/2 h-[150px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#eef4ff]"
+              ></div>
+
+              <div
+                class="absolute left-6 top-10 h-3 w-7 rounded-full bg-[#dbeafe] opacity-80"
+              ></div>
+              <div
+                class="absolute left-11 top-12 h-3 w-3 rounded-full bg-[#dbeafe] opacity-80"
+              ></div>
+              <div
+                class="absolute right-8 top-12 h-3 w-7 rounded-full bg-[#dbeafe] opacity-80"
+              ></div>
+              <div
+                class="absolute right-12 top-14 h-3 w-3 rounded-full bg-[#dbeafe] opacity-80"
+              ></div>
+
+              <div
+                class="absolute right-8 top-4 h-5 w-[2px] rotate-12 rounded-full bg-[#60a5fa]"
+              ></div>
+              <div
+                class="absolute right-3 top-10 h-[2px] w-4 rounded-full bg-[#60a5fa]"
+              ></div>
+
+              <div class="absolute bottom-8 left-6 flex gap-1">
+                <div
+                  class="h-10 w-6 rotate-[-24deg] rounded-full bg-[#b7e3a1]"
+                ></div>
+                <div
+                  class="h-8 w-5 rotate-[16deg] rounded-full bg-[#8ed081]"
+                ></div>
+              </div>
+
+              <div
+                class="absolute bottom-3 left-1/2 h-[32px] w-[180px] -translate-x-1/2 rounded-[16px] bg-white shadow-[0_10px_22px_rgba(148,163,184,0.20)]"
+              ></div>
+              <div
+                class="absolute bottom-6 left-1/2 h-[8px] w-[152px] -translate-x-1/2 rounded-full bg-[#e5e7eb]"
+              ></div>
+              <div
+                class="absolute bottom-6 left-[74px] h-[8px] w-9 rounded bg-[#d9f99d]"
+              ></div>
+              <div
+                class="absolute bottom-6 left-[118px] h-[8px] w-9 rounded bg-[#bbf7d0]"
+              ></div>
+              <div
+                class="absolute bottom-6 left-[162px] h-[8px] w-9 rounded bg-[#d9f99d]"
+              ></div>
+
+              <component
+                :is="onboardingContent.icon"
+                class="absolute left-1/2 top-1/2 h-[95px] w-[95px] -translate-x-1/2 -translate-y-1/2 text-[#3082e3] drop-shadow-[0_12px_18px_rgba(48,130,227,0.18)]"
+              />
+
+              <div
+                class="absolute bottom-10 right-6 flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#f2826d] shadow-[0_12px_18px_rgba(242,130,109,0.26)]"
+              >
+                <ShieldCheckIcon class="h-7 w-7 text-white" />
+              </div>
+            </div>
+
+            <div class="mt-3 text-left">
+              <h2 class="text-[22px] font-bold leading-tight text-slate-900">
+                {{ onboardingContent.title }}
+              </h2>
+
+              <p class="mt-3 text-[16px] leading-[1.65] text-slate-600">
+                {{ onboardingContent.text }}
+              </p>
+
+              <div
+                class="mt-5 inline-flex items-center gap-2 rounded-full bg-[#eef4ff] px-4 py-3 text-[15px] font-medium text-[#3082e3]"
+              >
+                <span class="text-[#f2826d] text-lg">❤</span>
+                <span>{{ onboardingContent.helper }}</span>
+              </div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-between gap-4">
+              <div class="flex items-center gap-2">
+                <span
+                  v-for="i in 4"
+                  :key="i"
+                  class="rounded-full transition-all duration-300"
+                  :class="
+                    i === onboardingStep
+                      ? 'h-3 w-3 bg-[#3082e3]'
+                      : 'h-3 w-3 bg-slate-300'
+                  "
+                ></span>
+              </div>
+
+              <button
+                type="button"
+                @click="nextOnboarding"
+                class="inline-flex items-center gap-2 rounded-[16px] bg-[#3082e3] px-6 py-3 text-[16px] font-semibold text-white shadow-[0_10px_22px_rgba(48,130,227,0.28)] transition hover:bg-[#236fcd] active:scale-[0.98]"
+              >
+                {{ onboardingContent.button }}
+                <ArrowRightIcon class="h-5 w-5" />
+              </button>
             </div>
           </div>
+        </div>
+      </transition>
 
-          <div class="mt-6 flex items-center justify-between gap-4">
-            <div class="flex items-center gap-2">
-              <span
-                v-for="i in 4"
-                :key="i"
-                class="rounded-full transition-all duration-300"
-                :class="
-                  i === onboardingStep
-                    ? 'h-3 w-3 bg-[#3082e3]'
-                    : 'h-3 w-3 bg-slate-300'
-                "
-              ></span>
-            </div>
+      <!-- MODAL POPUP: similares -->
+      <div
+        v-if="showSimilarHintModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      >
+        <div
+          class="relative w-11/12 max-w-sm rounded-2xl bg-white p-5 shadow-xl"
+        >
+          <button
+            @click="showSimilarHintModal = false"
+            class="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+          >
+            <XMarkIcon class="h-5 w-5" />
+          </button>
+
+          <div class="mb-3 flex items-center gap-2">
+            <ExclamationTriangleIcon class="h-6 w-6 text-[#3082e3]" />
+            <p class="text-base font-semibold text-gray-800">
+              Evitá duplicar reclamos
+            </p>
+          </div>
+
+          <p class="mb-4 text-sm leading-snug text-gray-700">
+            Encontramos reportes similares en esta zona. Podés sumarte a uno
+            existente para darle más fuerza y prioridad.
+          </p>
+
+          <div class="space-y-2">
+            <button
+              type="button"
+              @click="
+                showSimilarHintModal = false;
+                showBottomSheet = true;
+              "
+              class="w-full rounded-lg bg-[#3082e3] py-2.5 font-medium text-white transition hover:bg-[#085baf] active:scale-[.98]"
+            >
+              Ver reportes similares
+            </button>
 
             <button
               type="button"
-              @click="nextOnboarding"
-              class="inline-flex items-center gap-2 rounded-[16px] bg-[#3082e3] px-6 py-3 text-[16px] font-semibold text-white shadow-[0_10px_22px_rgba(48,130,227,0.28)] transition hover:bg-[#236fcd] active:scale-[0.98]"
+              @click="showSimilarHintModal = false"
+              class="w-full rounded-lg bg-gray-100 py-2.5 font-medium text-gray-700 hover:bg-gray-200 active:scale-[.98]"
             >
-              {{ onboardingContent.button }}
-              <ArrowRightIcon class="h-5 w-5" />
+              Cerrar
             </button>
           </div>
         </div>
       </div>
-    </transition>
 
-    <!-- MODAL POPUP: similares -->
-    <div
-      v-if="showSimilarHintModal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-    >
-      <div class="relative w-11/12 max-w-sm rounded-2xl bg-white p-5 shadow-xl">
-        <button
-          @click="showSimilarHintModal = false"
-          class="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-        >
-          <XMarkIcon class="h-5 w-5" />
-        </button>
-
-        <div class="mb-3 flex items-center gap-2">
-          <ExclamationTriangleIcon class="h-6 w-6 text-[#3082e3]" />
-          <p class="text-base font-semibold text-gray-800">
-            Evitá duplicar reclamos
-          </p>
-        </div>
-
-        <p class="mb-4 text-sm leading-snug text-gray-700">
-          Encontramos reportes similares en esta zona. Podés sumarte a uno
-          existente para darle más fuerza y prioridad.
-        </p>
-
-        <div class="space-y-2">
-          <button
-            type="button"
-            @click="
-              showSimilarHintModal = false;
-              showBottomSheet = true;
-            "
-            class="w-full rounded-lg bg-[#3082e3] py-2.5 font-medium text-white transition hover:bg-[#085baf] active:scale-[.98]"
-          >
-            Ver reportes similares
-          </button>
-
-          <button
-            type="button"
-            @click="showSimilarHintModal = false"
-            class="w-full rounded-lg bg-gray-100 py-2.5 font-medium text-gray-700 hover:bg-gray-200 active:scale-[.98]"
-          >
-            Cerrar
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- MODAL ÉXITO SUMARSE -->
-    <div
-      v-if="showSuccessSheet"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-    >
+      <!-- MODAL ÉXITO SUMARSE -->
       <div
-        class="relative flex w-11/12 max-w-sm flex-col items-center gap-3 rounded-2xl bg-white p-6 shadow-xl"
+        v-if="showSuccessSheet"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       >
-        <button
-          @click="showSuccessSheet = false"
-          class="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-        >
-          <XMarkIcon class="h-5 w-5" />
-        </button>
-
         <div
-          class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100"
+          class="relative flex w-11/12 max-w-sm flex-col items-center gap-3 rounded-2xl bg-white p-6 shadow-xl"
         >
-          <CheckCircleIcon class="h-8 w-8 text-green-600" />
-        </div>
-
-        <h2 class="text-center text-lg font-semibold text-gray-800">
-          ¡Te sumaste al reclamo!
-        </h2>
-
-        <p class="mb-2 text-center text-sm leading-relaxed text-gray-700">
-          Gracias por contribuir a la seguridad de tu zona. Tu apoyo se registró
-          correctamente.
-        </p>
-
-        <div class="mt-1 w-full space-y-3">
           <button
-            @click="router.push('/')"
-            class="w-full rounded-lg bg-[#3082e3] py-2.5 font-medium text-white transition hover:bg-[#085baf] active:scale-[.98]"
+            @click="showSuccessSheet = false"
+            class="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
           >
-            Ir al inicio
+            <XMarkIcon class="h-5 w-5" />
           </button>
 
-          <button
-            type="button"
-            @click="startNewReport"
-            class="w-full rounded-lg bg-gray-100 py-2.5 font-medium text-gray-700 hover:bg-gray-200 active:scale-[.98]"
+          <div
+            class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100"
           >
-            Hacer un nuevo reporte
-          </button>
-        </div>
-      </div>
-    </div>
+            <CheckCircleIcon class="h-8 w-8 text-green-600" />
+          </div>
 
-    <!-- OVERLAY -->
-    <div
-      v-if="showBottomSheet"
-      class="fixed inset-0 z-40 bg-black/40"
-      @click="showBottomSheet = false"
-    ></div>
+          <h2 class="text-center text-lg font-semibold text-gray-800">
+            ¡Te sumaste al reclamo!
+          </h2>
 
-    <!-- BOTTOM SHEET -->
-    <div
-      v-if="showBottomSheet"
-      class="fixed bottom-0 left-0 z-50 w-full rounded-t-2xl bg-white p-4 pb-8 shadow-xl animate-slide-up"
-    >
-      <div class="mb-2 flex justify-center">
-        <div class="h-1.5 w-12 rounded-full bg-gray-300"></div>
-      </div>
-
-      <div class="mb-3 flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-gray-800">Reportes similares</h2>
-
-        <button @click="showBottomSheet = false" class="text-gray-500">
-          <XMarkIcon class="h-6 w-6" />
-        </button>
-      </div>
-
-      <p class="mb-3 text-sm leading-normal text-gray-700">
-        Ya existen reportes parecidos en esta zona. Podés sumarte a uno de ellos
-        para darle más fuerza al reclamo.
-      </p>
-
-      <ul class="max-h-64 space-y-3 overflow-y-auto">
-        <li
-          v-for="r in similares"
-          :key="r.id"
-          class="rounded-lg border bg-gray-50 p-3 shadow-sm"
-        >
-          <p class="font-medium text-gray-800">{{ r.categoria }}</p>
-          <p class="text-sm text-gray-700">{{ r.ubicacion }}</p>
-          <p class="mt-1 text-xs text-gray-500">
-            Apoyos:
-            <span class="font-semibold">{{ r.apoyos ?? 0 }}</span>
-            — {{ new Date(r.created_at).toLocaleDateString() }}
+          <p class="mb-2 text-center text-sm leading-relaxed text-gray-700">
+            Gracias por contribuir a la seguridad de tu zona. Tu apoyo se
+            registró correctamente.
           </p>
 
-          <button
-            @click="joinExistingReport(r)"
-            class="mt-2 w-full rounded-lg bg-[#3082e3] py-1.5 text-sm text-white hover:bg-[#085baf] active:scale-[.98]"
-          >
-            Sumarme a este reporte
-          </button>
-        </li>
-      </ul>
+          <div class="mt-1 w-full space-y-3">
+            <button
+              @click="router.push('/')"
+              class="w-full rounded-lg bg-[#3082e3] py-2.5 font-medium text-white transition hover:bg-[#085baf] active:scale-[.98]"
+            >
+              Ir al inicio
+            </button>
 
-      <p class="mt-3 text-center text-sm text-gray-500">
-        Si ninguno coincide exactamente, podés cerrar esta ventana y completar
-        un reporte nuevo.
-      </p>
+            <button
+              type="button"
+              @click="startNewReport"
+              class="w-full rounded-lg bg-gray-100 py-2.5 font-medium text-gray-700 hover:bg-gray-200 active:scale-[.98]"
+            >
+              Hacer un nuevo reporte
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OVERLAY -->
+      <div
+        v-if="showBottomSheet"
+        class="fixed inset-0 z-40 bg-black/40"
+        @click="showBottomSheet = false"
+      ></div>
+
+      <!-- BOTTOM SHEET -->
+      <div
+        v-if="showBottomSheet"
+        class="fixed bottom-0 left-0 z-50 w-full rounded-t-2xl bg-white p-4 pb-8 shadow-xl animate-slide-up"
+      >
+        <div class="mb-2 flex justify-center">
+          <div class="h-1.5 w-12 rounded-full bg-gray-300"></div>
+        </div>
+
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-gray-800">
+            Reportes similares
+          </h2>
+
+          <button @click="showBottomSheet = false" class="text-gray-500">
+            <XMarkIcon class="h-6 w-6" />
+          </button>
+        </div>
+
+        <p class="mb-3 text-sm leading-normal text-gray-700">
+          Ya existen reportes parecidos en esta zona. Podés sumarte a uno de
+          ellos para darle más fuerza al reclamo.
+        </p>
+
+        <ul class="max-h-64 space-y-3 overflow-y-auto">
+          <li
+            v-for="r in similares"
+            :key="r.id"
+            class="rounded-lg border bg-gray-50 p-3 shadow-sm"
+          >
+            <p class="font-medium text-gray-800">{{ r.categoria }}</p>
+            <p class="text-sm text-gray-700">{{ r.ubicacion }}</p>
+            <p class="mt-1 text-xs text-gray-500">
+              Apoyos:
+              <span class="font-semibold">{{ r.apoyos ?? 0 }}</span>
+              — {{ new Date(r.created_at).toLocaleDateString() }}
+            </p>
+
+            <button
+              @click="joinExistingReport(r)"
+              class="mt-2 w-full rounded-lg bg-[#3082e3] py-1.5 text-sm text-white hover:bg-[#085baf] active:scale-[.98]"
+            >
+              Sumarme a este reporte
+            </button>
+          </li>
+        </ul>
+
+        <p class="mt-3 text-center text-sm text-gray-500">
+          Si ninguno coincide exactamente, podés cerrar esta ventana y completar
+          un reporte nuevo.
+        </p>
+      </div>
     </div>
   </div>
-
 
   <BottomNavigation />
 </template>
