@@ -63,7 +63,7 @@ export default {
     <!-- PARTE SUPERIOR AZUL -->
 
     <section
-      class="relative min-h-[395px] overflow-hidden bg-[#3082e3] px-5 pt-7 text-white"
+      class="relative min-h-[410px] overflow-hidden bg-[#3082e3] px-5 pt-7 text-white"
     >
       <div class="relative mx-auto w-full max-w-md">
         <!-- Logo -->
@@ -76,7 +76,7 @@ export default {
         <!-- Texto e ilustración -->
         <div class="relative mt-7 min-h-[270px]">
           <!-- Mensaje -->
-          <div class="relative z-20 w-[55%]">
+          <div class="relative z-20 w-[52%]">
             <p
               class="text-[12px] font-semibold uppercase tracking-[0.12em] text-white/80"
             >
@@ -84,11 +84,11 @@ export default {
             </p>
 
             <h1 class="mt-2 text-[29px] font-bold leading-[1.08]">
-              ¡Qué bueno verte de nuevo!
+              ¡Bienvenido!
             </h1>
 
             <p class="mt-3 text-[14px] leading-5 text-white/85">
-              Ingresá para seguir cuidando y acompañando a tu comunidad.
+              Ingresá para seguir acompañando a tu comunidad.
             </p>
           </div>
 
@@ -96,14 +96,14 @@ export default {
           <img
             src="/hero2.png"
             alt="Ciudad segura con punto de ubicación"
-            class="pointer-events-none absolute -bottom-4 -right-[72px] z-10 w-[285px] max-w-none origin-bottom-right scale-[1.18] object-contain"
+            class="pointer-events-none absolute bottom-[40px] right-[-42px] z-10 w-[255px] max-w-none object-contain"
           />
         </div>
       </div>
     </section>
 
     <!-- TARJETA DEL FORMULARIO -->
-    <section class="relative z-20 -mt-[76px] px-4 pb-10">
+    <section class="relative z-20 -mt-[48px] px-4 pb-10">
       <div
         class="mx-auto w-full max-w-md rounded-[30px] border border-[#edf1f6] bg-white px-5 pb-7 pt-6 shadow-[0_18px_45px_rgba(15,45,92,0.12)]"
       >
