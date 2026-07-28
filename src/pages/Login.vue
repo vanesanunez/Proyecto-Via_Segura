@@ -96,7 +96,7 @@ export default {
           <img
             src="/hero2.png"
             alt="Ciudad segura con punto de ubicación"
-            class="pointer-events-none absolute bottom-[40px] right-[-42px] z-10 w-[255px] max-w-none object-contain"
+            class="pointer-events-none absolute bottom-[40px] right-[-42px] z-10 w-[275px] max-w-none object-contain"
           />
         </div>
       </div>
