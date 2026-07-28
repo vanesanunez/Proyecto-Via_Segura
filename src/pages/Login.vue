@@ -60,50 +60,47 @@ export default {
 
 <template>
   <div class="min-h-screen overflow-hidden bg-[#f7f9f6]">
-<!-- PARTE SUPERIOR AZUL -->
-<section
-  class="relative min-h-[360px] overflow-hidden bg-[#3082e3] px-5 pb-24 pt-7 text-white"
->
-  <div class="relative z-10 mx-auto w-full max-w-md">
-    <!-- Logo real -->
-    <img
-      src="/logo2.png"
-      alt="Vía Segura"
-      class="h-12 w-auto object-contain"
-    />
+    <!-- PARTE SUPERIOR AZUL -->
 
-    <!-- Texto e ilustración -->
-    <div
-      class="mt-7 grid grid-cols-[minmax(0,1fr)_145px] items-end gap-2"
+    <section
+      class="relative min-h-[395px] overflow-hidden bg-[#3082e3] px-5 pt-7 text-white"
     >
-      <!-- Mensaje -->
-      <div class="min-w-0 pb-2">
-        <p
-          class="text-[12px] font-semibold uppercase tracking-[0.12em] text-white/80"
-        >
-          Tu comunidad segura
-        </p>
-
-        <h1 class="mt-2 text-[28px] font-bold leading-[1.08]">
-          ¡Qué bueno verte de nuevo!
-        </h1>
-
-        <p class="mt-3 text-[14px] leading-5 text-white/85">
-          Ingresá para seguir cuidando y acompañando a tu comunidad.
-        </p>
-      </div>
-
-      <!-- Ilustración ciudad -->
-      <div class="flex items-end justify-end">
+      <div class="relative mx-auto w-full max-w-md">
+        <!-- Logo -->
         <img
-          src="/hero-home.png"
-          alt="Ciudad segura con punto de ubicación"
-          class="w-[155px] scale-[1.12] object-contain object-bottom"
+          src="/icono2.png"
+          alt="Vía Segura"
+          class="relative z-30 h-12 w-auto object-contain"
         />
+
+        <!-- Texto e ilustración -->
+        <div class="relative mt-7 min-h-[270px]">
+          <!-- Mensaje -->
+          <div class="relative z-20 w-[55%]">
+            <p
+              class="text-[12px] font-semibold uppercase tracking-[0.12em] text-white/80"
+            >
+              Tu comunidad segura
+            </p>
+
+            <h1 class="mt-2 text-[29px] font-bold leading-[1.08]">
+              ¡Qué bueno verte de nuevo!
+            </h1>
+
+            <p class="mt-3 text-[14px] leading-5 text-white/85">
+              Ingresá para seguir cuidando y acompañando a tu comunidad.
+            </p>
+          </div>
+
+          <!-- Ilustración grande -->
+          <img
+            src="/hero.png"
+            alt="Ciudad segura con punto de ubicación"
+            class="pointer-events-none absolute -bottom-4 -right-[72px] z-10 w-[285px] max-w-none origin-bottom-right scale-[1.18] object-contain"
+          />
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
     <!-- TARJETA DEL FORMULARIO -->
     <section class="relative z-20 -mt-[76px] px-4 pb-10">
@@ -123,17 +120,15 @@ export default {
             Ingresar a mi cuenta
           </h2>
 
-          <p class="mx-auto mt-2 max-w-[280px] text-sm leading-6 text-slate-500">
+          <p
+            class="mx-auto mt-2 max-w-[280px] text-sm leading-6 text-slate-500"
+          >
             Continuá para seguir cuidando tu comunidad.
           </p>
         </div>
 
         <!-- Formulario -->
-        <form
-          class="mt-7 space-y-5"
-          action="#"
-          @submit.prevent="handleSubmit"
-        >
+        <form class="mt-7 space-y-5" action="#" @submit.prevent="handleSubmit">
           <!-- Email -->
           <div>
             <label
@@ -188,21 +183,13 @@ export default {
                 type="button"
                 class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-[#3082e3]"
                 :aria-label="
-                  showPassword
-                    ? 'Ocultar contraseña'
-                    : 'Mostrar contraseña'
+                  showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
                 "
                 @click="showPassword = !showPassword"
               >
-                <EyeSlashIcon
-                  v-if="showPassword"
-                  class="h-5 w-5"
-                />
+                <EyeSlashIcon v-if="showPassword" class="h-5 w-5" />
 
-                <EyeIcon
-                  v-else
-                  class="h-5 w-5"
-                />
+                <EyeIcon v-else class="h-5 w-5" />
               </button>
             </div>
           </div>
