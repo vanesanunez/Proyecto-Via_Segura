@@ -94,7 +94,7 @@ export default {
 
           <!-- Ilustración grande -->
           <img
-            src="/hero.png"
+            src="/hero2.png"
             alt="Ciudad segura con punto de ubicación"
             class="pointer-events-none absolute -bottom-4 -right-[72px] z-10 w-[285px] max-w-none origin-bottom-right scale-[1.18] object-contain"
           />
