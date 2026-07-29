@@ -72,8 +72,8 @@ export default {
       }
     },
 
-    goToHome() {
-      this.$router.push("/");
+    goToLogin() {
+      this.$router.push("/ingresar");
     },
   },
 };
@@ -140,17 +140,18 @@ export default {
             {{ successMessage }}
           </h2>
 
-          <p class="mx-auto mt-2 max-w-[280px] text-sm leading-6 text-slate-500">
-            Tu registro se completó correctamente. Ya podés comenzar a usar Vía
-            Segura.
+          <p
+            class="mx-auto mt-2 max-w-[280px] text-sm leading-6 text-slate-500"
+          >
+            Tu registro se completó correctamente. Iniciá sesión con tu email y  contraseña para comenzar.
           </p>
 
           <button
             type="button"
             class="mt-6 flex h-[54px] w-full items-center justify-center rounded-2xl bg-[#3082e3] px-5 text-base font-semibold text-white shadow-[0_10px_24px_rgba(48,130,227,0.25)] transition hover:bg-[#085baf] active:scale-[0.98]"
-            @click="goToHome"
+            @click="goToLogin"
           >
-            Ir al inicio
+            Iniciar sesión
           </button>
         </div>
 
@@ -293,9 +294,7 @@ export default {
                 type="button"
                 class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-[#3082e3]"
                 :aria-label="
-                  showPassword
-                    ? 'Ocultar contraseña'
-                    : 'Mostrar contraseña'
+                  showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
                 "
                 @click="showPassword = !showPassword"
               >

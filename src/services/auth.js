@@ -48,7 +48,7 @@ async function loadUserExtendedProfile() {
     if (!profileData) {
       console.warn(
         "[auth.js loadUserExtendedProfile] No se encontró perfil para el usuario:",
-        user.id
+        user.id,
       );
       return;
     }
@@ -60,11 +60,10 @@ async function loadUserExtendedProfile() {
       role: profileData.role,
       photoURL: profileData.photo_url,
     });
-
   } catch (error) {
     console.error(
       "[auth.js loadUserExtendedProfile] Error al traer perfil extendido del usuario: ",
-      error
+      error,
     );
   }
 }
@@ -93,9 +92,20 @@ export async function register(email, name, lastname, dni, password) {
     throw errorProfile;
   }
 
+
+   // Después de registrarse, cerramos la sesión automática.
+  // La persona tendrá que iniciar sesión con su nueva cuenta.
+  await supabase.auth.signOut();
+  
+  // Limpiamos cualquier dato que haya quedado del usuario anterior.
   updateUser({
-    id: data.user.id,
-    email: data.user.email,
+    id: null,
+    email: null,
+    name: null,
+    lastname: null,
+    dni: null,
+    role: null,
+    photoURL: null,
   });
 }
 
@@ -147,11 +157,10 @@ export async function updateAuthUserProfile(data) {
       // conservar foto actual si no se subió una nueva
       photoURL: updatedData.photo_url || user.photoURL,
     });
-
   } catch (error) {
     console.error(
       "[auth.js updateAuthUserProfile] Error al actualizar perfil: ",
-      error
+      error,
     );
     throw error;
   }
