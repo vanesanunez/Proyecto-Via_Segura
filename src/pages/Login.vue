@@ -60,45 +60,29 @@ export default {
 
 <template>
   <div class="min-h-screen overflow-hidden bg-[#f7f9f6]">
-    <!-- PARTE SUPERIOR AZUL -->
+   
 
+    <!-- HERO DE BIENVENIDA -->
     <section
-      class="relative min-h-[410px] overflow-hidden bg-[#3082e3] px-5 pt-7 text-white"
+      class="relative min-h-[370px] overflow-hidden bg-[#3082e3] text-white"
     >
-      <div class="relative mx-auto w-full max-w-md">
-        <!-- Logo -->
+      <!-- Imagen como fondo del hero -->
+      <img
+        src="/hero-login.png"
+        alt="imagen de edificios, mapa y ubicación"
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 h-full w-full object-cover object-right "
+      />
+
+      
+      <div class="relative z-10 mx-auto w-full max-w-md px-5 pt-7">
         <img
           src="/icono2.png"
           alt="Vía Segura"
-          class="relative z-30 h-12 w-auto object-contain"
+          class="h-auto w-[125px] object-contain"
         />
 
-        <!-- Texto e ilustración -->
-        <div class="relative mt-7 min-h-[270px]">
-          <!-- Mensaje -->
-          <div class="relative z-20 w-[52%]">
-            <p
-              class="text-[12px] font-semibold uppercase tracking-[0.12em] text-white/80"
-            >
-              Tu comunidad segura
-            </p>
-
-            <h1 class="mt-2 text-[29px] font-bold leading-[1.08]">
-              ¡Bienvenido!
-            </h1>
-
-            <p class="mt-3 text-[14px] leading-5 text-white/85">
-              Ingresá para seguir acompañando a tu comunidad.
-            </p>
-          </div>
-
-          <!-- Ilustración grande -->
-          <img
-            src="/hero2.png"
-            alt="Ciudad segura con punto de ubicación"
-            class="pointer-events-none absolute bottom-[40px] right-[-42px] z-10 w-[275px] max-w-none object-contain"
-          />
-        </div>
+        
       </div>
     </section>
 
@@ -116,9 +100,9 @@ export default {
 
         <!-- Título -->
         <div class="mt-5 text-center">
-          <h2 class="text-[27px] font-bold leading-tight text-[#2a2a2a]">
+          <h1 class="text-[27px] font-bold leading-tight text-[#2a2a2a]">
             Ingresar a mi cuenta
-          </h2>
+          </h1>
 
           <p
             class="mx-auto mt-2 max-w-[280px] text-sm leading-6 text-slate-500"
