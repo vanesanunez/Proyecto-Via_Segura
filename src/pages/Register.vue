@@ -40,15 +40,120 @@ export default {
       showPassword: false,
       successMessage: "",
       errorMessage: "",
+
+      fieldErrors: {
+        email: "",
+        name: "",
+        lastname: "",
+        dni: "",
+        password: "",
+      },
     };
   },
 
   methods: {
+    // Permite letras, tildes, espacios, guiones y apóstrofes.
+    sanitizePersonName(field) {
+      this.user[field] = this.user[field]
+        .replace(/[^\p{L}\s'-]/gu, "")
+        .replace(/\s{2,}/g, " ")
+        .slice(0, 40);
+
+      this.fieldErrors[field] = "";
+    },
+
+    // Elimina letras, símbolos y cualquier cosa que no sea un número.
+    sanitizeDni() {
+      this.user.dni = this.user.dni
+        .replace(/\D/g, "")
+        .slice(0, 8);
+
+      this.fieldErrors.dni = "";
+    },
+
+    validateForm() {
+      this.fieldErrors = {
+        email: "",
+        name: "",
+        lastname: "",
+        dni: "",
+        password: "",
+      };
+
+      const email = this.user.email.trim();
+      const name = this.user.name.trim();
+      const lastname = this.user.lastname.trim();
+      const dni = this.user.dni.trim();
+      const password = this.user.password;
+
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      const namePattern =
+        /^[\p{L}]+(?:[ '-][\p{L}]+)*$/u;
+
+      // Email
+      if (!email) {
+        this.fieldErrors.email = "Ingresá tu email.";
+      } else if (!emailPattern.test(email)) {
+        this.fieldErrors.email = "Ingresá un email válido.";
+      }
+
+      // Nombre
+      if (!name) {
+        this.fieldErrors.name = "Ingresá tu nombre.";
+      } else if (name.length < 2 || !namePattern.test(name)) {
+        this.fieldErrors.name =
+          "El nombre debe contener solamente letras.";
+      }
+
+      // Apellido
+      if (!lastname) {
+        this.fieldErrors.lastname = "Ingresá tu apellido.";
+      } else if (
+        lastname.length < 2 ||
+        !namePattern.test(lastname)
+      ) {
+        this.fieldErrors.lastname =
+          "El apellido debe contener solamente letras.";
+      }
+
+      // DNI
+      if (!dni) {
+        this.fieldErrors.dni = "Ingresá tu DNI.";
+      } else if (!/^\d{7,8}$/.test(dni)) {
+        this.fieldErrors.dni =
+          "El DNI debe tener entre 7 y 8 números.";
+      }
+
+      // Contraseña: letras, números o símbolos.
+      // Debe tener exactamente 6 caracteres y no admite espacios.
+      if (!password) {
+        this.fieldErrors.password =
+          "Ingresá una contraseña.";
+      } else if (!/^\S{6}$/.test(password)) {
+        this.fieldErrors.password =
+          "La contraseña debe tener exactamente 6 caracteres, sin espacios.";
+      }
+
+      // Guardamos los valores sin espacios accidentales
+      // al principio o al final.
+      this.user.email = email;
+      this.user.name = name;
+      this.user.lastname = lastname;
+      this.user.dni = dni;
+
+      return !Object.values(this.fieldErrors).some(
+        (message) => message !== "",
+      );
+    },
+
     async handleSubmit() {
       if (this.loading) return;
 
       this.successMessage = "";
       this.errorMessage = "";
+
+      if (!this.validateForm()) return;
 
       try {
         this.loading = true;
@@ -108,7 +213,7 @@ export default {
       <div
         class="mx-auto w-full max-w-md rounded-[30px] border border-[#edf1f6] bg-white px-5 pb-7 pt-6 shadow-[0_18px_45px_rgba(15,45,92,0.12)]"
       >
-        <!-- Ícono -->
+        <!-- Ícono superior -->
         <div
           class="mx-auto -mt-14 flex h-[72px] w-[72px] items-center justify-center rounded-[24px] border-[6px] border-white bg-[#eef4ff] text-[#3082e3] shadow-[0_10px_24px_rgba(48,130,227,0.16)]"
         >
@@ -128,7 +233,7 @@ export default {
           </p>
         </div>
 
-        <!-- ÉXITO -->
+        <!-- REGISTRO EXITOSO -->
         <div v-if="successMessage" class="mt-7 text-center">
           <div
             class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3]"
@@ -143,7 +248,7 @@ export default {
           <p
             class="mx-auto mt-2 max-w-[280px] text-sm leading-6 text-slate-500"
           >
-            Tu registro se completó correctamente. Iniciá sesión con tu email y  contraseña para comenzar.
+            Tu registro se completó correctamente.
           </p>
 
           <button
@@ -160,9 +265,10 @@ export default {
           v-else
           class="mt-7 space-y-5"
           action="#"
+          novalidate
           @submit.prevent="handleSubmit"
         >
-          <!-- Email -->
+          <!-- EMAIL -->
           <div>
             <label
               for="email"
@@ -181,14 +287,29 @@ export default {
                 v-model="user.email"
                 type="email"
                 autocomplete="email"
+                autocapitalize="none"
+                spellcheck="false"
                 required
                 placeholder="nombre@email.com"
-                class="h-[54px] w-full rounded-2xl border border-[#dbe5f0] bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:border-[#3082e3] focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
+                class="h-[54px] w-full rounded-2xl border bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
+                :class="
+                  fieldErrors.email
+                    ? 'border-[#f2826d] focus:border-[#f2826d]'
+                    : 'border-[#dbe5f0] focus:border-[#3082e3]'
+                "
+                @input="fieldErrors.email = ''"
               />
             </div>
+
+            <p
+              v-if="fieldErrors.email"
+              class="mt-2 text-xs font-medium text-[#d96651]"
+            >
+              {{ fieldErrors.email }}
+            </p>
           </div>
 
-          <!-- Nombre -->
+          <!-- NOMBRE -->
           <div>
             <label
               for="name"
@@ -207,14 +328,29 @@ export default {
                 v-model="user.name"
                 type="text"
                 autocomplete="given-name"
+                autocapitalize="words"
+                maxlength="40"
                 required
                 placeholder="Ingresá tu nombre"
-                class="h-[54px] w-full rounded-2xl border border-[#dbe5f0] bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:border-[#3082e3] focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
+                class="h-[54px] w-full rounded-2xl border bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
+                :class="
+                  fieldErrors.name
+                    ? 'border-[#f2826d] focus:border-[#f2826d]'
+                    : 'border-[#dbe5f0] focus:border-[#3082e3]'
+                "
+                @input="sanitizePersonName('name')"
               />
             </div>
+
+            <p
+              v-if="fieldErrors.name"
+              class="mt-2 text-xs font-medium text-[#d96651]"
+            >
+              {{ fieldErrors.name }}
+            </p>
           </div>
 
-          <!-- Apellido -->
+          <!-- APELLIDO -->
           <div>
             <label
               for="lastname"
@@ -233,11 +369,26 @@ export default {
                 v-model="user.lastname"
                 type="text"
                 autocomplete="family-name"
+                autocapitalize="words"
+                maxlength="40"
                 required
                 placeholder="Ingresá tu apellido"
-                class="h-[54px] w-full rounded-2xl border border-[#dbe5f0] bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:border-[#3082e3] focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
+                class="h-[54px] w-full rounded-2xl border bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
+                :class="
+                  fieldErrors.lastname
+                    ? 'border-[#f2826d] focus:border-[#f2826d]'
+                    : 'border-[#dbe5f0] focus:border-[#3082e3]'
+                "
+                @input="sanitizePersonName('lastname')"
               />
             </div>
+
+            <p
+              v-if="fieldErrors.lastname"
+              class="mt-2 text-xs font-medium text-[#d96651]"
+            >
+              {{ fieldErrors.lastname }}
+            </p>
           </div>
 
           <!-- DNI -->
@@ -259,14 +410,29 @@ export default {
                 v-model="user.dni"
                 type="text"
                 inputmode="numeric"
+                autocomplete="off"
+                maxlength="8"
                 required
                 placeholder="Ingresá tu DNI"
-                class="h-[54px] w-full rounded-2xl border border-[#dbe5f0] bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:border-[#3082e3] focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
+                class="h-[54px] w-full rounded-2xl border bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
+                :class="
+                  fieldErrors.dni
+                    ? 'border-[#f2826d] focus:border-[#f2826d]'
+                    : 'border-[#dbe5f0] focus:border-[#3082e3]'
+                "
+                @input="sanitizeDni"
               />
             </div>
+
+            <p
+              v-if="fieldErrors.dni"
+              class="mt-2 text-xs font-medium text-[#d96651]"
+            >
+              {{ fieldErrors.dni }}
+            </p>
           </div>
 
-          <!-- Contraseña -->
+          <!-- CONTRASEÑA -->
           <div>
             <label
               for="password"
@@ -285,16 +451,26 @@ export default {
                 v-model="user.password"
                 :type="showPassword ? 'text' : 'password'"
                 autocomplete="new-password"
+                minlength="6"
+                maxlength="6"
                 required
-                placeholder="Creá una contraseña"
-                class="h-[54px] w-full rounded-2xl border border-[#dbe5f0] bg-[#fbfcfd] pl-12 pr-12 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:border-[#3082e3] focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
+                placeholder="Ingresá 6 caracteres"
+                class="h-[54px] w-full rounded-2xl border bg-[#fbfcfd] pl-12 pr-12 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
+                :class="
+                  fieldErrors.password
+                    ? 'border-[#f2826d] focus:border-[#f2826d]'
+                    : 'border-[#dbe5f0] focus:border-[#3082e3]'
+                "
+                @input="fieldErrors.password = ''"
               />
 
               <button
                 type="button"
                 class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-[#3082e3]"
                 :aria-label="
-                  showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
+                  showPassword
+                    ? 'Ocultar contraseña'
+                    : 'Mostrar contraseña'
                 "
                 @click="showPassword = !showPassword"
               >
@@ -302,9 +478,24 @@ export default {
                 <EyeIcon v-else class="h-5 w-5" />
               </button>
             </div>
+
+            <p
+              v-if="fieldErrors.password"
+              class="mt-2 text-xs font-medium text-[#d96651]"
+            >
+              {{ fieldErrors.password }}
+            </p>
+
+            <p
+              v-else
+              class="mt-2 text-xs leading-5 text-slate-400"
+            >
+              Debe tener exactamente 6 caracteres. Podés usar letras, números o
+              símbolos.
+            </p>
           </div>
 
-          <!-- ERROR -->
+          <!-- ERROR GENERAL -->
           <div
             v-if="errorMessage"
             class="rounded-2xl border border-[#f8dfd9] bg-[#fff1ed] px-4 py-3 text-sm leading-5 text-[#d96651]"
@@ -329,7 +520,7 @@ export default {
           </button>
         </form>
 
-        <!-- INGRESAR -->
+        <!-- ENLACE A LOGIN -->
         <div v-if="!successMessage">
           <div class="my-6 flex items-center gap-3">
             <div class="h-px flex-1 bg-slate-200"></div>
