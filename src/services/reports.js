@@ -363,3 +363,20 @@ export async function updateReport(reportId, reportData) {
 
   return data;
 }
+
+// Reportes activos con coordenadas, para calcular riesgo en la ruta
+export async function fetchActiveReportsWithCoords() {
+  const { data, error } = await supabase
+    .from("reports")
+    .select("id, categoria, estado, ubicacion, latitud, longitud")
+    .neq("estado", "Resuelto")
+    .not("latitud", "is", null)
+    .not("longitud", "is", null);
+
+  if (error) {
+    console.error("[reports.js fetchActiveReportsWithCoords] Error:", error);
+    throw error;
+  }
+
+  return data ?? [];
+}
