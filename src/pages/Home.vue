@@ -1,4 +1,5 @@
 <script>
+import AppOnboarding from "../components/AppOnboarding.vue";
 import AppH1 from "../components/AppH1.vue";
 import ActionCard from "../components/ActionCard.vue";
 import BottomNavigation from "../components/BottomNavigation.vue";
@@ -53,6 +54,8 @@ export default {
       },
       recentReports: [],
       reportsLoading: false,
+      showOnboarding: false,
+      userStateUnsubscribe: null,
     };
   },
   computed: {
@@ -76,6 +79,28 @@ export default {
     },
   },
   methods: {
+    onboardingStorageKey(userId) {
+      return `via_segura_onboarding_seen_${userId}`;
+    },
+
+    checkOnboarding(userId) {
+      if (!userId) return;
+
+      const storageKey = this.onboardingStorageKey(userId);
+      const wasSeen = localStorage.getItem(storageKey);
+
+      this.showOnboarding = wasSeen !== "true";
+    },
+
+    finishOnboarding() {
+      if (this.user?.id) {
+        const storageKey = this.onboardingStorageKey(this.user.id);
+
+        localStorage.setItem(storageKey, "true");
+      }
+
+      this.showOnboarding = false;
+    },
     async loadGamification() {
       if (!this.user?.id) return;
 
@@ -135,17 +160,38 @@ export default {
       return report?.imagen || "/map.png";
     },
   },
-  mounted() {
-    subscribeToUserState(async (newUserState) => {
-      this.user = newUserState || { id: null, email: null, name: null };
+ mounted() {
+  this.userStateUnsubscribe = subscribeToUserState(
+    async (newUserState) => {
+      const previousUserId = this.user?.id;
+
+      this.user =
+        newUserState || {
+          id: null,
+          email: null,
+          name: null,
+        };
 
       if (this.user?.id) {
         await this.loadGamification();
-      }
-    });
 
-    this.loadRecentReports();
-  },
+        // Solo revisamos el onboarding cuando cambia el usuario
+        // o cuando entra por primera vez.
+        if (previousUserId !== this.user.id) {
+          this.checkOnboarding(this.user.id);
+        }
+      }
+    },
+  );
+
+  this.loadRecentReports();
+},
+
+beforeUnmount() {
+  if (typeof this.userStateUnsubscribe === "function") {
+    this.userStateUnsubscribe();
+  }
+},
 };
 </script>
 
