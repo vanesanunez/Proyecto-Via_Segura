@@ -1,16 +1,10 @@
 <script>
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  XMarkIcon,
-} from "@heroicons/vue/24/outline";
+import { XMarkIcon } from "@heroicons/vue/24/outline";
 
 export default {
   name: "AppOnboarding",
 
   components: {
-    ChevronLeftIcon,
-    ChevronRightIcon,
     XMarkIcon,
   },
 
@@ -25,7 +19,8 @@ export default {
         {
           image: "/onboarding/bienvenida.png",
           alt: "Bienvenida a Vía Segura",
-          title: "Bienvenido/a a Vía Segura",
+          title: "Bienvenido a",
+          brandTitle: "Vía Segura",
           description:
             "Conocé las herramientas que te ayudan a moverte con más tranquilidad.",
         },
@@ -33,22 +28,25 @@ export default {
           image: "/onboarding/reporte.png",
           alt: "Personas realizando reportes",
           title: "Realizá reportes",
+          brandTitle: "",
           description:
-            "Avisá sobre problemas de iluminación, infraestructura o seguridad.",
+            "Informá problemas de iluminación, infraestructura o seguridad en tu zona.",
         },
         {
           image: "/onboarding/recorrido.png",
           alt: "Persona utilizando un mapa para realizar un recorrido seguro",
-          title: "Compartí tu recorrido",
+          title: "Recorrido seguro",
+          brandTitle: "",
           description:
-            "Elegí un contacto de confianza y compartí tu trayecto mientras llegás a destino.",
+            "Planificá y compartí tu trayecto para moverte con mayor tranquilidad.",
         },
         {
           image: "/onboarding/novedades.png",
           alt: "Persona recibiendo novedades en su teléfono",
           title: "Recibí novedades",
+          brandTitle: "",
           description:
-            "Enterate de reportes, invitaciones y cambios importantes desde la app.",
+            "Mantenete al tanto de reportes, alertas y actualizaciones importantes.",
         },
       ],
     };
@@ -121,117 +119,112 @@ export default {
 <template>
   <Teleport to="body">
     <div
-      class="fixed inset-0 z-[100] flex items-center justify-center bg-[#0f2d5c]/55 px-4 py-6 backdrop-blur-[2px]"
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-[#0f2d5c]/55 px-3 py-3 backdrop-blur-[2px]"
       role="dialog"
       aria-modal="true"
       aria-labelledby="onboarding-title"
     >
       <section
-        class="relative w-full max-w-[410px] overflow-hidden rounded-[30px] border border-white/70 bg-[#f7f9f6] shadow-[0_24px_65px_rgba(15,45,92,0.24)]"
+        class="relative flex max-h-[calc(100dvh-24px)] min-h-[620px] w-full max-w-[410px] flex-col overflow-hidden rounded-[32px] border border-white/70 bg-white shadow-[0_24px_65px_rgba(15,45,92,0.24)]"
       >
-        <!-- Saltar / cerrar -->
-        <button
-          type="button"
-          class="absolute right-4 top-4 z-20 flex h-10 items-center gap-1 rounded-full bg-white/90 px-3 text-sm font-semibold text-slate-500 shadow-sm transition hover:text-[#3082e3]"
-          aria-label="Saltar introducción"
-          @click="finishOnboarding"
-        >
-          <span>Saltar</span>
-          <XMarkIcon class="h-4 w-4" />
-        </button>
-
-        <!-- Contenido del paso -->
-        <Transition
-          mode="out-in"
-          enter-active-class="transition duration-300 ease-out"
-          enter-from-class="translate-x-6 opacity-0"
-          enter-to-class="translate-x-0 opacity-100"
-          leave-active-class="transition duration-200 ease-in"
-          leave-from-class="translate-x-0 opacity-100"
-          leave-to-class="-translate-x-6 opacity-0"
-        >
-          <div :key="currentSlide">
-            <!-- Imagen -->
-            <div
-              class="flex min-h-[245px] items-center justify-center bg-white px-4 pb-2 pt-14"
-            >
-              <img
-                :src="activeSlide.image"
-                :alt="activeSlide.alt"
-                class="max-h-[230px] w-full object-contain"
-              />
-            </div>
-
-            <!-- Texto accesible y explicativo -->
-            <div class="px-6 pb-4 pt-5 text-center">
-              <h2
-                id="onboarding-title"
-                class="text-[24px] font-bold leading-tight text-[#2a2a2a]"
-              >
-                {{ activeSlide.title }}
-              </h2>
-
-              <p
-                class="mx-auto mt-3 max-w-[310px] text-sm leading-6 text-slate-500"
-              >
-                {{ activeSlide.description }}
-              </p>
-            </div>
-          </div>
-        </Transition>
-
-        <!-- Indicadores -->
-        <div class="flex items-center justify-center gap-2 px-6 py-3">
+        <!-- Botón saltar -->
+        <div class="flex justify-end px-5 pt-5">
           <button
-            v-for="(slide, index) in slides"
-            :key="slide.title"
             type="button"
-            class="h-2.5 rounded-full transition-all duration-300"
-            :class="
-              index === currentSlide
-                ? 'w-7 bg-[#3082e3]'
-                : 'w-2.5 bg-[#d6e8fb]'
-            "
-            :aria-label="`Ir al paso ${index + 1}`"
-            @click="currentSlide = index"
-          ></button>
+            class="relative z-20 flex h-10 items-center gap-1 rounded-full px-3 text-sm font-semibold text-[#3082e3] transition hover:bg-[#eef4ff] hover:text-[#085baf]"
+            aria-label="Saltar introducción"
+            @click="finishOnboarding"
+          >
+            <span>Saltar</span>
+            <XMarkIcon class="h-4 w-4" />
+          </button>
         </div>
 
-        <!-- Botones -->
-        <div class="flex items-center gap-3 px-6 pb-6 pt-2">
-          <button
-            type="button"
-            class="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-2xl border border-[#d6e8fb] bg-white text-[#3082e3] transition hover:bg-[#eef4ff] disabled:cursor-not-allowed disabled:opacity-30"
-            :disabled="isFirstSlide"
-            aria-label="Paso anterior"
-            @click="previousSlide"
+        <!-- Contenido deslizable -->
+        <div class="min-h-0 flex-1 overflow-y-auto">
+          <Transition
+            mode="out-in"
+            enter-active-class="transition duration-300 ease-out"
+            enter-from-class="translate-x-6 opacity-0"
+            enter-to-class="translate-x-0 opacity-100"
+            leave-active-class="transition duration-200 ease-in"
+            leave-from-class="translate-x-0 opacity-100"
+            leave-to-class="-translate-x-6 opacity-0"
           >
-            <ChevronLeftIcon class="h-5 w-5" />
-          </button>
+            <div :key="currentSlide" class="px-5 pb-4">
+              <!-- Imagen integrada -->
+              <div class="mt-2 flex h-[280px] items-center justify-center">
+                <img
+                  :src="activeSlide.image"
+                  :alt="activeSlide.alt"
+                  class="h-[245px] w-[245px] object-contain"
+                />
+              </div>
 
+              <!-- Título y descripción -->
+              <div class="pt-6">
+                <h2
+                  id="onboarding-title"
+                  class="text-center text-[27px] font-bold leading-tight"
+                >
+                  <span
+                    class="block"
+                    :class="
+                      activeSlide.brandTitle
+                        ? 'text-[#2a2a2a]'
+                        : 'text-[#3082e3]'
+                    "
+                  >
+                    {{ activeSlide.title }}
+                  </span>
+
+                  <span
+                    v-if="activeSlide.brandTitle"
+                    class="mt-1 block text-[#3082e3]"
+                  >
+                    {{ activeSlide.brandTitle }}
+                  </span>
+                </h2>
+
+                <!-- Texto alineado a la izquierda -->
+                <p
+                  class="mt-4 w-full text-left text-sm leading-6 text-slate-500"
+                >
+                  {{ activeSlide.description }}
+                </p>
+              </div>
+            </div>
+          </Transition>
+        </div>
+
+        <!-- Navegación inferior -->
+        <div class="bg-white px-5 pb-6 pt-3">
+          <!-- Indicadores -->
+          <div class="mb-5 flex items-center justify-center gap-3">
+            <button
+              v-for="(slide, index) in slides"
+              :key="slide.title"
+              type="button"
+              class="h-2.5 rounded-full transition-all duration-300"
+              :class="
+                index === currentSlide
+                  ? 'w-7 bg-[#3082e3]'
+                  : 'w-2.5 bg-[#d6e8fb]'
+              "
+              :aria-label="`Ir al paso ${index + 1}`"
+              @click="currentSlide = index"
+            ></button>
+          </div>
+
+          <!-- Botón principal -->
           <button
             type="button"
-            class="flex h-[52px] flex-1 items-center justify-center gap-2 rounded-2xl bg-[#3082e3] px-5 text-base font-semibold text-white shadow-[0_10px_24px_rgba(48,130,227,0.25)] transition hover:bg-[#085baf] active:scale-[0.98]"
+            class="flex h-[54px] w-full items-center justify-center rounded-2xl bg-[#3082e3] px-5 text-base font-semibold text-white shadow-[0_10px_24px_rgba(48,130,227,0.25)] transition hover:bg-[#085baf] active:scale-[0.98]"
             @click="nextSlide"
           >
-            <span>
-              {{
-                isLastSlide
-                  ? "Empezar a usar Vía Segura"
-                  : "Siguiente"
-              }}
-            </span>
-
-            <ChevronRightIcon
-              v-if="!isLastSlide"
-              class="h-5 w-5"
-            />
+            {{ isLastSlide ? "Empezar" : "Siguiente" }}
           </button>
         </div>
-
-        <p class="pb-5 text-center text-xs font-medium text-slate-400">
-          Paso {{ currentSlide + 1 }} de {{ slides.length }}
-        </p>
       </section>
     </div>
   </Teleport>
