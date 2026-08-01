@@ -49,6 +49,7 @@ export default {
         // navegar a la vista de seguimiento (pasamos sharer y path)
         const pathId = this.incomingInvite.path_id;
         const sharerId = this.incomingInvite.sharer_id;
+        const sharerName = this.incomingInvite.sender_name;
 
         // limpiar UI
         this.incomingInvite = null;
@@ -57,7 +58,7 @@ export default {
         // navegar
         this.$router.push({
           path: `/ver-recorrido/${pathId}`,
-          query: { sharer_id: sharerId },
+          query: { sharer_id: sharerId, sharer_name: sharerName },
         });
       } catch (err) {
         console.error("Error aceptando invitación:", err);

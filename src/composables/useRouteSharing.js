@@ -69,8 +69,9 @@ function watchPosition() {
 
 /**
  * Inicia el recorrido. Si hay contacto, comparte por path-sharing.js.
+ * @param {{destination:Object, contact:Object|null, routeCoords:Array, alerts:Array, senderName?:string}} params
  */
-async function startRoute({ destination: dest, contact, routeCoords: rc, alerts: al }) {
+async function startRoute({ destination: dest, contact, routeCoords: rc, alerts: al, senderName }) {
   destination.value = dest;
   selectedContact.value = contact || null;
   routeCoords.value = rc || [];
@@ -83,7 +84,7 @@ async function startRoute({ destination: dest, contact, routeCoords: rc, alerts:
   if (contact) {
     isSharing.value = true;
     await startPath();
-    await sharePathWith(contact.id);
+    await sharePathWith(contact.id, senderName);
   } else {
     isSharing.value = false;
     await startPathWithoutSharing();
