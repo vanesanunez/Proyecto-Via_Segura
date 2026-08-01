@@ -160,17 +160,15 @@ export default {
       return report?.imagen || "/map.png";
     },
   },
- mounted() {
-  this.userStateUnsubscribe = subscribeToUserState(
-    async (newUserState) => {
+  mounted() {
+    this.userStateUnsubscribe = subscribeToUserState(async (newUserState) => {
       const previousUserId = this.user?.id;
 
-      this.user =
-        newUserState || {
-          id: null,
-          email: null,
-          name: null,
-        };
+      this.user = newUserState || {
+        id: null,
+        email: null,
+        name: null,
+      };
 
       if (this.user?.id) {
         await this.loadGamification();
@@ -181,22 +179,22 @@ export default {
           this.checkOnboarding(this.user.id);
         }
       }
-    },
-  );
+    });
 
-  this.loadRecentReports();
-},
+    this.loadRecentReports();
+  },
 
-beforeUnmount() {
-  if (typeof this.userStateUnsubscribe === "function") {
-    this.userStateUnsubscribe();
-  }
-},
+  beforeUnmount() {
+    if (typeof this.userStateUnsubscribe === "function") {
+      this.userStateUnsubscribe();
+    }
+  },
 };
 </script>
 
 <template>
   <section class="min-h-screen bg-[#f7f9f6] pt-12 pb-28">
+    <AppOnboarding v-if="showOnboarding" @finish="finishOnboarding" />
     <main class="mx-auto w-full max-w-[430px] px-3">
       <!-- saludo -->
       <div class="mb-5">
