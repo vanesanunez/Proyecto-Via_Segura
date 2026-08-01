@@ -412,12 +412,12 @@ watch(destination, () => {
   <div class="max-w-3xl mx-auto p-4 relative">
     <AppH1>Siguiendo a {{ sharerName || "tu contacto" }}</AppH1>
 
-    <div ref="mapEl" class="mt-4 rounded-xl border" style="height: 500px;"></div>
+    <div ref="mapEl" class="mt-4 rounded-xl border" style="height: 300px;"></div>
 
     <div class="mt-4">
       <button
         @click="stopFollowingAndExit"
-        class="px-4 py-2 rounded bg-[#f2826d] text-white font-semibold hover:brightness-105 transition"
+        class="px-4 py-2 w-full rounded bg-[#f2826d] text-white font-semibold hover:brightness-105 transition"
       >
         Dejar de seguir
       </button>

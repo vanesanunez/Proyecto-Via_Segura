@@ -1,316 +1,7 @@
-<!-- <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from "vue";
-import L from "leaflet";
-import AppH1 from "../components/AppH1.vue";
-import { getTrustedContacts } from "../services/contacts";
-import { subscribeToUserState } from "../services/auth";
-import { nominatimSearch, composeAddress } from "../services/nominatim";
-import {
-  startPath,
-  startPathWithoutSharing,
-  sharePathWith,
-  updateCoords,
-  endPath,
-} from "../services/path-sharing";
-import BottomNavigation from "../components/BottomNavigation.vue";
-import icon2x from "leaflet/dist/images/marker-icon-2x.png";
-import icon from "leaflet/dist/images/marker-icon.png";
-import shadow from "leaflet/dist/images/marker-shadow.png";
 
-// Fix Leaflet paths
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: icon2x,
-  iconUrl: icon,
-  shadowUrl: shadow,
-});
-
-// Refs
-const mapEl = ref(null);
-const trustedContacts = ref([]);
-const selectedContact = ref(null);
-const routeActive = ref(false);
-const isSharing = ref(false);
-const destinationQuery = ref("");
-const destinationResults = ref([]);
-const currentUser = ref(null);
-
-// Variables internas
-let map = null;
-let myMarker = null;
-let myPath = null;
-let destinationMarker = null;
-let routeLine = null;
-let watchId = null;
-
-// guardamos coords del destino
-let destinationCoords = null;
-
-// -----------------------------------------------------------
-// Montaje del mapa
-// -----------------------------------------------------------
-onMounted(async () => {
-  map = L.map(mapEl.value, { zoomControl: false }).setView([-34.6037, -58.3816], 13);
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: "© OpenStreetMap contributors",
-  }).addTo(map);
-
-  L.control.zoom({ position: "topright" }).addTo(map);
-
-  subscribeToUserState(async (user) => {
-    currentUser.value = user;
-    if (user?.id) {
-      trustedContacts.value = await getTrustedContacts(user.id);
-    } else {
-      trustedContacts.value = [];
-    }
-  });
-});
-
-// -----------------------------------------------------------
-// Cleanup
-// -----------------------------------------------------------
-onUnmounted(() => {
-  if (watchId) navigator.geolocation.clearWatch(watchId);
-
-  [myMarker, myPath, destinationMarker, routeLine].forEach((l) => {
-    if (l && map) map.removeLayer(l);
-  });
-});
-
-// -----------------------------------------------------------
-// Funciones de recorrido
-// -----------------------------------------------------------
-async function startSharing() {
-  if (!selectedContact.value) {
-    alert("Seleccioná un contacto de confianza.");
-    return;
-  }
-
-  routeActive.value = true;
-  isSharing.value = true;
-
-  await startPath();
-  await sharePathWith(selectedContact.value.id);
-
-  myPath = L.polyline([], { color: "#3082e3", weight: 3 }).addTo(map);
-  startWatchingPosition(true);
-}
-
-async function startLocal() {
-  routeActive.value = true;
-  isSharing.value = false;
-
-  await startPathWithoutSharing();
-  myPath = L.polyline([], { color: "#3082e3", weight: 3 }).addTo(map);
-  startWatchingPosition(false);
-}
-
-function startWatchingPosition(shouldShare) {
-  if (!("geolocation" in navigator)) return;
-
-  watchId = navigator.geolocation.watchPosition(
-    async (pos) => {
-      const { latitude, longitude } = pos.coords;
-
-      updateMyMarker(latitude, longitude);
-      myPath.addLatLng([latitude, longitude]);
-
-      if (shouldShare) {
-        updateCoords({ lat: latitude, lng: longitude });
-      }
-
-      // Si ya hay destino, recalcular ruta en tiempo real 
-      if (destinationCoords) {
-        drawRoute({ lat: latitude, lng: longitude }, destinationCoords);
-      }
-    },
-    (err) => console.error("Error en geolocalización:", err),
-    { enableHighAccuracy: true }
-  );
-}
-
-async function finishSharing() {
-  if (watchId) {
-    navigator.geolocation.clearWatch(watchId);
-    watchId = null;
-  }
-
-  await endPath();
-
-  routeActive.value = false;
-  isSharing.value = false;
-
-  [myMarker, myPath, destinationMarker, routeLine].forEach((layer) => {
-    if (layer && map) map.removeLayer(layer);
-  });
-
-  myMarker = myPath = destinationMarker = routeLine = null;
-}
-
-function updateMyMarker(lat, lng) {
-  if (!myMarker) {
-    myMarker = L.marker([lat, lng]).addTo(map).bindPopup("Tu ubicación actual");
-  } else {
-    myMarker.setLatLng([lat, lng]);
-  }
-  map.flyTo([lat, lng], 15);
-}
-
-// -----------------------------------------------------------
-// Búsqueda de destino
-// -----------------------------------------------------------
-async function searchDestination() {
-  if (!destinationQuery.value.trim()) return;
-
-  destinationResults.value = await nominatimSearch(destinationQuery.value, {
-    countrycodes: "ar",
-    limit: 5,
-  });
-}
-
-function selectDestination(place) {
-  const lat = parseFloat(place.lat);
-  const lon = parseFloat(place.lon);
-
-  destinationCoords = { lat, lng: lon }; // guardamos coords
-
-  // Borrar marcadores previos
-  if (destinationMarker) map.removeLayer(destinationMarker);
-  if (routeLine) map.removeLayer(routeLine);
-
-  // Crear marcador de destino
-  destinationMarker = L.marker([lat, lon], {
-    icon: L.icon({
-      iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-      iconSize: [32, 32],
-    }),
-  })
-    .addTo(map)
-    .bindPopup(`<b>Destino:</b> ${composeAddress(place.address)}`)
-    .openPopup();
-
-  map.setView([lat, lon], 15);
-
-  destinationQuery.value = composeAddress(place.address);
-  destinationResults.value = [];
-
-  // Si ya tenemos ubicación actual, trazar ruta real
-  if (myMarker) {
-    const { lat: myLat, lng: myLng } = myMarker.getLatLng();
-    drawRoute({ lat: myLat, lng: myLng }, destinationCoords);
-  }
-}
-
-// -----------------------------------------------------------
-// Función de ruta OSRM
-// -----------------------------------------------------------
-async function drawRoute(from, to) {
-  try {
-    const res = await fetch(
-      `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`
-    );
-
-    const data = await res.json();
-    if (!data.routes.length) return;
-
-    const coords = data.routes[0].geometry.coordinates.map((c) => [c[1], c[0]]);
-
-    if (routeLine) map.removeLayer(routeLine);
-
-    routeLine = L.polyline(coords, {
-      color: "blue",
-      weight: 3,
-      opacity: 0.9,
-    }).addTo(map);
-
-    map.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
-  } catch (e) {
-    console.error("Error trazando ruta:", e);
-  }
-}
-</script>
-
-<template>
-  <div class="max-w-2xl mx-auto p-4">
-    <AppH1>Recorrido seguro</AppH1>
-
-    <div ref="mapEl" class="mt-4 rounded-xl border relative z-0" style="height: 300px;"></div>
-
-    <div class="mb-4 mt-4">
-      <label class="block font-medium">Dirección de destino:</label>
-      <div class="flex gap-2">
-        <input
-          v-model="destinationQuery"
-          type="text"
-          class="flex-1 border rounded px-3 py-2"
-          @keyup.enter="searchDestination"
-          placeholder="Ej: Av. Corrientes 1234"
-        />
-        <button @click="searchDestination" class="px-4 py-2 rounded bg-blue-500 text-white">
-          Buscar
-        </button>
-      </div>
-
-      <ul
-        v-if="destinationResults.length"
-        class="bg-white border mt-2 rounded shadow max-h-40 overflow-auto"
-      >
-        <li
-          v-for="r in destinationResults"
-          :key="r.place_id"
-          class="p-2 hover:bg-blue-100 cursor-pointer"
-          @click="selectDestination(r)"
-        >
-          {{ composeAddress(r.address) }}
-        </li>
-      </ul>
-    </div>
-
-    <div class="mb-4 mt-4">
-      <label class="block font-medium">Contactos de confianza:</label>
-      <select v-model="selectedContact" class="w-full border rounded px-3 py-2">
-        <option :value="null" disabled>Seleccioná un contacto...</option>
-        <option v-for="c in trustedContacts" :key="c.id" :value="c">
-          {{ c.name }} {{ c.lastname }}
-        </option>
-      </select>
-    </div>
-
-    <div class="flex gap-2 mb-2 items-center">
-      <button
-        v-if="!routeActive"
-        @click="startSharing"
-        class="mt-4 px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700"
-      >
-        Iniciar recorrido compartido
-      </button>
-
-      <button
-        v-if="!routeActive"
-        @click="startLocal"
-        class="mt-4 px-4 py-2 rounded border border-blue-500 bg-white text-gray hover:bg-blue-200"
-      >
-        Iniciar recorrido sin compartir
-      </button>
-
-      <button
-        v-if="routeActive"
-        @click="finishSharing"
-        class="mt-4 px-4 py-2 rounded bg-orange-400 text-white"
-      >
-        Finalizar recorrido
-      </button>
-    </div>
-  </div>
-
-  <BottomNavigation />
-</template>
- -->
  <script setup>
  import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
+ import { useRouter } from "vue-router";
  import L from "leaflet";
  import { getTrustedContacts } from "../services/contacts";
  import { subscribeToUserState } from "../services/auth";
@@ -325,6 +16,8 @@ async function drawRoute(from, to) {
  
  delete L.Icon.Default.prototype._getIconUrl;
  L.Icon.Default.mergeOptions({ iconRetinaUrl: icon2x, iconUrl: icon, shadowUrl: shadow });
+ 
+ const router = useRouter();
  
  // ── Composable persistente ───────────────────────────────────────────────
  const {
@@ -360,6 +53,8 @@ async function drawRoute(from, to) {
  const routeError = ref("");
  const routeResult = ref(null); // { coords, distance, duration, risk, hazards }
  
+ const showFinishConfirm = ref(false);
+ 
  // ── Mapa ────────────────────────────────────────────────────────────────
  const mapEl = ref(null);
  let map = null;
@@ -368,13 +63,12 @@ async function drawRoute(from, to) {
  let routeLine = null;
  let traveledLine = null;
  let hazardMarkers = [];
+ let resizeObserver = null;
  
  const DEFAULT_CENTER = [-34.6037, -58.3816];
  
- // Alturas más conservadoras: en 'active' el mapa se achica para dejar
- // siempre visible el botón de Finalizar recorrido.
  const mapHeight = computed(() => {
-   if (viewState.value === "active") return "200px";
+   if (viewState.value === "active") return "300px";
    if (viewState.value === "preview") return "300px";
    return "260px";
  });
@@ -445,7 +139,6 @@ async function drawRoute(from, to) {
    destinationMarker = L.marker([lat, lng], { icon: iconDestination() }).addTo(map);
  }
  
- // Ya NO llama fitBounds acá: eso lo maneja refitView() con invalidateSize primero.
  function drawRouteLine(coords, color = "#3082e3") {
    if (routeLine) map.removeLayer(routeLine);
    const latlngs = coords.map((c) => [c.lat, c.lng]);
@@ -461,20 +154,30 @@ async function drawRoute(from, to) {
    if (fly) map.flyTo([lat, lng], 16);
  }
  
- // Recalcula el tamaño real del contenedor y recién ahí ajusta el encuadre.
- // Esto es lo que evita el "zoom horrible" al cambiar de vista.
  function refitView() {
    if (!map) return;
  
-   map.invalidateSize({ animate: false, pan: false });
+   requestAnimationFrame(() => {
+     requestAnimationFrame(() => {
+       if (!map) return;
  
-   if (routeLine && (viewState.value === "preview" || viewState.value === "active")) {
-     map.fitBounds(routeLine.getBounds(), { padding: [28, 28] });
-   } else if (destinationMarker) {
-     map.setView(destinationMarker.getLatLng(), 15);
-   } else {
-     map.setView(DEFAULT_CENTER, 13);
-   }
+       map.invalidateSize({ animate: false, pan: false });
+ 
+       const canFitRoute =
+         routeLine &&
+         (viewState.value === "preview" || viewState.value === "active") &&
+         routeLine.getLatLngs().length > 1 &&
+         routeLine.getBounds().isValid();
+ 
+       if (canFitRoute) {
+         map.fitBounds(routeLine.getBounds(), { padding: [28, 28], maxZoom: 17 });
+       } else if (destinationMarker) {
+         map.setView(destinationMarker.getLatLng(), 15);
+       } else {
+         map.setView(DEFAULT_CENTER, 13);
+       }
+     });
+   });
  }
  
  // ── Búsqueda de destino ───────────────────────────────────────────────────
@@ -560,7 +263,7 @@ async function drawRoute(from, to) {
    loadingRoute.value = true;
    viewState.value = "preview";
    await nextTick();
-   refitView(); // el contenedor recién cambió a 300px
+   refitView();
  
    try {
      const origin = await getCurrentPositionAsync();
@@ -600,7 +303,7 @@ async function drawRoute(from, to) {
  
    clearHazardMarkers();
    drawHazards(routeResult.value.hazards);
-   drawRouteLine(routeResult.value.coords, "#a9c8f5"); // ruta sugerida en tono más claro
+   drawRouteLine(routeResult.value.coords, "#a9c8f5");
    if (traveledLine) map.removeLayer(traveledLine);
    traveledLine = L.polyline([], { color: "#3082e3", weight: 5 }).addTo(map);
  
@@ -609,8 +312,13 @@ async function drawRoute(from, to) {
    refitView();
  }
  
- async function handleFinishRoute() {
-   await endRoute();
+ function openFinishConfirm() {
+   showFinishConfirm.value = true;
+ }
+ 
+ async function confirmFinish(arrived) {
+   showFinishConfirm.value = false;
+   await endRoute({ arrived });
  
    [destinationMarker, userMarker, routeLine, traveledLine].forEach((l) => {
      if (l && map) map.removeLayer(l);
@@ -643,22 +351,45 @@ async function drawRoute(from, to) {
    nextTick(() => refitView());
  }
  
+ function goHome() {
+   router.push("/");
+ }
+ 
+ function handleBack() {
+   if (viewState.value === "active") {
+     goHome();
+   } else {
+     goBackToSetup();
+   }
+ }
+ 
  // ── Ciclo de vida ──────────────────────────────────────────────────────────
  onMounted(async () => {
    await nextTick();
  
-   map = L.map(mapEl.value, { zoomControl: false }).setView(DEFAULT_CENTER, 13);
+   map = L.map(mapEl.value, {
+     zoomControl: false,
+     minZoom: 11,
+     maxZoom: 19,
+   }).setView(DEFAULT_CENTER, 13);
+ 
    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
      maxZoom: 19,
      attribution: "© OpenStreetMap contributors",
    }).addTo(map);
    L.control.zoom({ position: "topright" }).addTo(map);
  
+   // Corrige el mapa cada vez que su contenedor cambia de tamaño real,
+   // sin depender de que cada transición de estado lo llame manualmente.
+   resizeObserver = new ResizeObserver(() => {
+     map?.invalidateSize({ animate: false, pan: false });
+   });
+   resizeObserver.observe(mapEl.value);
+ 
    subscribeToUserState((user) => {
      currentUser.value = user;
    });
  
-   // Si ya había un recorrido activo (venimos de la barra flotante), lo reconstruimos
    if (isActive.value) {
      selectedDestination.value = sharedDestination.value;
      destinationQuery.value = sharedDestination.value?.address || "";
@@ -688,15 +419,14 @@ async function drawRoute(from, to) {
      viewState.value = "active";
    }
  
-   // Leaflet a veces se monta antes de que el contenedor tenga su tamaño final
-   setTimeout(refitView, 150);
+   refitView();
  });
  
  onUnmounted(() => {
+   resizeObserver?.disconnect();
    if (map) map.remove();
  });
  
- // Mientras el recorrido está activo y estamos en esta página, actualizamos el mapa en vivo
  watch(currentPosition, (pos) => {
    if (!pos || !map || viewState.value !== "active") return;
    updateUserMarker(pos.lat, pos.lng, true);
@@ -715,7 +445,6 @@ async function drawRoute(from, to) {
  });
  const pointsCount = computed(() => coordsHistory.value.length);
  
- // Nombre a mostrar en la tarjeta de estado activo (nunca el email)
  const activeContactLabel = computed(() => {
    const c = sharedContact.value;
    if (!c) return "";
@@ -729,8 +458,8 @@ async function drawRoute(from, to) {
        <!-- HEADER -->
        <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
          <button
-           v-if="viewState !== 'setup' && viewState !== 'active'"
-           @click="goBackToSetup"
+           v-if="viewState !== 'setup'"
+           @click="handleBack"
            class="flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200 shrink-0"
          >
            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#2a2a2a" stroke-width="2.2">
@@ -749,7 +478,6 @@ async function drawRoute(from, to) {
        <div class="relative w-full overflow-hidden">
          <div ref="mapEl" class="w-full" :style="{ height: mapHeight, zIndex: 0 }"></div>
  
-         <!-- Buscador superpuesto (solo en setup) -->
          <div v-if="viewState === 'setup'" class="absolute top-3 left-3 right-3 z-20">
            <div class="relative">
              <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2">
@@ -780,7 +508,7 @@ async function drawRoute(from, to) {
          </div>
        </div>
  
-       <!-- ══════════ SETUP: descripción de la función ══════════ -->
+       <!-- SETUP -->
        <section v-if="viewState === 'setup'" class="px-4 pt-5">
          <div class="rounded-[22px] border border-[#d6e8fb] bg-[#eef4ff] p-5">
            <div class="flex items-start gap-3">
@@ -800,7 +528,7 @@ async function drawRoute(from, to) {
          </div>
        </section>
  
-       <!-- ══════════ MODAL: ¿Compartir con contacto? ══════════ -->
+       <!-- MODAL: ¿Compartir? -->
        <div v-if="viewState === 'confirmShare'" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
          <div class="w-full max-w-sm rounded-[26px] bg-white p-6 shadow-[0_22px_48px_rgba(15,23,42,0.22)]">
            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3]">
@@ -834,7 +562,7 @@ async function drawRoute(from, to) {
          </div>
        </div>
  
-       <!-- ══════════ SHEET: elegir contacto ══════════ -->
+       <!-- SHEET: elegir contacto -->
        <div v-if="viewState === 'pickContact'" class="fixed inset-0 z-40 bg-black/35" @click="viewState = 'confirmShare'"></div>
        <div
          v-if="viewState === 'pickContact'"
@@ -872,7 +600,7 @@ async function drawRoute(from, to) {
          </div>
        </div>
  
-       <!-- ══════════ PREVIEW: ruta calculada ══════════ -->
+       <!-- PREVIEW -->
        <section v-if="viewState === 'preview'" class="px-4 pt-4">
          <div v-if="loadingRoute" class="rounded-2xl bg-[#E0E5EC] px-4 py-5 text-center text-sm text-slate-600">
            Calculando el camino más seguro...
@@ -932,7 +660,7 @@ async function drawRoute(from, to) {
          </div>
        </section>
  
-       <!-- ══════════ ACTIVO: recorrido en curso ══════════ -->
+       <!-- ACTIVO -->
        <section v-if="viewState === 'active'" class="px-4 pt-4">
          <div class="rounded-[24px] p-5 text-white shadow-[0_14px_30px_rgba(48,130,227,0.28)]" style="background: linear-gradient(135deg, #3082e3 0%, #085baf 100%);">
            <div class="flex items-center justify-between gap-3">
@@ -954,7 +682,6 @@ async function drawRoute(from, to) {
            <p class="mt-1 text-[11px] text-white/75">puntos GPS registrados</p>
          </div>
  
-         <!-- Alerta de proximidad en esta misma pantalla -->
          <transition name="fade-alert">
            <div
              v-if="activeAlert"
@@ -976,12 +703,53 @@ async function drawRoute(from, to) {
  
          <button
            type="button"
-           @click="handleFinishRoute"
+           @click="openFinishConfirm"
            class="mt-4 w-full rounded-2xl bg-[#f2826d] py-3.5 text-sm font-bold text-white transition hover:brightness-105 active:scale-[0.98]"
          >
            Finalizar recorrido
          </button>
        </section>
+ 
+       <!-- MODAL: ¿Llegaste bien? -->
+       <div v-if="showFinishConfirm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
+         <div class="w-full max-w-sm rounded-[26px] bg-white p-6 shadow-[0_22px_48px_rgba(15,23,42,0.22)]">
+           <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3]">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12A9 9 0 1 1 3 12a9 9 0 0 1 18 0Z" />
+             </svg>
+           </div>
+           <h3 class="mt-4 text-center text-[18px] font-bold text-slate-900">
+             ¿Llegaste bien a tu destino?
+           </h3>
+           <p v-if="isSharing" class="mt-2 text-center text-sm leading-6 text-slate-500">
+             Le avisamos a {{ activeContactLabel || "tu contacto" }} que finalizaste el recorrido.
+           </p>
+ 
+           <div class="mt-6 space-y-3">
+             <button
+               type="button"
+               @click="confirmFinish(true)"
+               class="w-full rounded-2xl bg-[#3082e3] py-3 text-sm font-semibold text-white transition hover:bg-[#085baf] active:scale-[0.98]"
+             >
+               Sí, llegué bien
+             </button>
+             <button
+               type="button"
+               @click="confirmFinish(false)"
+               class="w-full rounded-2xl bg-[#eef4ff] py-3 text-sm font-semibold text-[#3082e3] transition active:scale-[0.98]"
+             >
+               Finalizar sin avisar
+             </button>
+             <button
+               type="button"
+               @click="showFinishConfirm = false"
+               class="w-full py-2 text-sm font-medium text-slate-400 transition hover:text-slate-600"
+             >
+               Volver
+             </button>
+           </div>
+         </div>
+       </div>
      </div>
    </div>
  

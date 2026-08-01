@@ -10,7 +10,9 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-
+html, body, #app {
+    overflow-x: hidden;
+  }
 /* html, body, #app {
     height: 100%;
 }
