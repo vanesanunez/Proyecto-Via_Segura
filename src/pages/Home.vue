@@ -1,9 +1,9 @@
 <script>
-import AppOnboarding from "../components/AppOnboarding.vue";
 import AppH1 from "../components/AppH1.vue";
 import ActionCard from "../components/ActionCard.vue";
 import BottomNavigation from "../components/BottomNavigation.vue";
 import EmergencyButton from "../components/EmergencyButton.vue";
+import AppOnboarding from "../components/AppOnboarding.vue";
 
 import { subscribeToUserState } from "../services/auth";
 import { fetchUserGamification } from "../services/gamification";
@@ -25,6 +25,7 @@ export default {
   name: "Home",
   components: {
     AppH1,
+    AppOnboarding,
     ActionCard,
     BottomNavigation,
     EmergencyButton,
