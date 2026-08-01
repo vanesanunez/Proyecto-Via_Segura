@@ -23,21 +23,21 @@ export default {
 
       slides: [
         {
-          image: "/onboarding/bienvenida2.png",
+          image: "/onboarding/bienvenida.png",
           alt: "Bienvenida a Vía Segura",
           title: "Bienvenido/a a Vía Segura",
           description:
             "Conocé las herramientas que te ayudan a moverte con más tranquilidad.",
         },
         {
-          image: "/onboarding/reporte2.png",
+          image: "/onboarding/reporte.png",
           alt: "Personas realizando reportes",
           title: "Realizá reportes",
           description:
             "Avisá sobre problemas de iluminación, infraestructura o seguridad.",
         },
         {
-          image: "/onboarding/recorrido2.png",
+          image: "/onboarding/recorrido.png",
           alt: "Persona utilizando un mapa para realizar un recorrido seguro",
           title: "Compartí tu recorrido",
           description:
