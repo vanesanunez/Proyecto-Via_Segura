@@ -236,7 +236,7 @@ export default {
             </template>
           </ActionCard>
 
-          <ActionCard title="Info útil" to="/info-util" accent="blue-soft">
+          <ActionCard title="Info útil" to="/info" accent="blue-soft">
             <template #icon>
               <InformationCircleIcon class="h-5 w-5 text-[#3082e3]" />
             </template>
