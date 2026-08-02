@@ -129,15 +129,11 @@
             <span class="text-xs min-w-0 flex-1"
               style="color:#2a2a2a; word-break: break-word; overflow-wrap: anywhere;">{{ direccionInput }}</span>
           </div>
-          <button @click="nuevaBusqueda"
-            class="mt-2 text-xs font-semibold px-3 py-1 rounded-full border transition-colors active:bg-blue-50"
-            style="border-color:#3082e3; color:#3082e3;">
-            Nueva búsqueda
-          </button>
+         
         </div>
   
         <!-- Mapa Leaflet-->
-        <div ref="mapaRef" class="w-full shrink-0" style="height: 400px; z-index:0;"></div>
+        <div ref="mapaRef" class="w-full shrink-0" style="height: 300px; z-index:0;"></div>
   
         <!-- Slider de radio -->
         <div class="px-4 py-2.5 border-b border-gray-100 flex items-center gap-3 shrink-0">
@@ -208,8 +204,14 @@
             </svg>
           </div>
   
+          <button @click="nuevaBusqueda"
+          class="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 "
+          style="background:#3082e3;">
+            Nueva búsqueda
+          </button>
+
           <!-- Botón volver al inicio -->
-          <div class="px-4 py-5 flex justify-center">
+          <!-- <div class="px-4 py-5 flex justify-center">
             <button @click="$router.push('/')"
               class="flex items-center gap-2 py-2.5 px-5 rounded-xl text-sm font-semibold border transition-all active:scale-95"
               style="border-color:#e5e7eb; color:#3082e3; background:#f9fafb;">
@@ -220,7 +222,7 @@
               </svg>
               Volver al inicio
             </button>
-          </div>
+          </div> -->
   
         </div>
       </div>
