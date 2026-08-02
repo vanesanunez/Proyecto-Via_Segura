@@ -619,12 +619,12 @@ function startNewReport() {
 
             <!-- Ilustración del paso -->
             <div
-              class="mx-auto mt-6 flex h-[190px] w-full max-w-[290px] items-center justify-center overflow-hidden"
+              class="mx-auto mt-5 flex h-[220px] w-full max-w-[310px] items-center justify-center overflow-hidden"
             >
               <img
                 :src="onboardingContent.image"
                 :alt="onboardingContent.imageAlt"
-                class="h-[185px] w-[185px] object-contain"
+                class="h-full w-full scale-[2.2] object-contain object-center"
               />
             </div>
 
