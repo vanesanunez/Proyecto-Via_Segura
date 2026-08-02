@@ -583,7 +583,7 @@ export default {
 
             <!-- Mini cards -->
             <div class="grid grid-cols-2 gap-3 mt-4">
-              <div class="rounded-[16px] bg-[#f6f8fc] px-3 py-3 flex items-center gap-3">
+              <div class="rounded-2xl bg-[#f6f8fc] px-3 py-3 flex items-center gap-3">
                 <div class="w-12 h-12 rounded-full bg-[#dfeaff] flex items-center justify-center shrink-0">
                   <div class="w-8 h-8 rounded-full bg-[#1f7bf2] flex items-center justify-center">
                     <DocumentTextIcon class="w-4 h-4 text-white" />
@@ -600,7 +600,7 @@ export default {
                 </div>
               </div>
 
-              <div class="rounded-[16px] bg-[#f6f8fc] px-3 py-3 flex items-center gap-3">
+              <div class="rounded-2xl bg-[#f6f8fc] px-3 py-3 flex items-center gap-3">
                 <div class="w-12 h-12 rounded-full bg-[#ffe3dd] flex items-center justify-center shrink-0">
                   <div class="w-8 h-8 rounded-full bg-[#ff7f66] flex items-center justify-center">
                     <UserGroupIcon class="w-4 h-4 text-white" />
@@ -619,7 +619,7 @@ export default {
             </div>
 
             <!-- Insignia -->
-            <div class="mt-4 rounded-[16px] bg-[#eef4ff] border border-[#dbe7fb] px-3 py-3 flex items-center gap-3">
+            <div class="mt-4 rounded-2xl bg-[#eef4ff] border border-[#dbe7fb] px-3 py-3 flex items-center gap-3">
               <div
                 class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-500"
                 :class="[currentBadge.iconWrap, showBadgeCelebration ? 'badge-glow badge-pop' : '']"
