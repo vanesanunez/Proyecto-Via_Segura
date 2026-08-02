@@ -189,12 +189,7 @@ onMounted(() => {
               Usuarios registrados
             </h1>
 
-            <p
-              class="mt-2 max-w-xl text-sm leading-6 text-slate-600 sm:text-base"
-            >
-              Consultá los perfiles de la comunidad y administrá sus permisos
-              de acceso.
-            </p>
+           
           </div>
 
           <div
@@ -203,6 +198,12 @@ onMounted(() => {
             {{ users.length }}
           </div>
         </div>
+              <p
+              class="mt-2 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
+              Consultá los perfiles de la comunidad y administrá sus permisos
+              de acceso.
+            </p>
+
       </header>
 
       <!-- Métricas -->
