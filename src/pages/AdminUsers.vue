@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
+import { useRouter } from "vue-router";
+
 import {
   fetchAllUserProfiles,
   updateUserRole,
 } from "../services/user-profiles";
-import { useRouter } from "vue-router";
+
 import {
   ChevronDownIcon,
   UsersIcon,
@@ -13,45 +15,47 @@ import {
 
 const router = useRouter();
 
+// Datos principales
+const users = ref([]);
 const loading = ref(true);
 const errorMessage = ref("");
 const successMessage = ref("");
-const users = ref([]);
 const updatingUserId = ref(null);
 
+// Paginación: tres usuarios por página
 const page = ref(1);
 const pageSize = 3;
 
-const adminCount = computed(
-  () => users.value.filter((user) => user.role === "admin").length,
-);
+// Métricas
+const adminCount = computed(() => {
+  return users.value.filter((user) => user.role === "admin").length;
+});
 
-const regularUserCount = computed(
-  () => users.value.filter((user) => user.role !== "admin").length,
-);
+const regularUserCount = computed(() => {
+  return users.value.filter((user) => user.role !== "admin").length;
+});
 
-function userInitials(user) {
-  const nameInitial = user?.name?.trim()?.charAt(0) || "";
-  const lastnameInitial = user?.lastname?.trim()?.charAt(0) || "";
+// Cantidad total de páginas
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(users.value.length / pageSize));
+});
 
-  return `${nameInitial}${lastnameInitial}`.toUpperCase() || "U";
-}
-
-const totalPages = computed(() =>
-  Math.max(1, Math.ceil(users.value.length / pageSize)),
-);
-
+// Usuarios que se muestran en la página actual
 const paginatedUsers = computed(() => {
   const start = (page.value - 1) * pageSize;
   const end = start + pageSize;
+
   return users.value.slice(start, end);
 });
 
-function goTo(p) {
-  if (p < 1 || p > totalPages.value) return;
-  page.value = p;
+// Cambiar de página
+function goTo(newPage) {
+  if (newPage < 1 || newPage > totalPages.value) return;
+
+  page.value = newPage;
 }
 
+// Si cambia la cantidad de usuarios, controla que la página siga existiendo
 watch(
   () => users.value.length,
   () => {
@@ -63,6 +67,7 @@ watch(
 
 let successTimeout = null;
 
+// Mostrar mensaje de éxito durante tres segundos
 function showSuccessMessage(message) {
   successMessage.value = message;
 
@@ -75,6 +80,7 @@ function showSuccessMessage(message) {
   }, 3000);
 }
 
+// Obtener usuarios desde Supabase
 async function loadUsers() {
   loading.value = true;
   errorMessage.value = "";
@@ -83,36 +89,59 @@ async function loadUsers() {
     users.value = await fetchAllUserProfiles();
   } catch (error) {
     console.error("[AdminUsers] Error cargando usuarios:", error);
+
     errorMessage.value = "No se pudieron cargar los usuarios.";
   } finally {
     loading.value = false;
   }
 }
 
+// Cambiar el rol de un usuario
 async function handleRoleChange(userId, event) {
   const newRole = event.target.value;
+
   updatingUserId.value = userId;
+  errorMessage.value = "";
 
   try {
     await updateUserRole(userId, newRole);
 
-    users.value = users.value.map((user) =>
-      user.id === userId ? { ...user, role: newRole } : user,
-    );
+    users.value = users.value.map((user) => {
+      if (user.id === userId) {
+        return {
+          ...user,
+          role: newRole,
+        };
+      }
+
+      return user;
+    });
 
     showSuccessMessage("Rol actualizado con éxito.");
   } catch (error) {
     console.error("[AdminUsers] Error actualizando rol:", error);
+
     errorMessage.value = "No se pudo actualizar el rol del usuario.";
   } finally {
     updatingUserId.value = null;
   }
 }
 
+// Color de la etiqueta según el rol
 function roleBadgeClass(role) {
-  return role === "admin"
-    ? "border border-[#D6E8FB] bg-[#EEF4FF] text-[#3082E3]"
-    : "border border-slate-200 bg-white text-slate-600";
+  if (role === "admin") {
+    return "border border-[#D6E8FB] bg-[#EEF4FF] text-[#3082E3]";
+  }
+
+  return "border border-slate-200 bg-white text-slate-600";
+}
+
+// Iniciales para el avatar
+function userInitials(user) {
+  const nameInitial = user?.name?.trim()?.charAt(0) || "";
+  const lastnameInitial = user?.lastname?.trim()?.charAt(0) || "";
+
+  return `${nameInitial}${lastnameInitial}`.toUpperCase() || "U";
 }
 
 onMounted(() => {
@@ -150,6 +179,7 @@ onMounted(() => {
               class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-[#3082E3]"
             >
               <UsersIcon class="h-4 w-4" />
+
               <span>Gestión de usuarios</span>
             </div>
 
@@ -159,7 +189,9 @@ onMounted(() => {
               Usuarios registrados
             </h1>
 
-            <p class="mt-2 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
+            <p
+              class="mt-2 max-w-xl text-sm leading-6 text-slate-600 sm:text-base"
+            >
               Consultá los perfiles de la comunidad y administrá sus permisos
               de acceso.
             </p>
@@ -190,7 +222,7 @@ onMounted(() => {
         <article
           class="rounded-[20px] border border-[#D6E8FB] bg-white p-3 shadow-[0_8px_20px_rgba(48,130,227,0.06)]"
         >
-          <p class="text-[11px] font-semibold text-slate-500">
+          <p class="break-words text-[11px] font-semibold text-slate-500">
             Administradores
           </p>
 
@@ -234,7 +266,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Error -->
+      <!-- Mensaje de error -->
       <div
         v-if="errorMessage"
         class="mt-5 flex items-start gap-3 rounded-[20px] border border-[#F7CBC2] bg-[#FFF1ED] px-4 py-3 text-[#D96854]"
@@ -250,7 +282,7 @@ onMounted(() => {
         </p>
       </div>
 
-      <!-- Cargando -->
+      <!-- ESTADO 1: Cargando -->
       <div
         v-if="loading"
         class="mt-5 rounded-[24px] border border-[#D6E8FB] bg-white p-6 shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
@@ -266,58 +298,234 @@ onMounted(() => {
         </div>
       </div>
 
-      <template v-else>
-        <!-- Sin usuarios -->
+      <!-- ESTADO 2: No hay usuarios -->
+      <div
+        v-else-if="users.length === 0"
+        class="mt-5 rounded-[24px] border border-[#D6E8FB] bg-white px-5 py-10 text-center shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
+      >
         <div
-          v-if="users.length === 0"
-          class="mt-5 rounded-[24px] border border-[#D6E8FB] bg-white px-5 py-10 text-center shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
+          class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#EEF4FF] text-[#3082E3]"
         >
-          <div
-            class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#EEF4FF] text-[#3082E3]"
-          >
-            <UsersIcon class="h-7 w-7" />
-          </div>
+          <UsersIcon class="h-7 w-7" />
+        </div>
 
-          <p class="mt-4 font-bold text-slate-900">
-            Todavía no hay usuarios
-          </p>
+        <p class="mt-4 font-bold text-slate-900">
+          Todavía no hay usuarios
+        </p>
 
-          <p class="mt-1 text-sm text-slate-500">
-            Los nuevos perfiles aparecerán en esta sección.
+        <p class="mt-1 text-sm text-slate-500">
+          Los nuevos perfiles aparecerán en esta sección.
+        </p>
+      </div>
+
+      <!-- ESTADO 3: Hay usuarios -->
+      <div v-else>
+        <!-- Encabezado del listado -->
+        <div class="mb-4 mt-7">
+          <h2 class="text-[20px] font-bold text-slate-900">
+            Perfiles de la comunidad
+          </h2>
+
+          <p class="mt-1 text-sm leading-6 text-slate-500">
+            Revisá la información y asigná el rol correspondiente.
           </p>
         </div>
 
-        <template v-else>
-          <!-- Encabezado listado -->
-          <div class="mb-4 mt-7">
-            <h2 class="text-[20px] font-bold text-slate-900">
-              Perfiles de la comunidad
-            </h2>
+        <!-- Vista celular -->
+        <div class="space-y-4 md:hidden">
+          <article
+            v-for="user in paginatedUsers"
+            :key="user.id"
+            class="rounded-[24px] border border-[#D6E8FB] bg-white p-4 shadow-[0_10px_24px_rgba(48,130,227,0.07)]"
+          >
+            <!-- Información principal -->
+            <div class="flex items-start gap-3">
+              <div
+                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#EEF4FF] text-sm font-bold text-[#3082E3]"
+              >
+                {{ userInitials(user) }}
+              </div>
 
-            <p class="mt-1 text-sm leading-6 text-slate-500">
-              Revisá la información y asigná el rol correspondiente.
-            </p>
-          </div>
-
-          <!-- Celular -->
-          <div class="space-y-4 md:hidden">
-            <article
-              v-for="user in paginatedUsers"
-              :key="user.id"
-              class="rounded-[24px] border border-[#D6E8FB] bg-white p-4 shadow-[0_10px_24px_rgba(48,130,227,0.07)]"
-            >
-              <!-- Usuario -->
-              <div class="flex items-start gap-3">
-                <div
-                  class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#EEF4FF] text-sm font-bold text-[#3082E3]"
+              <div class="min-w-0 flex-1">
+                <span
+                  class="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold"
+                  :class="roleBadgeClass(user.role)"
                 >
-                  {{ userInitials(user) }}
-                </div>
+                  {{
+                    user.role === "admin"
+                      ? "Administrador"
+                      : "Usuario"
+                  }}
+                </span>
 
-                <div class="min-w-0 flex-1">
-                  <div class="flex flex-wrap items-center gap-2">
+                <h3
+                  class="mt-2 break-words text-[18px] font-bold leading-snug text-slate-900"
+                >
+                  {{ user.name || "Sin nombre" }}
+                  {{ user.lastname || "" }}
+                </h3>
+
+                <p class="mt-1 break-all text-sm text-slate-500">
+                  {{ user.email }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Datos secundarios -->
+            <div class="mt-4 grid grid-cols-2 gap-3">
+              <div
+                class="rounded-[16px] border border-[#E6EDF7] bg-[#F9FBFD] px-3 py-3"
+              >
+                <p class="text-[11px] font-semibold text-slate-400">
+                  DNI
+                </p>
+
+                <p class="mt-1 break-words text-sm font-bold text-slate-700">
+                  {{ user.dni || "Sin dato" }}
+                </p>
+              </div>
+
+              <div
+                class="rounded-[16px] border border-[#E6EDF7] bg-[#F9FBFD] px-3 py-3"
+              >
+                <p class="text-[11px] font-semibold text-slate-400">
+                  Registro
+                </p>
+
+                <p class="mt-1 text-sm font-bold text-slate-700">
+                  {{ new Date(user.created_at).toLocaleDateString() }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Cambio de rol -->
+            <div
+              class="mt-4 rounded-[18px] border border-[#D6E8FB] bg-[#EEF4FF] p-4"
+            >
+              <div class="flex items-center gap-2">
+                <ShieldCheckIcon class="h-5 w-5 text-[#3082E3]" />
+
+                <label
+                  :for="`role-${user.id}`"
+                  class="text-sm font-semibold text-slate-800"
+                >
+                  Permisos del usuario
+                </label>
+              </div>
+
+              <p class="mt-1 text-xs leading-5 text-slate-500">
+                Elegí qué nivel de acceso tendrá dentro de Vía Segura.
+              </p>
+
+              <div class="relative mt-3">
+                <select
+                  :id="`role-${user.id}`"
+                  :value="user.role"
+                  @change="handleRoleChange(user.id, $event)"
+                  :disabled="updatingUserId === user.id"
+                  class="w-full appearance-none rounded-2xl border border-[#D6E8FB] bg-white px-4 py-3 pr-12 text-sm font-medium text-slate-700 outline-none transition focus:border-[#3082E3] focus:ring-2 focus:ring-[#3082E3]/20 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <option value="user">Usuario</option>
+                  <option value="admin">Administrador</option>
+                </select>
+
+                <ChevronDownIcon
+                  class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                />
+              </div>
+
+              <p
+                v-if="updatingUserId === user.id"
+                class="mt-2 text-xs font-medium text-[#3082E3]"
+              >
+                Actualizando permisos...
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Vista escritorio -->
+        <section
+          class="hidden overflow-hidden rounded-[24px] border border-[#D6E8FB] bg-white shadow-[0_10px_26px_rgba(48,130,227,0.07)] md:block"
+        >
+          <div class="overflow-x-auto">
+            <table class="min-w-full border-collapse">
+              <thead class="bg-[#EEF4FF]">
+                <tr class="text-left">
+                  <th
+                    class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
+                  >
+                    Usuario
+                  </th>
+
+                  <th
+                    class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
+                  >
+                    Email
+                  </th>
+
+                  <th
+                    class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
+                  >
+                    DNI
+                  </th>
+
+                  <th
+                    class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
+                  >
+                    Fecha
+                  </th>
+
+                  <th
+                    class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
+                  >
+                    Rol
+                  </th>
+
+                  <th
+                    class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
+                  >
+                    Cambiar permisos
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr
+                  v-for="user in paginatedUsers"
+                  :key="user.id"
+                  class="border-t border-[#E6EDF7] transition hover:bg-[#F9FBFD]"
+                >
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#EEF4FF] text-xs font-bold text-[#3082E3]"
+                      >
+                        {{ userInitials(user) }}
+                      </div>
+
+                      <p class="font-semibold text-slate-800">
+                        {{ user.name || "Sin nombre" }}
+                        {{ user.lastname || "" }}
+                      </p>
+                    </div>
+                  </td>
+
+                  <td class="break-all px-4 py-4 text-sm text-slate-600">
+                    {{ user.email }}
+                  </td>
+
+                  <td class="px-4 py-4 text-sm text-slate-600">
+                    {{ user.dni || "Sin dato" }}
+                  </td>
+
+                  <td class="px-4 py-4 text-sm text-slate-600">
+                    {{ new Date(user.created_at).toLocaleDateString() }}
+                  </td>
+
+                  <td class="px-4 py-4">
                     <span
-                      class="rounded-full px-3 py-1 text-[11px] font-semibold"
+                      class="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold"
                       :class="roleBadgeClass(user.role)"
                     >
                       {{
@@ -326,262 +534,81 @@ onMounted(() => {
                           : "Usuario"
                       }}
                     </span>
-                  </div>
+                  </td>
 
-                  <h3
-                    class="mt-2 break-words text-[18px] font-bold leading-snug text-slate-900"
-                  >
-                    {{ user.name || "Sin nombre" }}
-                    {{ user.lastname || "" }}
-                  </h3>
-
-                  <p class="mt-1 break-all text-sm text-slate-500">
-                    {{ user.email }}
-                  </p>
-                </div>
-              </div>
-
-              <!-- Datos -->
-              <div class="mt-4 grid grid-cols-2 gap-3">
-                <div
-                  class="rounded-[16px] border border-[#E6EDF7] bg-[#F9FBFD] px-3 py-3"
-                >
-                  <p class="text-[11px] font-semibold text-slate-400">
-                    DNI
-                  </p>
-
-                  <p class="mt-1 break-words text-sm font-bold text-slate-700">
-                    {{ user.dni || "Sin dato" }}
-                  </p>
-                </div>
-
-                <div
-                  class="rounded-[16px] border border-[#E6EDF7] bg-[#F9FBFD] px-3 py-3"
-                >
-                  <p class="text-[11px] font-semibold text-slate-400">
-                    Registro
-                  </p>
-
-                  <p class="mt-1 text-sm font-bold text-slate-700">
-                    {{ new Date(user.created_at).toLocaleDateString() }}
-                  </p>
-                </div>
-              </div>
-
-              <!-- Rol -->
-              <div
-                class="mt-4 rounded-[18px] border border-[#D6E8FB] bg-[#EEF4FF] p-4"
-              >
-                <div class="flex items-center gap-2">
-                  <ShieldCheckIcon class="h-5 w-5 text-[#3082E3]" />
-
-                  <label
-                    :for="`role-${user.id}`"
-                    class="text-sm font-semibold text-slate-800"
-                  >
-                    Permisos del usuario
-                  </label>
-                </div>
-
-                <p class="mt-1 text-xs leading-5 text-slate-500">
-                  Elegí qué nivel de acceso tendrá dentro de Vía Segura.
-                </p>
-
-                <div class="relative mt-3">
-                  <select
-                    :id="`role-${user.id}`"
-                    :value="user.role"
-                    @change="handleRoleChange(user.id, $event)"
-                    :disabled="updatingUserId === user.id"
-                    class="w-full appearance-none rounded-2xl border border-[#D6E8FB] bg-white px-4 py-3 pr-12 text-sm font-medium text-slate-700 outline-none transition focus:border-[#3082E3] focus:ring-2 focus:ring-[#3082E3]/20 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    <option value="user">Usuario</option>
-                    <option value="admin">Administrador</option>
-                  </select>
-
-                  <ChevronDownIcon
-                    class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-                  />
-                </div>
-
-                <p
-                  v-if="updatingUserId === user.id"
-                  class="mt-2 text-xs font-medium text-[#3082E3]"
-                >
-                  Actualizando permisos...
-                </p>
-              </div>
-            </article>
-          </div>
-
-          <!-- Escritorio -->
-          <section
-            class="hidden overflow-hidden rounded-[24px] border border-[#D6E8FB] bg-white shadow-[0_10px_26px_rgba(48,130,227,0.07)] md:block"
-          >
-            <div class="overflow-x-auto">
-              <table class="min-w-full border-collapse">
-                <thead class="bg-[#EEF4FF]">
-                  <tr class="text-left">
-                    <th
-                      class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
-                    >
-                      Usuario
-                    </th>
-
-                    <th
-                      class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
-                    >
-                      Email
-                    </th>
-
-                    <th
-                      class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
-                    >
-                      DNI
-                    </th>
-
-                    <th
-                      class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
-                    >
-                      Fecha
-                    </th>
-
-                    <th
-                      class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
-                    >
-                      Rol
-                    </th>
-
-                    <th
-                      class="px-4 py-4 text-xs font-bold uppercase tracking-wide text-slate-600"
-                    >
-                      Cambiar permisos
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr
-                    v-for="user in paginatedUsers"
-                    :key="user.id"
-                    class="border-t border-[#E6EDF7] transition hover:bg-[#F9FBFD]"
-                  >
-                    <td class="px-4 py-4">
-                      <div class="flex items-center gap-3">
-                        <div
-                          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#EEF4FF] text-xs font-bold text-[#3082E3]"
-                        >
-                          {{ userInitials(user) }}
-                        </div>
-
-                        <div>
-                          <p class="font-semibold text-slate-800">
-                            {{ user.name || "Sin nombre" }}
-                            {{ user.lastname || "" }}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td class="break-all px-4 py-4 text-sm text-slate-600">
-                      {{ user.email }}
-                    </td>
-
-                    <td class="px-4 py-4 text-sm text-slate-600">
-                      {{ user.dni || "Sin dato" }}
-                    </td>
-
-                    <td class="px-4 py-4 text-sm text-slate-600">
-                      {{ new Date(user.created_at).toLocaleDateString() }}
-                    </td>
-
-                    <td class="px-4 py-4">
-                      <span
-                        class="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold"
-                        :class="roleBadgeClass(user.role)"
+                  <td class="px-4 py-4">
+                    <div class="relative min-w-[170px]">
+                      <select
+                        :value="user.role"
+                        @change="handleRoleChange(user.id, $event)"
+                        :disabled="updatingUserId === user.id"
+                        class="w-full appearance-none rounded-xl border border-[#D6E8FB] bg-white px-3 py-2.5 pr-10 text-sm text-slate-700 outline-none transition focus:border-[#3082E3] focus:ring-2 focus:ring-[#3082E3]/20 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {{
-                          user.role === "admin"
-                            ? "Administrador"
-                            : "Usuario"
-                        }}
-                      </span>
-                    </td>
+                        <option value="user">Usuario</option>
+                        <option value="admin">Administrador</option>
+                      </select>
 
-                    <td class="px-4 py-4">
-                      <div class="relative min-w-[170px]">
-                        <select
-                          :value="user.role"
-                          @change="handleRoleChange(user.id, $event)"
-                          :disabled="updatingUserId === user.id"
-                          class="w-full appearance-none rounded-xl border border-[#D6E8FB] bg-white px-3 py-2.5 pr-10 text-sm text-slate-700 outline-none transition focus:border-[#3082E3] focus:ring-2 focus:ring-[#3082E3]/20 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          <option value="user">Usuario</option>
-                          <option value="admin">Administrador</option>
-                        </select>
+                      <ChevronDownIcon
+                        class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                      />
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-                        <ChevronDownIcon
-                          class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <!-- Paginación -->
-          <nav
-            v-if="totalPages > 1"
-            class="mt-6 flex items-center justify-center gap-2"
-            aria-label="Paginación de usuarios"
+        <!-- Paginación -->
+        <nav
+          v-if="totalPages > 1"
+          class="mt-6 flex items-center justify-center gap-2"
+          aria-label="Paginación de usuarios"
+        >
+          <button
+            type="button"
+            @click="goTo(page - 1)"
+            :disabled="page === 1"
+            class="flex h-10 w-10 items-center justify-center rounded-xl border border-[#D6E8FB] bg-white text-lg transition"
+            :class="
+              page === 1
+                ? 'cursor-not-allowed text-slate-300'
+                : 'text-slate-700 hover:border-[#3082E3] hover:text-[#3082E3] active:scale-[0.97]'
+            "
           >
-            <button
-              type="button"
-              @click="goTo(page - 1)"
-              :disabled="page === 1"
-              class="flex h-10 w-10 items-center justify-center rounded-xl border border-[#D6E8FB] bg-white text-lg transition"
-              :class="
-                page === 1
-                  ? 'cursor-not-allowed text-slate-300'
-                  : 'text-slate-700 hover:border-[#3082E3] hover:text-[#3082E3] active:scale-[0.97]'
-              "
-            >
-              ‹
-            </button>
+            ‹
+          </button>
 
-            <button
-              v-for="p in totalPages"
-              :key="p"
-              type="button"
-              @click="goTo(p)"
-              class="flex h-10 min-w-[40px] items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
-              :class="
-                p === page
-                  ? 'bg-[#3082E3] text-white shadow-[0_6px_14px_rgba(48,130,227,0.22)]'
-                  : 'border border-[#D6E8FB] bg-white text-slate-700 hover:border-[#3082E3] hover:text-[#3082E3] active:scale-[0.97]'
-              "
-            >
-              {{ p }}
-            </button>
+          <button
+            v-for="pageNumber in totalPages"
+            :key="pageNumber"
+            type="button"
+            @click="goTo(pageNumber)"
+            class="flex h-10 min-w-[40px] items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
+            :class="
+              pageNumber === page
+                ? 'bg-[#3082E3] text-white shadow-[0_6px_14px_rgba(48,130,227,0.22)]'
+                : 'border border-[#D6E8FB] bg-white text-slate-700 hover:border-[#3082E3] hover:text-[#3082E3] active:scale-[0.97]'
+            "
+          >
+            {{ pageNumber }}
+          </button>
 
-            <button
-              type="button"
-              @click="goTo(page + 1)"
-              :disabled="page === totalPages"
-              class="flex h-10 w-10 items-center justify-center rounded-xl border border-[#D6E8FB] bg-white text-lg transition"
-              :class="
-                page === totalPages
-                  ? 'cursor-not-allowed text-slate-300'
-                  : 'text-slate-700 hover:border-[#3082E3] hover:text-[#3082E3] active:scale-[0.97]'
-              "
-            >
-              ›
-            </button>
-          </nav>
-        </template>
-      </template>
+          <button
+            type="button"
+            @click="goTo(page + 1)"
+            :disabled="page === totalPages"
+            class="flex h-10 w-10 items-center justify-center rounded-xl border border-[#D6E8FB] bg-white text-lg transition"
+            :class="
+              page === totalPages
+                ? 'cursor-not-allowed text-slate-300'
+                : 'text-slate-700 hover:border-[#3082E3] hover:text-[#3082E3] active:scale-[0.97]'
+            "
+          >
+            ›
+          </button>
+        </nav>
+      </div>
     </div>
   </section>
 </template>
