@@ -21,6 +21,11 @@ body,
   margin: 0;
   background-color: #f7f9f6;
 }
+
+body,
+#app {
+  min-height: 100dvh;
+}
 /* html, body, #app {
     height: 100%;
 }
