@@ -455,24 +455,20 @@
  <template>
    <div class="min-h-screen bg-white pb-28 overflow-x-hidden" style="color:#2a2a2a;">
      <div class="mx-auto w-full max-w-md">
-       <!-- HEADER -->
-       <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-         <button
-           v-if="viewState !== 'setup'"
-           @click="handleBack"
-           class="flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200 shrink-0"
-         >
-           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#2a2a2a" stroke-width="2.2">
-             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-           </svg>
-         </button>
-         <div class="min-w-0 mt-4">
-           <h1 class="text-base font-semibold leading-tight">Recorrido seguro</h1>
-           <p class="text-xs" style="color:#6b7280;">
-             {{ viewState === "active" ? "Recorrido en curso" : "Encontrá el camino con menos alertas" }}
-           </p>
-         </div>
-       </div>
+        <!-- ── HEADER ── -->
+      <div class="flex items-center gap-3 mt-4 px-4 py-3 border-b border-gray-100">
+        <button @click="$router.back()"
+          class="flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200 shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#2a2a2a"
+            stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div class="min-w-0">
+          <h1 class="text-base font-semibold leading-tight" style="color:#2a2a2a;">Recorrido Seguro</h1>
+          <p class="text-xs" style="color:#6b7280;">Encontrá el camino con menos alertas</p>
+        </div>
+      </div>
  
        <!-- MAPA (siempre montado) -->
        <div class="relative w-full overflow-hidden">
