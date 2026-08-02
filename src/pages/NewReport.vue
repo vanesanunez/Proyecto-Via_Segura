@@ -17,13 +17,8 @@ import {
   XMarkIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  MapPinIcon,
-  TagIcon,
-  PencilSquareIcon,
-  PhotoIcon,
   ArrowRightIcon,
   LightBulbIcon,
-  ShieldCheckIcon,
 } from "@heroicons/vue/24/solid";
 import BottomNavigation from "../components/BottomNavigation.vue";
 
@@ -89,10 +84,12 @@ function skipOnboarding() {
 }
 
 // --- Contenido del onboarding ---
+// --- Contenido del onboarding ---
 const onboardingContent = computed(() => {
   if (onboardingStep.value === 1) {
     return {
-      icon: MapPinIcon,
+      image: "/onboarding-reporte/ubicacion.png",
+      imageAlt: "Ubicación precisa para crear un reporte",
       eyebrow: "Paso 1",
       title: "Marcá bien el lugar",
       text: "Ubicá el problema con precisión.",
@@ -104,7 +101,8 @@ const onboardingContent = computed(() => {
 
   if (onboardingStep.value === 2) {
     return {
-      icon: TagIcon,
+      image: "/onboarding-reporte/categoria.png",
+      imageAlt: "Selección del tipo de problema",
       eyebrow: "Paso 2",
       title: "Elegí la categoría",
       text: "Indicá el tipo de problema.",
@@ -116,7 +114,8 @@ const onboardingContent = computed(() => {
 
   if (onboardingStep.value === 3) {
     return {
-      icon: PencilSquareIcon,
+      image: "/onboarding-reporte/descripcion.png",
+      imageAlt: "Descripción clara del problema",
       eyebrow: "Paso 3",
       title: "Contá qué pasó",
       text: "Describilo claro y breve.",
@@ -127,7 +126,8 @@ const onboardingContent = computed(() => {
   }
 
   return {
-    icon: PhotoIcon,
+    image: "/onboarding-reporte/foto.png",
+    imageAlt: "Subida de una fotografía para validar el reporte",
     eyebrow: "Paso 4",
     title: "Subí una foto",
     text: "Ayuda a validar el reporte.",
@@ -617,66 +617,15 @@ function startNewReport() {
               </button>
             </div>
 
-            <div class="relative mx-auto mt-6 h-[190px] w-full max-w-[290px]">
-              <div
-                class="absolute left-1/2 top-1/2 h-[150px] w-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#eef4ff]"
-              ></div>
-
-              <div
-                class="absolute left-6 top-10 h-3 w-7 rounded-full bg-[#dbeafe] opacity-80"
-              ></div>
-              <div
-                class="absolute left-11 top-12 h-3 w-3 rounded-full bg-[#dbeafe] opacity-80"
-              ></div>
-              <div
-                class="absolute right-8 top-12 h-3 w-7 rounded-full bg-[#dbeafe] opacity-80"
-              ></div>
-              <div
-                class="absolute right-12 top-14 h-3 w-3 rounded-full bg-[#dbeafe] opacity-80"
-              ></div>
-
-              <div
-                class="absolute right-8 top-4 h-5 w-[2px] rotate-12 rounded-full bg-[#60a5fa]"
-              ></div>
-              <div
-                class="absolute right-3 top-10 h-[2px] w-4 rounded-full bg-[#60a5fa]"
-              ></div>
-
-              <div class="absolute bottom-8 left-6 flex gap-1">
-                <div
-                  class="h-10 w-6 rotate-[-24deg] rounded-full bg-[#b7e3a1]"
-                ></div>
-                <div
-                  class="h-8 w-5 rotate-[16deg] rounded-full bg-[#8ed081]"
-                ></div>
-              </div>
-
-              <div
-                class="absolute bottom-3 left-1/2 h-[32px] w-[180px] -translate-x-1/2 rounded-[16px] bg-white shadow-[0_10px_22px_rgba(148,163,184,0.20)]"
-              ></div>
-              <div
-                class="absolute bottom-6 left-1/2 h-[8px] w-[152px] -translate-x-1/2 rounded-full bg-[#e5e7eb]"
-              ></div>
-              <div
-                class="absolute bottom-6 left-[74px] h-[8px] w-9 rounded bg-[#d9f99d]"
-              ></div>
-              <div
-                class="absolute bottom-6 left-[118px] h-[8px] w-9 rounded bg-[#bbf7d0]"
-              ></div>
-              <div
-                class="absolute bottom-6 left-[162px] h-[8px] w-9 rounded bg-[#d9f99d]"
-              ></div>
-
-              <component
-                :is="onboardingContent.icon"
-                class="absolute left-1/2 top-1/2 h-[95px] w-[95px] -translate-x-1/2 -translate-y-1/2 text-[#3082e3] drop-shadow-[0_12px_18px_rgba(48,130,227,0.18)]"
+            <!-- Ilustración del paso -->
+            <div
+              class="mx-auto mt-6 flex h-[190px] w-full max-w-[290px] items-center justify-center overflow-hidden"
+            >
+              <img
+                :src="onboardingContent.image"
+                :alt="onboardingContent.imageAlt"
+                class="h-[185px] w-[185px] object-contain"
               />
-
-              <div
-                class="absolute bottom-10 right-6 flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#f2826d] shadow-[0_12px_18px_rgba(242,130,109,0.26)]"
-              >
-                <ShieldCheckIcon class="h-7 w-7 text-white" />
-              </div>
             </div>
 
             <div class="mt-3 text-left">
