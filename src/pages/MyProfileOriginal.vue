@@ -4,7 +4,6 @@ import { subscribeToUserState } from '../services/auth';
 import MainLoader from '../components/MainLoader.vue';
 import { fetchUserReportsPageWithCount } from '../services/reports';
 import { fetchUserGamification } from '../services/gamification';
-import { getTrustedContacts } from '../services/contacts';
 import ReportCard from '../components/ReportCard.vue';
 import BottomNavigation from '../components/BottomNavigation.vue';
 import {
@@ -63,10 +62,6 @@ export default {
       },
       gamificationLoading: false,
       gamificationError: '',
-
-      trustedContacts: [],
-      trustedContactsLoading: false,
-      trustedContactsError: '',
 
       showBadgeCelebration: false,
       badgeAnimationTimer: null,
@@ -234,12 +229,6 @@ export default {
       localStorage.setItem(storageKey, String(level));
     },
 
-    initialsFor(contact) {
-      const n = contact.name?.[0] || '';
-      const l = contact.lastname?.[0] || '';
-      return (n + l).toUpperCase() || 'U';
-    },
-
     async loadMyReports() {
       if (!this.user?.id) return;
       this.myLoading = true;
@@ -277,22 +266,6 @@ export default {
       }
     },
 
-    async loadTrustedContacts() {
-      if (!this.user?.id) return;
-
-      this.trustedContactsLoading = true;
-      this.trustedContactsError = '';
-
-      try {
-        this.trustedContacts = await getTrustedContacts(this.user.id);
-      } catch (e) {
-        console.error('[MyProfile] Error cargando contactos de confianza:', e);
-        this.trustedContactsError = 'No se pudieron cargar tus contactos.';
-      } finally {
-        this.trustedContactsLoading = false;
-      }
-    },
-
     goToMy(p) {
       if (p < 1 || p > this.totalPages) return;
       this.myPage = p;
@@ -306,7 +279,6 @@ export default {
         this.myPage = 1;
         this.loadMyReports();
         this.loadGamification();
-        this.loadTrustedContacts();
       }
     });
   },
@@ -422,66 +394,6 @@ export default {
               <p class="text-xs mb-0.5" style="color:#9ca3af;">DNI</p>
               <p class="text-sm font-medium">{{ user.dni || '—' }}</p>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CONTACTOS DE CONFIANZA -->
-      <div class="px-4 pb-4">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-semibold uppercase tracking-wider" style="color:#9ca3af;">Contactos de confianza</p>
-          <RouterLink
-            to="/contactos"
-            class="text-xs font-semibold"
-            style="color:#3082e3;"
-          >
-            {{ trustedContacts.length ? 'Ver todos' : 'Agregar' }}
-          </RouterLink>
-        </div>
-
-        <div v-if="trustedContactsError" class="rounded-xl px-4 py-3 text-sm mb-3" style="background:#fff1f0; color:#dc2626;">
-          {{ trustedContactsError }}
-        </div>
-
-        <div v-if="trustedContactsLoading" class="flex justify-center py-6">
-          <div class="w-7 h-7 rounded-full border-2 animate-spin" style="border-color:#3082e3; border-top-color:transparent;"></div>
-        </div>
-
-        <div
-          v-else-if="!trustedContactsLoading && trustedContacts.length === 0"
-          class="rounded-2xl border border-gray-100 bg-white flex flex-col items-center py-8 px-6 text-center gap-3"
-        >
-          <div class="w-11 h-11 rounded-full flex items-center justify-center" style="background:#eff6ff;">
-            <UserGroupIcon class="w-5 h-5" style="color:#3082e3;" />
-          </div>
-          <p class="text-sm font-medium">Todavía no agregaste contactos</p>
-          <RouterLink
-            to="/contactos"
-            class="text-xs font-semibold px-4 py-2 rounded-full transition-all active:scale-95"
-            style="background:#eff6ff; color:#3082e3;"
-          >
-            Agregar contacto
-          </RouterLink>
-        </div>
-
-        <div v-else class="rounded-2xl border border-gray-100 overflow-hidden bg-white">
-          <div
-            v-for="(c, index) in trustedContacts"
-            :key="c.id"
-            class="flex items-center gap-3 px-4 py-3.5"
-            :class="{ 'border-b border-gray-50': index < trustedContacts.length - 1 }"
-          >
-            <div
-              class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm"
-              style="background:#eff6ff; color:#3082e3;"
-            >
-              {{ initialsFor(c) }}
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium truncate">{{ c.name }} {{ c.lastname }}</p>
-              <p class="text-xs mt-0.5" style="color:#9ca3af;">Puede seguir tus recorridos</p>
-            </div>
-            <ShieldCheckIcon class="w-4 h-4 shrink-0" style="color:#86efac;" />
           </div>
         </div>
       </div>
