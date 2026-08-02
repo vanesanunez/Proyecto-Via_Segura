@@ -321,6 +321,23 @@ export default {
 
 <template>
   <div class="flex flex-col min-h-full bg-gray-50 font-['Inter'] pb-24" style="color:#2a2a2a;">
+     <!-- HEADER -->
+     <div class="mt-4 flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+      <button
+        @click="$router.back()"
+        class="flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200 shrink-0"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#2a2a2a" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <div class="min-w-0">
+        <h1 class="text-base font-semibold leading-tight">Mi perfil</h1>
+        <p class="text-xs" style="color:#6b7280;">Administrá tus datos personales e información de la cuenta</p>
+      </div>
+    </div>
+
+
     <div v-if="!loading">
       <!-- HERO CARD -->
       <div class="px-4 pt-5 pb-4">

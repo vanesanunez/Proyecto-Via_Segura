@@ -289,6 +289,21 @@ if (unsubscribeChat) {
 <template>
 
     <div class="min-h-screen bg-[#f7f9fc] pb-28">
+        <!-- HEADER -->
+     <div class="mt-4 flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+      <button
+        @click="$router.back()"
+        class="flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200 shrink-0"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#2a2a2a" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <div class="min-w-0">
+        <h1 class="text-base font-semibold leading-tight">Chat general</h1>
+        <p class="text-xs" style="color:#6b7280;">Conectate con tu comunidad y compartí información útil para ayudar a construir barrios más seguros.</p>
+      </div>
+    </div>
 
         <!-- HEADER -->
 
@@ -303,7 +318,7 @@ if (unsubscribeChat) {
                 );
             ">
 
-                <h1 class="text-white text-xl font-bold">
+                <h1 class="text-white text-xl text-center font-bold">
                     Comunidad Vía Segura
                 </h1>
 <!-- 
@@ -321,33 +336,6 @@ if (unsubscribeChat) {
 
         </section>
 
-        <!-- CARD COMUNIDAD -->
-
-        <section class="px-4 mt-4">
-
-            <div class="
-            bg-white
-            rounded-2xl
-            border
-            border-[#d6e8fb]
-            p-4
-            shadow-sm
-            ">
-
-               
-                <p class="
-                text-sm
-                text-gray-500
-                mt-1
-                leading-relaxed
-                ">
-                    Conectate con tu comunidad y compartí información útil para ayudar
-                    a otros vecinos a construir barrios más seguros.
-                </p>
-
-            </div>
-
-        </section>
 
         <!-- CHAT -->
 
