@@ -238,11 +238,13 @@
       </div>
   
     </div>
+    <BottomNavigation />
   </template>
   
   <script setup>
   import { ref, computed, watch, onUnmounted, nextTick } from 'vue';
   import { puntosSegurosCoordenadas } from '../services/puntosSegurosCoordenadas.js';
+  import BottomNavigation from "../components/BottomNavigation.vue";
   
   // ── Estado ─────────────────────────────────────────────────────────────────
   const direccionInput = ref('');

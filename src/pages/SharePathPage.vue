@@ -305,7 +305,7 @@
    drawHazards(routeResult.value.hazards);
    drawRouteLine(routeResult.value.coords, "#a9c8f5");
    if (traveledLine) map.removeLayer(traveledLine);
-   traveledLine = L.polyline([], { color: "#3082e3", weight: 5 }).addTo(map);
+   traveledLine = L.polyline([], { color: "#3082e3", weight: 3 }).addTo(map);
  
    viewState.value = "active";
    await nextTick();
@@ -466,7 +466,7 @@
              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
            </svg>
          </button>
-         <div class="min-w-0">
+         <div class="min-w-0 mt-4">
            <h1 class="text-base font-semibold leading-tight">Recorrido seguro</h1>
            <p class="text-xs" style="color:#6b7280;">
              {{ viewState === "active" ? "Recorrido en curso" : "Encontrá el camino con menos alertas" }}
@@ -579,13 +579,13 @@
            Todavía no tenés contactos de confianza agregados.
          </div>
  
-         <div v-else class="mt-4 max-h-72 space-y-2 overflow-y-auto">
+         <div v-else class="mt-4 mb-6 max-h-72 space-y-2 overflow-y-auto">
            <button
              v-for="c in trustedContacts"
              :key="c.id"
              type="button"
              @click="chooseContact(c)"
-             class="flex w-full items-center gap-3 rounded-2xl border border-[#e4ebf4] bg-white px-3 py-3 text-left transition hover:border-[#c7daf7] active:scale-[0.98]"
+             class="flex w-full items-center gap-3 rounded-2xl border border-[#e4ebf4] bg-white px-3 py-4 text-left transition hover:border-[#c7daf7] active:scale-[0.98]"
            >
              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3] font-bold">
                {{ (c.name?.[0] || "") + (c.lastname?.[0] || "") }}
@@ -662,24 +662,24 @@
  
        <!-- ACTIVO -->
        <section v-if="viewState === 'active'" class="px-4 pt-4">
-         <div class="rounded-[24px] p-5 text-white shadow-[0_14px_30px_rgba(48,130,227,0.28)]" style="background: linear-gradient(135deg, #3082e3 0%, #085baf 100%);">
+         <div class="rounded-3xl p-5 text-white shadow-[0_14px_30px_rgba(48,130,227,0.28)]" style="background: linear-gradient(135deg, #3082e3 0%, #085baf 100%);">
            <div class="flex items-center justify-between gap-3">
              <div class="min-w-0">
                <span class="inline-flex rounded-full bg-white/20 px-3 py-1 text-[11px] font-semibold">
                  {{ isSharing ? "Compartiendo en vivo" : "Recorrido privado" }}
                </span>
-               <p class="mt-2 text-[17px] font-bold leading-tight truncate">
+               <p class="mt-4 text-[12px] font-bold leading-tight truncate">
                  {{ sharedDestination?.address || selectedDestination?.address }}
                </p>
                <p v-if="isSharing && activeContactLabel" class="mt-1 text-[12px] text-white/85 truncate">
                  Compartiendo con {{ activeContactLabel }}
                </p>
              </div>
-             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/15 text-center">
+             <!-- <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/15 text-center">
                <span class="text-[15px] font-bold">{{ pointsCount }}</span>
-             </div>
+             </div> -->
            </div>
-           <p class="mt-1 text-[11px] text-white/75">puntos GPS registrados</p>
+           <!-- <p class="mt-1 text-[11px] text-white/75">puntos GPS registrados</p> -->
          </div>
  
          <transition name="fade-alert">

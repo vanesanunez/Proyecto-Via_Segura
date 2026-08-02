@@ -313,20 +313,7 @@ if (unsubscribeChat) {
 
                 <div class="flex gap-3 mt-5">
 
-                  
-
-                    <div class="
-                    bg-white/15
-                    backdrop-blur-sm
-                    rounded-2xl
-                    px-3
-                    py-2
-                    ">
-                        <p class="text-white text-xs font-bold">
-                            Activo
-                        </p>
-
-                    </div>
+                
 
                 </div>
 
@@ -354,9 +341,8 @@ if (unsubscribeChat) {
                 mt-1
                 leading-relaxed
                 ">
-                    Compartí información útil para ayudar
-                    a otros vecinos y construir barrios
-                    más seguros.
+                    Conectate con tu comunidad y compartí información útil para ayudar
+                    a otros vecinos a construir barrios más seguros.
                 </p>
 
             </div>
