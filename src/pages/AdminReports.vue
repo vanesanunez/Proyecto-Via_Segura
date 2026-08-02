@@ -232,357 +232,534 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="min-h-screen overflow-x-hidden bg-white px-4 pt-4 pb-24">
-    <div class="mx-auto w-full max-w-[390px]">
+  <section
+    class="min-h-[100dvh] overflow-x-hidden bg-[#F7F9F6] px-4 pb-12 pt-5"
+  >
+    <div class="mx-auto w-full max-w-5xl">
+      <!-- Volver -->
       <button
         type="button"
         @click="router.push('/admin/dashboard')"
-        class="mb-6 inline-flex items-center gap-3 text-left transition group active:scale-95"
+        class="group mb-5 inline-flex items-center gap-2 rounded-full border border-[#D6E8FB] bg-[#EEF4FF] px-3 py-2 text-sm font-semibold text-[#3082E3] transition hover:border-[#3082E3] hover:bg-white active:scale-[0.98]"
       >
         <span
-          class="flex h-10 w-10 items-center justify-center rounded-full bg-[#E0E5EC] text-xl font-bold text-[#3082e3] shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
+          class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-lg shadow-sm transition group-hover:bg-[#3082E3] group-hover:text-white"
         >
           ←
         </span>
 
-        <span>
-          <span class="block text-sm font-semibold text-slate-900">
-            Volver al panel admin
-          </span>
-          <span class="block text-xs text-slate-500">
-            Regresá a la vista principal del administrador
-          </span>
-        </span>
+        <span>Volver al panel admin</span>
       </button>
 
-      <header class="mb-6">
-        <h1 class="text-[30px] font-bold leading-[1.08] text-[#0f172a]">
+      <!-- Encabezado -->
+      <header
+        class="mb-6 rounded-[28px] border border-[#D6E8FB] bg-[#EEF4FF] p-5 shadow-[0_12px_28px_rgba(48,130,227,0.08)] sm:p-6"
+      >
+        <span
+          class="inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#3082E3]"
+        >
+          Administración
+        </span>
+
+        <h1
+          class="mt-3 text-[28px] font-bold leading-tight text-slate-900 sm:text-[34px]"
+        >
           Gestión de reportes
         </h1>
 
-        <p class="mt-3 max-w-[320px] text-[15px] leading-[1.7] text-slate-500">
-          Supervisá métricas, priorizá apoyos y administrá los reportes de la comunidad.
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+          Supervisá los reportes de la comunidad, actualizá su estado y
+          priorizá aquellos que recibieron más apoyos.
         </p>
       </header>
 
-      <div
-        v-if="successMessage && !isSuccessModalOpen"
-        class="mb-5 rounded-[20px] bg-[#eef4ff] px-4 py-3 text-sm font-medium text-[#3082e3] shadow-[0_8px_18px_rgba(148,163,184,0.15)]"
-      >
-        {{ successMessage }}
-      </div>
-
+      <!-- Mensaje general -->
       <div
         v-if="errorMessage"
-        class="mb-5 rounded-[20px] bg-[#fff1ed] px-4 py-3 text-sm font-medium text-[#e67661] shadow-[0_8px_18px_rgba(148,163,184,0.15)]"
+        class="mb-5 flex items-start gap-3 rounded-[20px] border border-[#F7CBC2] bg-[#FFF1ED] px-4 py-3 text-[#D96854]"
       >
-        {{ errorMessage }}
+        <span
+          class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white font-bold"
+        >
+          !
+        </span>
+
+        <p class="pt-1 text-sm font-medium">
+          {{ errorMessage }}
+        </p>
       </div>
 
+      <!-- Cargando panel -->
       <div
         v-if="loading"
-        class="rounded-[24px] bg-[#E0E5EC] px-4 py-5 text-slate-600 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
+        class="rounded-[24px] border border-[#D6E8FB] bg-white p-6 shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
       >
-        Cargando panel...
+        <div class="flex items-center gap-3">
+          <div
+            class="h-6 w-6 animate-spin rounded-full border-2 border-[#D6E8FB] border-t-[#3082E3]"
+          ></div>
+
+          <p class="text-sm font-medium text-slate-600">
+            Cargando panel de reportes...
+          </p>
+        </div>
       </div>
 
       <template v-else>
-        <div class="grid gap-3">
-          <article class="w-full rounded-[24px] bg-[#E0E5EC] p-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)]">
-            <div class="flex items-center justify-between gap-4">
-              <div class="min-w-0 flex-1">
-                <p class="text-sm font-medium text-slate-500">Total de reportes</p>
-                <p class="mt-2 text-sm text-slate-400">Panel general</p>
-              </div>
-              <div class="ml-3 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-xl font-bold text-[#3082e3] shadow-[0_6px_16px_rgba(148,163,184,0.18)]">
-                {{ stats.totalReports }}
-              </div>
+        <!-- Métricas -->
+        <section class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <!-- Total -->
+          <article
+            class="rounded-[22px] border border-[#D6E8FB] bg-white p-4 shadow-[0_8px_22px_rgba(48,130,227,0.07)]"
+          >
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-[#EEF4FF] text-sm font-bold text-[#3082E3]"
+            >
+              {{ stats.totalReports }}
             </div>
+
+            <p class="mt-4 text-sm font-bold text-slate-900">
+              Total de reportes
+            </p>
+
+            <p class="mt-1 text-xs leading-5 text-slate-500">
+              Todos los reclamos registrados.
+            </p>
           </article>
 
-          <article class="w-full rounded-[24px] bg-[#E0E5EC] p-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)]">
-            <div class="flex items-center justify-between gap-4">
-              <div class="min-w-0 flex-1">
-                <p class="text-sm font-medium text-slate-500">Pendientes</p>
-                <p class="mt-2 text-sm text-slate-400">Requieren atención</p>
-              </div>
-              <div class="ml-3 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#fff1ed] text-xl font-bold text-[#f2826d] shadow-[0_6px_16px_rgba(148,163,184,0.18)]">
-                {{ stats.pendingReports }}
-              </div>
+          <!-- Pendientes -->
+          <article
+            class="rounded-[22px] border border-[#F8D8D1] bg-white p-4 shadow-[0_8px_22px_rgba(242,130,109,0.07)]"
+          >
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-[#FFF1ED] text-sm font-bold text-[#F2826D]"
+            >
+              {{ stats.pendingReports }}
             </div>
+
+            <p class="mt-4 text-sm font-bold text-slate-900">
+              Pendientes
+            </p>
+
+            <p class="mt-1 text-xs leading-5 text-slate-500">
+              Reportes que requieren atención.
+            </p>
           </article>
 
-          <article class="w-full rounded-[24px] bg-[#E0E5EC] p-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)]">
-            <div class="flex items-center justify-between gap-4">
-              <div class="min-w-0 flex-1">
-                <p class="text-sm font-medium text-slate-500">Resueltos</p>
-                <p class="mt-2 text-sm text-slate-400">Ya gestionados</p>
-              </div>
-              <div class="ml-3 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-100 text-xl font-bold text-green-600 shadow-[0_6px_16px_rgba(148,163,184,0.18)]">
-                {{ stats.resolvedReports }}
-              </div>
+          <!-- Resueltos -->
+          <article
+            class="rounded-[22px] border border-green-100 bg-white p-4 shadow-[0_8px_22px_rgba(34,197,94,0.06)]"
+          >
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-700"
+            >
+              {{ stats.resolvedReports }}
             </div>
+
+            <p class="mt-4 text-sm font-bold text-slate-900">
+              Resueltos
+            </p>
+
+            <p class="mt-1 text-xs leading-5 text-slate-500">
+              Reclamos marcados como solucionados.
+            </p>
           </article>
 
-          <article class="w-full rounded-[24px] bg-[#E0E5EC] p-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)]">
-            <div class="flex items-center justify-between gap-4">
-              <div class="min-w-0 flex-1">
-                <p class="text-sm font-medium text-slate-500">Usuarios registrados</p>
-                <p class="mt-2 text-sm text-slate-400">Comunidad activa</p>
-              </div>
-              <div class="ml-3 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-xl font-bold text-[#3082e3] shadow-[0_6px_16px_rgba(148,163,184,0.18)]">
-                {{ stats.totalUsers }}
-              </div>
+          <!-- Usuarios -->
+          <article
+            class="rounded-[22px] border border-[#D6E8FB] bg-white p-4 shadow-[0_8px_22px_rgba(48,130,227,0.07)]"
+          >
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-[#EEF4FF] text-sm font-bold text-[#3082E3]"
+            >
+              {{ stats.totalUsers }}
             </div>
-          </article>
-        </div>
 
-        <section class="mt-6 rounded-[24px] bg-white p-4 shadow-[0_10px_24px_rgba(148,163,184,0.12)]">
-          <div class="mb-5">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-[11px] font-semibold px-3 py-1 rounded-full bg-[#eef4ff] text-[#3082e3]">
-                Gestión de reportes
+            <p class="mt-4 text-sm font-bold text-slate-900">
+              Usuarios
+            </p>
+
+            <p class="mt-1 text-xs leading-5 text-slate-500">
+              Personas registradas en la comunidad.
+            </p>
+          </article>
+        </section>
+
+        <!-- Gestión -->
+        <section
+          class="mt-6 rounded-[28px] border border-[#D6E8FB] bg-white p-4 shadow-[0_12px_30px_rgba(48,130,227,0.07)] sm:p-6"
+        >
+          <!-- Encabezado sección -->
+          <div
+            class="flex flex-col gap-4 border-b border-[#E6EDF7] pb-5 sm:flex-row sm:items-end sm:justify-between"
+          >
+            <div>
+              <span
+                class="inline-flex rounded-full bg-[#EEF4FF] px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#3082E3]"
+              >
+                Reportes cargados
               </span>
+
+              <h2 class="mt-3 text-[22px] font-bold text-slate-900">
+                Administrar reportes
+              </h2>
+
+              <p class="mt-1 text-sm leading-6 text-slate-500">
+                Filtrá, modificá el estado, editá o eliminá reportes.
+              </p>
             </div>
 
-            <h2 class="mt-3 text-[20px] font-bold text-slate-900">
-              Reportes cargados
-            </h2>
+            <div
+              class="inline-flex w-fit items-center rounded-full bg-[#EEF4FF] px-3 py-2 text-xs font-semibold text-[#3082E3]"
+            >
+              {{ adminReports.length }}
+              {{
+                adminReports.length === 1
+                  ? "reporte encontrado"
+                  : "reportes encontrados"
+              }}
+            </div>
+          </div>
 
-            <p class="mt-2 text-[15px] leading-[1.7] text-slate-500">
-              Revisá el estado, actualizalo y priorizá por apoyos.
+          <!-- Filtros -->
+          <div
+            class="mt-5 rounded-[22px] border border-[#E6EDF7] bg-[#F9FBFD] p-4"
+          >
+            <p class="text-sm font-bold text-slate-800">
+              Organizar resultados
+            </p>
+
+            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+              <!-- Orden -->
+              <div>
+                <label
+                  for="report-order"
+                  class="mb-2 block text-sm font-semibold text-slate-700"
+                >
+                  Ordenar por
+                </label>
+
+                <div class="relative">
+                  <select
+                    id="report-order"
+                    :value="reportOrder"
+                    @change="handleOrderChange"
+                    class="w-full appearance-none rounded-2xl border border-[#D6E8FB] bg-white px-4 py-3 pr-12 text-sm text-slate-700 outline-none transition focus:border-[#3082E3] focus:ring-2 focus:ring-[#3082E3]/20"
+                  >
+                    <option value="recent">Más recientes</option>
+                    <option value="most_supported">Más apoyados</option>
+                  </select>
+
+                  <ChevronDownIcon
+                    class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                  />
+                </div>
+              </div>
+
+              <!-- Estado -->
+              <div>
+                <label
+                  for="report-status-filter"
+                  class="mb-2 block text-sm font-semibold text-slate-700"
+                >
+                  Estado
+                </label>
+
+                <div class="relative">
+                  <select
+                    id="report-status-filter"
+                    :value="reportStatusFilter"
+                    @change="handleStatusFilterChange"
+                    class="w-full appearance-none rounded-2xl border border-[#D6E8FB] bg-white px-4 py-3 pr-12 text-sm text-slate-700 outline-none transition focus:border-[#3082E3] focus:ring-2 focus:ring-[#3082E3]/20"
+                  >
+                    <option value="all">Todos</option>
+                    <option value="pending">Pendientes</option>
+                    <option value="resolved">Resueltos</option>
+                  </select>
+
+                  <ChevronDownIcon
+                    class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mensajes de listado -->
+          <div
+            v-if="loadingReports"
+            class="mt-5 rounded-[20px] border border-[#D6E8FB] bg-[#EEF4FF] px-4 py-4"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="h-5 w-5 animate-spin rounded-full border-2 border-[#D6E8FB] border-t-[#3082E3]"
+              ></div>
+
+              <p class="text-sm font-medium text-slate-600">
+                Cargando reportes...
+              </p>
+            </div>
+          </div>
+
+          <div
+            v-else-if="reportsError"
+            class="mt-5 rounded-[20px] border border-[#F7CBC2] bg-[#FFF1ED] px-4 py-4 text-sm font-medium text-[#D96854]"
+          >
+            {{ reportsError }}
+          </div>
+
+          <div
+            v-else-if="adminReports.length === 0"
+            class="mt-5 rounded-[20px] border border-[#D6E8FB] bg-[#F9FBFD] px-5 py-8 text-center"
+          >
+            <p class="font-semibold text-slate-800">
+              No hay reportes para mostrar
+            </p>
+
+            <p class="mt-1 text-sm text-slate-500">
+              Probá cambiando los filtros seleccionados.
             </p>
           </div>
 
-          <div class="grid gap-4">
-            <div class="w-full">
-              <label class="mb-2 block text-sm font-medium text-slate-500">
-                Ordenar por
-              </label>
-
-              <div class="relative">
-                <select
-                  :value="reportOrder"
-                  @change="handleOrderChange"
-                  class="w-full appearance-none rounded-2xl border-0 bg-white px-4 py-3 pr-12 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.16)] focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25"
+          <!-- Listado -->
+          <div v-else class="mt-5 grid gap-4 lg:grid-cols-2">
+            <article
+              v-for="report in paginatedReports"
+              :key="report.id"
+              class="flex h-full flex-col rounded-[24px] border border-[#D6E8FB] bg-[#EEF4FF] p-4 shadow-[0_8px_22px_rgba(48,130,227,0.07)]"
+            >
+              <!-- Etiquetas -->
+              <div class="flex flex-wrap items-center gap-2">
+                <span
+                  class="rounded-full border border-[#D6E8FB] bg-white px-3 py-1 text-[11px] font-semibold text-[#3082E3]"
                 >
-                  <option value="recent">Más recientes</option>
-                  <option value="most_supported">Más apoyados</option>
-                </select>
+                  {{ report.categoria }}
+                </span>
 
-                <ChevronDownIcon
-                  class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-                />
-              </div>
-            </div>
-
-            <div class="w-full">
-              <label class="mb-2 block text-sm font-medium text-slate-500">
-                Estado
-              </label>
-
-              <div class="relative">
-                <select
-                  :value="reportStatusFilter"
-                  @change="handleStatusFilterChange"
-                  class="w-full appearance-none rounded-2xl border-0 bg-white px-4 py-3 pr-12 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.16)] focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25"
+                <span
+                  class="rounded-full px-3 py-1 text-[11px] font-semibold"
+                  :class="statusBadgeClass(report.estado)"
                 >
-                  <option value="all">Todos</option>
-                  <option value="pending">Pendientes</option>
-                  <option value="resolved">Resueltos</option>
-                </select>
-
-                <ChevronDownIcon
-                  class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-                />
+                  {{ report.estado || "Pendiente" }}
+                </span>
               </div>
-            </div>
-          </div>
 
-          <div v-if="loadingReports" class="py-4">
-            <p class="text-slate-600">Cargando reportes...</p>
-          </div>
+              <!-- Información principal -->
+              <div class="mt-4 flex-1">
+                <p
+                  class="text-[11px] font-bold uppercase tracking-wide text-slate-400"
+                >
+                  Ubicación
+                </p>
 
-          <div v-else-if="reportsError" class="py-4">
-            <p class="text-[#e67661]">{{ reportsError }}</p>
-          </div>
+                <h3
+                  class="mt-1 break-words text-[18px] font-bold leading-snug text-slate-900"
+                >
+                  {{ report.ubicacion }}
+                </h3>
 
-          <div v-else-if="adminReports.length === 0" class="py-4">
-            <p class="text-slate-600">Todavía no hay reportes cargados.</p>
-          </div>
+                <p class="mt-2 break-words text-xs text-slate-500">
+                  Creado por {{ report.email || "Usuario sin correo" }}
+                </p>
 
-          <div v-else>
-            <div class="mt-5 space-y-4">
-              <article
-                v-for="report in paginatedReports"
-                :key="report.id"
-                class="w-full overflow-hidden rounded-[24px] bg-[#E0E5EC] px-4 py-4 shadow-[0_10px_24px_rgba(148,163,184,0.18)]"
-              >
-                <div class="flex items-start justify-between gap-3">
-                  <div class="min-w-0 flex-1">
-                    <div class="flex items-center gap-2 flex-wrap">
-                      <span class="text-[11px] font-semibold px-3 py-1 rounded-full bg-[#eef4ff] text-[#3082e3]">
-                        {{ report.categoria }}
-                      </span>
+                <div class="mt-4 rounded-[18px] bg-white/80 p-4">
+                  <p class="text-xs font-bold uppercase tracking-wide text-slate-400">
+                    Descripción
+                  </p>
 
-                      <span
-                        class="text-[11px] font-semibold px-3 py-1 rounded-full"
-                        :class="statusBadgeClass(report.estado)"
-                      >
-                        {{ report.estado }}
-                      </span>
-                    </div>
-
-                    <h3 class="mt-3 break-words text-[18px] font-bold leading-snug text-slate-900">
-                      {{ report.ubicacion }}
-                    </h3>
-
-                    <p class="mt-1 break-words text-sm text-slate-500">
-                      {{ report.email }}
-                    </p>
-
-                    <div class="mt-3">
-                      <p class="text-sm font-medium text-slate-500">Descripción</p>
-                      <p class="mt-1 break-words text-[15px] leading-[1.7] text-slate-700">
-                        {{ report.descripcion || "Sin descripción" }}
-                      </p>
-                    </div>
-                  </div>
+                  <p
+                    class="mt-2 break-words text-sm leading-6 text-slate-700"
+                  >
+                    {{ report.descripcion || "Sin descripción" }}
+                  </p>
                 </div>
+              </div>
 
-                <div class="mt-4 space-y-2 text-sm text-slate-600">
-                  <p>
-                    <span class="font-medium text-slate-500">Apoyos:</span>
+              <!-- Datos -->
+              <div class="mt-4 grid grid-cols-2 gap-3">
+                <div
+                  class="rounded-[16px] border border-white bg-white/70 px-3 py-3"
+                >
+                  <p class="text-[11px] font-semibold text-slate-400">
+                    Apoyos
+                  </p>
+
+                  <p class="mt-1 text-lg font-bold text-[#3082E3]">
                     {{ report.apoyos ?? 0 }}
                   </p>
-                  <p>
-                    <span class="font-medium text-slate-500">Fecha:</span>
+                </div>
+
+                <div
+                  class="rounded-[16px] border border-white bg-white/70 px-3 py-3"
+                >
+                  <p class="text-[11px] font-semibold text-slate-400">
+                    Fecha
+                  </p>
+
+                  <p class="mt-1 text-sm font-bold text-slate-700">
                     {{ new Date(report.created_at).toLocaleDateString() }}
                   </p>
                 </div>
+              </div>
 
-                <div class="mt-4 space-y-3 border-t border-white/60 pt-4">
-                  <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-600">
-                      Cambiar estado
-                    </label>
+              <!-- Cambiar estado -->
+              <div class="mt-4 border-t border-[#D6E8FB] pt-4">
+                <label
+                  :for="`status-${report.id}`"
+                  class="mb-2 block text-sm font-semibold text-slate-700"
+                >
+                  Cambiar estado
+                </label>
 
-                    <div class="relative">
-                      <select
-                        :value="report.estado"
-                        @change="handleStatusChange(report.id, $event)"
-                        :disabled="updatingReportId === report.id"
-                        class="w-full appearance-none rounded-2xl border-0 bg-white px-4 py-3 pr-12 text-sm text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.16)] focus:outline-none focus:ring-2 focus:ring-[#3082e3]/25 disabled:opacity-60"
-                      >
-                        <option value="Pendiente">Pendiente</option>
-                        <option value="Resuelto">Resuelto</option>
-                      </select>
+                <div class="relative">
+                  <select
+                    :id="`status-${report.id}`"
+                    :value="report.estado"
+                    @change="handleStatusChange(report.id, $event)"
+                    :disabled="updatingReportId === report.id"
+                    class="w-full appearance-none rounded-2xl border border-[#D6E8FB] bg-white px-4 py-3 pr-12 text-sm text-slate-700 outline-none transition focus:border-[#3082E3] focus:ring-2 focus:ring-[#3082E3]/20 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Resuelto">Resuelto</option>
+                  </select>
 
-                      <ChevronDownIcon
-                        class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="flex items-center justify-end gap-3">
-                    <button
-                      type="button"
-                      @click="router.push(`/admin/reportes/${report.id}/editar`)"
-                      class="flex h-11 w-11 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3] shadow-[0_6px_16px_rgba(148,163,184,0.18)] transition hover:-translate-y-0.5 hover:bg-blue-50 active:scale-95"
-                    >
-                      <PencilSquareIcon class="h-5 w-5" />
-                    </button>
-
-                    <button
-                      type="button"
-                      @click="openDeleteModal(report)"
-                      class="flex h-11 w-11 items-center justify-center rounded-full bg-[#fff1ed] text-[#e67661] shadow-[0_6px_16px_rgba(148,163,184,0.18)] transition hover:-translate-y-0.5 hover:bg-red-50 active:scale-95"
-                    >
-                      <TrashIcon class="h-5 w-5" />
-                    </button>
-                  </div>
+                  <ChevronDownIcon
+                    class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                  />
                 </div>
-              </article>
-            </div>
 
-            <nav v-if="totalPages > 1" class="mt-6 flex items-center justify-center gap-2">
-              <button
-                @click="goTo(page - 1)"
-                :disabled="page === 1"
-                class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg shadow-[0_6px_16px_rgba(148,163,184,0.18)] transition"
-                :class="page === 1 ? 'cursor-not-allowed text-slate-300' : 'text-slate-700 hover:text-[#3082e3] active:scale-[0.97]'"
-              >
-                ‹
-              </button>
+                <p
+                  v-if="updatingReportId === report.id"
+                  class="mt-2 text-xs font-medium text-[#3082E3]"
+                >
+                  Actualizando estado...
+                </p>
+              </div>
 
-              <button
-                v-for="p in visiblePages"
-                :key="p"
-                @click="goTo(p)"
-                class="flex h-10 min-w-[40px] items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
-                :class="p === page
-                  ? 'bg-[#3082e3] text-white shadow-sm'
-                  : 'bg-[#E0E5EC] text-slate-700 shadow-[0_6px_16px_rgba(148,163,184,0.18)] hover:text-[#3082e3] active:scale-[0.97]'"
-              >
-                {{ p }}
-              </button>
+              <!-- Acciones -->
+              <div class="mt-4 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  @click="
+                    router.push(`/admin/reportes/${report.id}/editar`)
+                  "
+                  class="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#D6E8FB] bg-white px-4 py-3 text-sm font-semibold text-[#3082E3] transition hover:border-[#3082E3] hover:bg-[#F9FBFD] active:scale-[0.98]"
+                >
+                  <PencilSquareIcon class="h-5 w-5" />
+                  <span>Editar</span>
+                </button>
 
-              <button
-                @click="goTo(page + 1)"
-                :disabled="page === totalPages"
-                class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E0E5EC] text-lg shadow-[0_6px_16px_rgba(148,163,184,0.18)] transition"
-                :class="page === totalPages ? 'cursor-not-allowed text-slate-300' : 'text-slate-700 hover:text-[#3082e3] active:scale-[0.97]'"
-              >
-                ›
-              </button>
-            </nav>
+                <button
+                  type="button"
+                  @click="openDeleteModal(report)"
+                  class="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#F7CBC2] bg-[#FFF1ED] px-4 py-3 text-sm font-semibold text-[#D96854] transition hover:border-[#F2826D] hover:bg-white active:scale-[0.98]"
+                >
+                  <TrashIcon class="h-5 w-5" />
+                  <span>Eliminar</span>
+                </button>
+              </div>
+            </article>
           </div>
+
+          <!-- Paginación -->
+          <nav
+            v-if="totalPages > 1"
+            class="mt-7 flex items-center justify-center gap-2"
+            aria-label="Paginación de reportes"
+          >
+            <button
+              type="button"
+              @click="goTo(page - 1)"
+              :disabled="page === 1"
+              class="flex h-10 w-10 items-center justify-center rounded-xl border border-[#D6E8FB] bg-white text-lg transition"
+              :class="
+                page === 1
+                  ? 'cursor-not-allowed text-slate-300'
+                  : 'text-slate-700 hover:border-[#3082E3] hover:text-[#3082E3] active:scale-[0.97]'
+              "
+            >
+              ‹
+            </button>
+
+            <button
+              v-for="p in visiblePages"
+              :key="p"
+              type="button"
+              @click="goTo(p)"
+              class="flex h-10 min-w-[40px] items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
+              :class="
+                p === page
+                  ? 'bg-[#3082E3] text-white shadow-[0_6px_14px_rgba(48,130,227,0.22)]'
+                  : 'border border-[#D6E8FB] bg-white text-slate-700 hover:border-[#3082E3] hover:text-[#3082E3] active:scale-[0.97]'
+              "
+            >
+              {{ p }}
+            </button>
+
+            <button
+              type="button"
+              @click="goTo(page + 1)"
+              :disabled="page === totalPages"
+              class="flex h-10 w-10 items-center justify-center rounded-xl border border-[#D6E8FB] bg-white text-lg transition"
+              :class="
+                page === totalPages
+                  ? 'cursor-not-allowed text-slate-300'
+                  : 'text-slate-700 hover:border-[#3082E3] hover:text-[#3082E3] active:scale-[0.97]'
+              "
+            >
+              ›
+            </button>
+          </nav>
         </section>
       </template>
     </div>
 
+    <!-- Modal eliminar -->
     <div
       v-if="isDeleteModalOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4 backdrop-blur-[2px]"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-[2px]"
+      @click.self="closeDeleteModal"
     >
       <div
-        class="w-full max-w-sm rounded-[28px] bg-[#E0E5EC] p-6 shadow-[-10px_-10px_20px_rgba(255,255,255,0.9),10px_10px_20px_rgba(163,177,198,0.38)]"
+        class="w-full max-w-sm rounded-[28px] border border-[#F7CBC2] bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.20)]"
       >
-        <div class="flex items-start gap-4">
-          <div
-            class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#fff1ed] text-[#e67661] shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
-          >
-            <TrashIcon class="h-6 w-6" />
-          </div>
-
-          <div class="min-w-0 flex-1">
-            <h3 class="text-xl font-bold text-slate-900">Eliminar reporte</h3>
-
-            <p class="mt-2 text-sm leading-6 text-slate-500">
-              ¿Seguro que querés eliminar este reporte? Esta acción no se puede deshacer.
-            </p>
-
-            <div
-              v-if="reportToDelete"
-              class="mt-4 rounded-2xl bg-white/60 px-4 py-3 text-sm text-slate-600"
-            >
-              <p class="break-words">
-                <span class="font-semibold text-slate-800">Categoría:</span>
-                {{ reportToDelete.categoria }}
-              </p>
-              <p class="mt-2 break-words">
-                <span class="font-semibold text-slate-800">Ubicación:</span>
-                {{ reportToDelete.ubicacion }}
-              </p>
-            </div>
-          </div>
+        <div
+          class="flex h-14 w-14 items-center justify-center rounded-full bg-[#FFF1ED] text-[#D96854]"
+        >
+          <TrashIcon class="h-6 w-6" />
         </div>
 
-        <div class="mt-6 flex gap-3">
+        <h3 class="mt-5 text-xl font-bold text-slate-900">
+          Eliminar reporte
+        </h3>
+
+        <p class="mt-2 text-sm leading-6 text-slate-500">
+          Esta acción eliminará el reporte definitivamente y no se puede
+          deshacer.
+        </p>
+
+        <div
+          v-if="reportToDelete"
+          class="mt-4 rounded-[18px] border border-[#E6EDF7] bg-[#F9FBFD] p-4"
+        >
+          <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Reporte seleccionado
+          </p>
+
+          <p class="mt-2 break-words text-sm font-bold text-slate-800">
+            {{ reportToDelete.categoria }}
+          </p>
+
+          <p class="mt-1 break-words text-sm leading-6 text-slate-600">
+            {{ reportToDelete.ubicacion }}
+          </p>
+        </div>
+
+        <div class="mt-6 grid grid-cols-2 gap-3">
           <button
             type="button"
             @click="closeDeleteModal"
-            class="flex-1 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 active:scale-[0.98]"
+            class="rounded-2xl border border-[#D6E8FB] bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-[#EEF4FF] active:scale-[0.98]"
           >
             Cancelar
           </button>
@@ -591,23 +768,29 @@ onMounted(() => {
             type="button"
             @click="confirmDeleteReport"
             :disabled="deletingReportId === reportToDelete?.id"
-            class="flex-1 rounded-xl bg-[#f2826d] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.98]"
+            class="rounded-2xl bg-[#F2826D] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#E67661] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {{ deletingReportId === reportToDelete?.id ? "Eliminando..." : "Sí, eliminar" }}
+            {{
+              deletingReportId === reportToDelete?.id
+                ? "Eliminando..."
+                : "Sí, eliminar"
+            }}
           </button>
         </div>
       </div>
     </div>
 
+    <!-- Modal éxito -->
     <div
       v-if="isSuccessModalOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/25 px-4 backdrop-blur-[2px]"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4 backdrop-blur-[2px]"
+      @click.self="closeSuccessModal"
     >
       <div
-        class="w-full max-w-sm rounded-[28px] bg-[#E0E5EC] p-6 text-center shadow-[-10px_-10px_20px_rgba(255,255,255,0.9),10px_10px_20px_rgba(163,177,198,0.38)]"
+        class="w-full max-w-sm rounded-[28px] border border-[#D6E8FB] bg-white p-6 text-center shadow-[0_24px_60px_rgba(15,23,42,0.18)]"
       >
         <div
-          class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3] shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
+          class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#EEF4FF] text-[#3082E3]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -625,7 +808,9 @@ onMounted(() => {
           </svg>
         </div>
 
-        <h3 class="mt-4 text-xl font-bold text-slate-900">Acción realizada</h3>
+        <h3 class="mt-4 text-xl font-bold text-slate-900">
+          Acción realizada
+        </h3>
 
         <p class="mt-2 text-sm leading-6 text-slate-500">
           {{ successMessage }}
@@ -634,7 +819,7 @@ onMounted(() => {
         <button
           type="button"
           @click="closeSuccessModal"
-          class="mt-5 w-full rounded-xl bg-[#3082e3] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-105 active:scale-[0.98]"
+          class="mt-5 w-full rounded-2xl bg-[#3082E3] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#085BAF] active:scale-[0.98]"
         >
           Entendido
         </button>
