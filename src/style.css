@@ -13,6 +13,14 @@ body {
 html, body, #app {
     overflow-x: hidden;
   }
+  
+html,
+body,
+#app {
+  min-height: 100%;
+  margin: 0;
+  background-color: #f7f9f6;
+}
 /* html, body, #app {
     height: 100%;
 }

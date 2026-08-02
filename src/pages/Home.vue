@@ -194,7 +194,7 @@ export default {
 </script>
 
 <template>
-  <section class="min-h-screen bg-[#f7f9f6] pt-12 pb-28">
+  <section class="min-h-[100dvh] bg-[#f7f9f6] pb-28 pt-12">
     <AppOnboarding v-if="showOnboarding" @finish="finishOnboarding" />
     <main class="mx-auto w-full max-w-[430px] px-3">
       <!-- saludo -->
