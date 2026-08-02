@@ -6,6 +6,10 @@ const props = defineProps({
   to: { type: String, default: null },
   supporting: { type: Boolean, default: false },
   alreadySupported: { type: Boolean, default: false },
+  showSupportButton: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const emit = defineEmits(["support"]);
@@ -29,7 +33,7 @@ function handleSupport() {
 
 <template>
   <li
-    class="w-full overflow-hidden rounded-[24px] border border-[#D6E8FB] bg-[#EEF4FF] p-4 shadow-[0_10px_24px_rgba(48,130,227,0.10)] transition-all duration-300 ease-out"
+    class="w-full overflow-hidden rounded-[24px] border border-[#C7D9F2] bg-[#E3ECFA] p-4 shadow-[0_10px_24px_rgba(48,130,227,0.12)] transition-all duration-300 ease-out"
   >
     <div class="flex items-start gap-4 w-full">
       <img
@@ -80,13 +84,14 @@ function handleSupport() {
         <div class="mt-4 border-t border-white/60 pt-4">
           <div class="flex flex-col gap-3">
             <div
-             class="inline-flex w-fit items-center gap-2 rounded-full border border-[#D6E8FB] bg-white px-3 py-1.5 text-xs font-semibold text-[#3082e3] shadow-[0_6px_16px_rgba(48,130,227,0.08)]"
+              class="inline-flex w-fit items-center gap-2 rounded-full border border-[#D6E8FB] bg-white px-3 py-1.5 text-xs font-semibold text-[#3082e3] shadow-[0_6px_16px_rgba(48,130,227,0.08)]"
             >
               <HandThumbUpIcon class="h-4 w-4" />
               <span>Apoyos: {{ report.apoyos ?? 0 }}</span>
             </div>
 
             <button
+              v-if="showSupportButton"
               type="button"
               @click="handleSupport"
               :disabled="alreadySupported || supporting"
