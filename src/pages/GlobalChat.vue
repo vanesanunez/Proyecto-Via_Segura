@@ -130,7 +130,7 @@ import { subscribeToUserState } from '../services/auth';
 import MainLoader from '../components/MainLoader.vue';
 import { PaperAirplaneIcon } from '@heroicons/vue/24/solid';
 
-let unsubAuth = () => {};
+let unsubAuth = () => { };
 let unsubscribeChat = null;
 
 export default {
@@ -244,27 +244,27 @@ export default {
         try {
 
             const allMessages =
-    await loadLastGlobalChatMessages();
+                await loadLastGlobalChatMessages();
 
-this.messages = allMessages.reverse();
+            this.messages = allMessages.reverse();
 
-this.loadingMessages = false;
-
-await this.scrollToBottom();
-
-unsubscribeChat =
-    subscribeToGlobalChatNewMessages(
-        async (newMessage) => {
-
-            this.messages.push(newMessage);
-
-            if (this.messages.length > 6) {
-                this.messages.shift();
-            }
+            this.loadingMessages = false;
 
             await this.scrollToBottom();
-        }
-    );
+
+            unsubscribeChat =
+                subscribeToGlobalChatNewMessages(
+                    async (newMessage) => {
+
+                        this.messages.push(newMessage);
+
+                        if (this.messages.length > 6) {
+                            this.messages.shift();
+                        }
+
+                        await this.scrollToBottom();
+                    }
+                );
 
         } catch (error) {
 
@@ -277,12 +277,12 @@ unsubscribeChat =
 
     unmounted() {
 
-unsubAuth();
+        unsubAuth();
 
-if (unsubscribeChat) {
-    unsubscribeChat();
-}
-}
+        if (unsubscribeChat) {
+            unsubscribeChat();
+        }
+    }
 };
 </script>
 
@@ -290,20 +290,20 @@ if (unsubscribeChat) {
 
     <div class="min-h-screen bg-[#f7f9fc] pb-28">
         <!-- HEADER -->
-     <div class="mt-4 flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-      <button
-        @click="$router.back()"
-        class="flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200 shrink-0"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#2a2a2a" stroke-width="2.2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <div class="min-w-0">
-        <h1 class="text-base font-semibold leading-tight">Chat general</h1>
-        <p class="text-xs mt-1" style="color:#6b7280;">Conectate con tu comunidad y compartí información útil para ayudar a construir barrios más seguros.</p>
-      </div>
-    </div>
+        <div class="mt-4 flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+            <button @click="$router.back()"
+                class="flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200 shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#2a2a2a"
+                    stroke-width="2.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <div class="min-w-0">
+                <h1 class="text-base font-semibold leading-tight">Chat general</h1>
+                <p class="text-xs mt-1" style="color:#6b7280;">Conectate con tu comunidad y compartí información útil
+                    para ayudar a construir barrios más seguros.</p>
+            </div>
+        </div>
 
 
         <!-- CHAT -->
