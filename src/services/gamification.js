@@ -2,27 +2,33 @@ import supabase from "./supabase";
 
 function calculateGamificationUpdate(profile, { type }) {
   const currentPoints = profile?.community_points ?? 0;
+  const currentAvailablePoints = profile?.available_points ?? 0;
   const currentActions = profile?.community_actions ?? 0;
   const currentReports = profile?.reports_created ?? 0;
   const currentSupports = profile?.supports_given ?? 0;
-  const bonusUnlocked = profile?.third_contribution_bonus_unlocked ?? false;
-  const firstBadgeUnlocked = profile?.first_badge_unlocked ?? false;
 
-  let pointsToAdd = 0;
-  let actionsToAdd = 1;
+  const bonusUnlocked =
+    profile?.third_contribution_bonus_unlocked ?? false;
 
+  const firstBadgeUnlocked =
+    profile?.first_badge_unlocked ?? false;
+
+  let pointsEarned = 0;
+  const actionsToAdd = 1;
+
+  // Premio por crear un reporte completo
   if (type === "report_created") {
-    // +10 por crear reporte +2 por foto válida
-    pointsToAdd = 12;
+    // +10 por crear el reporte
+    // +2 porque incluye una fotografía válida
+    pointsEarned = 12;
   }
 
+  // Premio por apoyar un reporte existente
   if (type === "report_supported") {
-    // +3 por sumarse a reclamo existente
-    pointsToAdd = 3;
+    pointsEarned = 3;
   }
 
   const nextActions = currentActions + actionsToAdd;
-  let nextPoints = currentPoints + pointsToAdd;
 
   let nextReports = currentReports;
   let nextSupports = currentSupports;
@@ -35,19 +41,28 @@ function calculateGamificationUpdate(profile, { type }) {
     nextSupports += 1;
   }
 
+  // Bonus único por alcanzar el tercer aporte
   let nextBonusUnlocked = bonusUnlocked;
+
   if (!bonusUnlocked && nextActions >= 3) {
-    nextPoints += 5; // bonus por 3er aporte
+    pointsEarned += 5;
     nextBonusUnlocked = true;
   }
 
+  // Primera insignia al alcanzar cuatro acciones
   let nextFirstBadgeUnlocked = firstBadgeUnlocked;
+
   if (!firstBadgeUnlocked && nextActions >= 4) {
     nextFirstBadgeUnlocked = true;
   }
 
   return {
-    community_points: nextPoints,
+    // Total histórico: nunca se descuenta
+    community_points: currentPoints + pointsEarned,
+
+    // Saldo disponible: se podrá gastar en beneficios
+    available_points: currentAvailablePoints + pointsEarned,
+
     community_actions: nextActions,
     reports_created: nextReports,
     supports_given: nextSupports,
@@ -60,13 +75,26 @@ export async function fetchUserGamification(userId) {
   const { data, error } = await supabase
     .from("user_profiles")
     .select(
-      "id, community_points, community_actions, reports_created, supports_given, third_contribution_bonus_unlocked, first_badge_unlocked",
+      `
+        id,
+        community_points,
+        available_points,
+        community_actions,
+        reports_created,
+        supports_given,
+        third_contribution_bonus_unlocked,
+        first_badge_unlocked
+      `,
     )
     .eq("id", userId)
     .single();
 
   if (error) {
-    console.error("[gamification] Error trayendo gamificación:", error);
+    console.error(
+      "[gamification] Error trayendo gamificación:",
+      error,
+    );
+
     throw error;
   }
 
@@ -85,12 +113,25 @@ export async function rewardUserForReport(userId) {
     .update(updatePayload)
     .eq("id", userId)
     .select(
-      "id, community_points, community_actions, reports_created, supports_given, third_contribution_bonus_unlocked, first_badge_unlocked",
+      `
+        id,
+        community_points,
+        available_points,
+        community_actions,
+        reports_created,
+        supports_given,
+        third_contribution_bonus_unlocked,
+        first_badge_unlocked
+      `,
     )
     .single();
 
   if (error) {
-    console.error("[gamification] Error premiando reporte:", error);
+    console.error(
+      "[gamification] Error premiando reporte:",
+      error,
+    );
+
     throw error;
   }
 
@@ -109,12 +150,25 @@ export async function rewardUserForSupport(userId) {
     .update(updatePayload)
     .eq("id", userId)
     .select(
-      "id, community_points, community_actions, reports_created, supports_given, third_contribution_bonus_unlocked, first_badge_unlocked",
+      `
+        id,
+        community_points,
+        available_points,
+        community_actions,
+        reports_created,
+        supports_given,
+        third_contribution_bonus_unlocked,
+        first_badge_unlocked
+      `,
     )
     .single();
 
   if (error) {
-    console.error("[gamification] Error premiando apoyo:", error);
+    console.error(
+      "[gamification] Error premiando apoyo:",
+      error,
+    );
+
     throw error;
   }
 

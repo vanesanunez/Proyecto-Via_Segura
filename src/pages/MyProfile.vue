@@ -55,6 +55,7 @@ export default {
 
       gamification: {
         community_points: 0,
+        available_points: 0,
         community_actions: 0,
         reports_created: 0,
         supports_given: 0,
