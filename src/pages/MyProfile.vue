@@ -30,7 +30,6 @@ export default {
     StarIcon,
     DocumentTextIcon,
     TrophyIcon,
-    HeartIcon,
     SparklesIcon,
     ShieldCheckIcon,
     CheckBadgeIcon,
@@ -741,36 +740,13 @@ export default {
                 </div>
               </div>
 
-              <!-- Dibujito edificio -->
-              <div class="relative w-[90px] h-[74px] shrink-0 opacity-90">
-                <div class="absolute inset-0 rounded-full bg-[#f7f9ff]"></div>
-
-                <div class="absolute top-1 right-4">
-                  <HeartIcon class="w-8 h-8 text-[#f2826d]" />
-                </div>
-
-                <div
-                  class="absolute bottom-1 left-2 w-4 h-6 rounded-t bg-[#dbe8ff]"
-                ></div>
-                <div
-                  class="absolute bottom-1 left-7 w-5 h-10 rounded-t bg-[#bfd5ff]"
-                ></div>
-                <div
-                  class="absolute bottom-1 left-14 w-4 h-7 rounded-t bg-[#dbe8ff]"
-                ></div>
-                <div
-                  class="absolute bottom-1 left-20 w-3 h-5 rounded-t bg-[#cfe0ff]"
-                ></div>
-
-                <div
-                  class="absolute top-2 left-1 w-5 h-2 rounded-full bg-[#edf3ff]"
-                ></div>
-                <div
-                  class="absolute top-6 left-0 w-3 h-1.5 rounded-full bg-[#edf3ff]"
-                ></div>
-                <div
-                  class="absolute top-8 right-1 w-4 h-2 rounded-full bg-[#edf3ff]"
-                ></div>
+              <!-- Ilustración del impacto -->
+              <div class="h-[90px] w-[105px] shrink-0 overflow-hidden">
+                <img
+                  src="/impacto-edificios.png"
+                  alt="Edificios y corazón representando el impacto en la comunidad"
+                  class="h-full w-full scale-[1.65] object-contain object-center"
+                />
               </div>
             </div>
 
