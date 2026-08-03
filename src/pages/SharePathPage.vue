@@ -466,7 +466,7 @@
         </button>
         <div class="min-w-0">
           <h1 class="text-base font-semibold leading-tight" style="color:#2a2a2a;">Recorrido Seguro</h1>
-          <p class="text-xs" style="color:#6b7280;">Encontrá el camino con menos alertas</p>
+          <p class="text-xs mt-1" style="color:#6b7280;">Encontrá el camino con menos alertas</p>
         </div>
       </div>
  

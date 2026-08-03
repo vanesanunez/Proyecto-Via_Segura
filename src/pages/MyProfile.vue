@@ -348,7 +348,7 @@ export default {
       </button>
       <div class="min-w-0">
         <h1 class="text-base font-semibold leading-tight">Mi perfil</h1>
-        <p class="text-xs" style="color: #6b7280">
+        <p class="text-xs mt-1" style="color: #6b7280">
           Administrá tus datos personales e información de la cuenta
         </p>
       </div>

@@ -301,7 +301,7 @@ if (unsubscribeChat) {
       </button>
       <div class="min-w-0">
         <h1 class="text-base font-semibold leading-tight">Chat general</h1>
-        <p class="text-xs mt-2" style="color:#6b7280;">Conectate con tu comunidad y compartí información útil para ayudar a construir barrios más seguros.</p>
+        <p class="text-xs mt-1" style="color:#6b7280;">Conectate con tu comunidad y compartí información útil para ayudar a construir barrios más seguros.</p>
       </div>
     </div>
 

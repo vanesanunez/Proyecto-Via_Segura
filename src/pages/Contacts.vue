@@ -313,7 +313,7 @@ async function confirmRemoveContact() {
       </button>
       <div class="min-w-0">
         <h1 class="text-base font-semibold leading-tight">Contactos de confianza</h1>
-        <p class="text-xs" style="color:#6b7280;">Van a poder seguir tus recorridos compartidos</p>
+        <p class="text-xs mt-1" style="color:#6b7280;">Van a poder seguir tus recorridos compartidos</p>
       </div>
     </div>
 

@@ -478,7 +478,7 @@ onUnmounted(() => {
         </button>
         <div class="min-w-0">
           <h1 class="text-base font-semibold leading-tight" style="color:#2a2a2a;">Información útil</h1>
-          <p class="text-xs" style="color:#6b7280;">Hospitales, comisarías, bomberos y farmacias cerca tuyo</p>
+          <p class="text-xs mt-1" style="color:#6b7280;">Hospitales, comisarías, bomberos y farmacias cerca tuyo</p>
         </div>
       </div>
 
