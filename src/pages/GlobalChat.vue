@@ -301,40 +301,9 @@ if (unsubscribeChat) {
       </button>
       <div class="min-w-0">
         <h1 class="text-base font-semibold leading-tight">Chat general</h1>
-        <p class="text-xs" style="color:#6b7280;">Conectate con tu comunidad y compartí información útil para ayudar a construir barrios más seguros.</p>
+        <p class="text-xs mt-2" style="color:#6b7280;">Conectate con tu comunidad y compartí información útil para ayudar a construir barrios más seguros.</p>
       </div>
     </div>
-
-        <!-- HEADER -->
-
-        <section class="px-4 pt-5">
-
-            <div class="rounded-3xl p-6 shadow-sm" style="
-                background:
-                linear-gradient(
-                    135deg,
-                    #3082e3 0%,
-                    #085baf 100%
-                );
-            ">
-
-                <h1 class="text-white text-xl text-center font-bold">
-                    Comunidad Vía Segura
-                </h1>
-<!-- 
-                <p class="text-sm mt-2" style="color: rgba(255,255,255,.75)">
-                    Compartí alertas, consejos y ayudá a mejorar tu comunidad.
-                </p> -->
-
-                <div class="flex gap-3 mt-5">
-
-                
-
-                </div>
-
-            </div>
-
-        </section>
 
 
         <!-- CHAT -->
