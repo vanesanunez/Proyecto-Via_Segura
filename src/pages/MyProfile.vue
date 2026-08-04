@@ -852,6 +852,38 @@ export default {
         </div>
       </div>
 
+      <!-- Beneficios canjeables -->
+      <div class="mt-4 rounded-2xl border border-[#dbe7fb] bg-white px-4 py-4">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <p class="text-sm font-bold text-[#0f172a]">
+              Beneficios Vía Segura
+            </p>
+
+            <p class="mt-1 text-xs text-slate-500">
+              Tenés
+              <span class="font-bold text-[#3082e3]">
+                {{
+                  gamificationLoading
+                    ? "..."
+                    : (gamification.available_points ?? 0)
+                }}
+                puntos
+              </span>
+              disponibles para canjear.
+            </p>
+          </div>
+
+          <RouterLink
+            to="/beneficios"
+            class="shrink-0 inline-flex items-center justify-center rounded-xl bg-[#3082E3] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#085BAF] active:scale-95"
+          >
+            Ver beneficios
+          </RouterLink>
+        </div>
+      </div>
+
+      
       <!-- MIS REPORTES -->
       <div class="px-4 pb-6">
         <div class="flex items-center justify-between mb-3">

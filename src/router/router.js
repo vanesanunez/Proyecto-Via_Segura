@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory} from 'vue-router';
 import { subscribeToUserState } from "../services/auth";
+import Benefits from "../views/Benefits.vue";
 import supabase from "../services/supabase";
 //import { consoleError } from 'vuetify/lib/util/console.mjs';
 
@@ -26,6 +27,7 @@ const routes = [
   { path: '/admin/usuarios',            component: () => import('../pages/AdminUsers.vue'),         meta: { requiresAuth: true, requiresAdmin: true },},
   { path: '/admin/chat',                component: () => import('../pages/AdminChat.vue'),          meta: { requiresAuth: true, requiresAdmin: true },},
   {  path: '/admin/reportes/:id/editar',  component: () => import('../pages/AdminEditReport.vue'),  meta: { requiresAuth: true, requiresAdmin: true },},
+  {  path: "/beneficios", name: "beneficios", component: Benefits,  meta: { requiresAuth: true,},},
 
 
 ];
