@@ -157,30 +157,25 @@
                 </strong>
               </div>
 
-              <button
-                type="button"
-                <button
-               type="button"
-              :disabled="
-              !canAfford(benefit) ||
-              redeemingBenefitId !== null
-              "
-              class="w-full rounded-xl px-4 py-3 text-sm font-bold transition active:scale-[0.98]"
-              :class="
-              canAfford(benefit) && redeemingBenefitId === null
-              ? 'bg-[#3082E3] text-white hover:bg-[#085BAF]'
-              : 'cursor-not-allowed bg-gray-100 text-gray-400'
-              "
-             @click="handleRedeem(benefit)"
-             >
-            {{
-            redeemingBenefitId === benefit.id
-            ? "Canjeando..."
-            : canAfford(benefit)
-            ? "Canjear beneficio"
-            : "Puntos insuficientes"
-            }}
-            </button>
+             <button
+  type="button"
+  :disabled="!canAfford(benefit) || redeemingBenefitId !== null"
+  class="w-full rounded-xl px-4 py-3 text-sm font-bold transition active:scale-[0.98]"
+  :class="
+    canAfford(benefit) && redeemingBenefitId === null
+      ? 'bg-[#3082E3] text-white hover:bg-[#085BAF]'
+      : 'cursor-not-allowed bg-gray-100 text-gray-400'
+  "
+  @click="handleRedeem(benefit)"
+>
+  {{
+    redeemingBenefitId === benefit.id
+      ? "Canjeando..."
+      : canAfford(benefit)
+        ? "Canjear beneficio"
+        : "Puntos insuficientes"
+  }}
+</button>
                 class="w-full cursor-not-allowed rounded-xl px-4 py-3 text-sm font-bold"
                 :class="
                   canAfford(benefit)
