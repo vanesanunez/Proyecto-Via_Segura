@@ -44,6 +44,34 @@
         </div>
       </div>
 
+
+      <!-- Resultado del canje -->
+<div
+  v-if="redeemedCoupon"
+  class="mb-6 rounded-2xl border border-green-200 bg-green-50 px-5 py-4"
+>
+  <p class="font-bold text-green-800">
+    ¡Beneficio canjeado correctamente!
+  </p>
+
+  <p class="mt-2 text-sm text-green-700">
+    Tu código es:
+    <strong class="ml-1 tracking-wider">
+      {{ redeemedCoupon.coupon_code }}
+    </strong>
+  </p>
+
+  <p class="mt-1 text-xs text-green-700">
+    Te quedan {{ redeemedCoupon.remaining_points }} puntos disponibles.
+  </p>
+</div>
+
+<div
+  v-if="redemptionError"
+  class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700"
+>
+  {{ redemptionError }}
+</div>
       <!-- Cargando -->
       <div
         v-if="loading"
@@ -131,7 +159,28 @@
 
               <button
                 type="button"
-                disabled
+                <button
+               type="button"
+              :disabled="
+              !canAfford(benefit) ||
+              redeemingBenefitId !== null
+              "
+              class="w-full rounded-xl px-4 py-3 text-sm font-bold transition active:scale-[0.98]"
+              :class="
+              canAfford(benefit) && redeemingBenefitId === null
+              ? 'bg-[#3082E3] text-white hover:bg-[#085BAF]'
+              : 'cursor-not-allowed bg-gray-100 text-gray-400'
+              "
+             @click="handleRedeem(benefit)"
+             >
+            {{
+            redeemingBenefitId === benefit.id
+            ? "Canjeando..."
+            : canAfford(benefit)
+            ? "Canjear beneficio"
+            : "Puntos insuficientes"
+            }}
+            </button>
                 class="w-full cursor-not-allowed rounded-xl px-4 py-3 text-sm font-bold"
                 :class="
                   canAfford(benefit)
@@ -161,12 +210,16 @@ import supabase from "../services/supabase";
 import {
   fetchActiveBenefits,
   fetchAvailablePoints,
+  redeemBenefit,
 } from "../services/benefits";
 
 const benefits = ref([]);
 const availablePoints = ref(0);
 const loading = ref(true);
 const errorMessage = ref("");
+const redeemingBenefitId = ref(null);
+const redeemedCoupon = ref(null);
+const redemptionError = ref("");
 
 function canAfford(benefit) {
   return availablePoints.value >= benefit.points_cost;
@@ -210,6 +263,53 @@ async function loadBenefitsPage() {
       "No pudimos cargar los beneficios. Intentá nuevamente.";
   } finally {
     loading.value = false;
+  }
+}
+
+async function handleRedeem(benefit) {
+  if (!canAfford(benefit)) {
+    redemptionError.value =
+      "No tenés puntos suficientes para canjear este beneficio.";
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `¿Querés canjear "${benefit.title}" por ${benefit.points_cost} puntos?`,
+  );
+
+  if (!confirmed) return;
+
+  redeemingBenefitId.value = benefit.id;
+  redeemedCoupon.value = null;
+  redemptionError.value = "";
+
+  try {
+    const coupon = await redeemBenefit(benefit.id);
+
+    if (!coupon) {
+      throw new Error("No se recibió la información del cupón.");
+    }
+
+    redeemedCoupon.value = coupon;
+    availablePoints.value = coupon.remaining_points;
+
+    benefits.value = benefits.value
+      .map((item) => {
+        if (item.id !== benefit.id) return item;
+
+        return {
+          ...item,
+          stock: Math.max(0, item.stock - 1),
+        };
+      })
+      .filter((item) => item.stock > 0);
+  } catch (error) {
+    console.error("[Benefits.vue] Error realizando canje:", error);
+
+    redemptionError.value =
+      error?.message || "No se pudo realizar el canje.";
+  } finally {
+    redeemingBenefitId.value = null;
   }
 }
 

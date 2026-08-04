@@ -39,3 +39,16 @@ export async function fetchAvailablePoints(userId) {
 
   return data?.available_points ?? 0;
 }
+
+export async function redeemBenefit(benefitId) {
+  const { data, error } = await supabase.rpc("redeem_benefit", {
+    p_benefit_id: benefitId,
+  });
+
+  if (error) {
+    console.error("[benefits] Error canjeando beneficio:", error);
+    throw error;
+  }
+
+  return data?.[0] ?? null;
+}
