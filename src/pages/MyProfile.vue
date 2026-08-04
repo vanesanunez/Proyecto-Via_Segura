@@ -16,6 +16,7 @@ import {
   SparklesIcon,
   ShieldCheckIcon,
   CheckBadgeIcon,
+  GiftIcon,
 } from "@heroicons/vue/24/solid";
 
 let unsubAuth = () => {};
@@ -33,6 +34,7 @@ export default {
     SparklesIcon,
     ShieldCheckIcon,
     CheckBadgeIcon,
+    GiftIcon,
   },
   data() {
     return {
@@ -851,39 +853,90 @@ export default {
           </div>
         </div>
       </div>
-
+      
       <!-- Beneficios canjeables -->
-      <div class="mt-4 rounded-2xl border border-[#dbe7fb] bg-white px-4 py-4">
-        <div class="flex items-center justify-between gap-4">
-          <div>
-            <p class="text-sm font-bold text-[#0f172a]">
+      <div
+        class="mt-4 overflow-hidden rounded-[22px] border border-[#cfe0fb] bg-gradient-to-br from-[#eef4ff] via-white to-[#f7faff] p-4 shadow-[0_8px_24px_rgba(48,130,227,0.10)]"
+      >
+        <!-- Encabezado -->
+        <div class="flex items-start gap-3">
+          <div
+            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#3082e3] shadow-[0_6px_14px_rgba(48,130,227,0.25)]"
+          >
+            <GiftIcon class="h-6 w-6 text-white" />
+          </div>
+
+          <div class="min-w-0 flex-1">
+            <p class="text-[16px] font-bold leading-tight text-[#0f172a]">
               Beneficios Vía Segura
             </p>
 
-            <p class="mt-1 text-xs text-slate-500">
-              Tenés
-              <span class="font-bold text-[#3082e3]">
+            <p class="mt-1 text-[12px] leading-5 text-slate-500">
+              Canjeá tus puntos por descuentos y actividades en espacios
+              adheridos.
+            </p>
+          </div>
+        </div>
+
+        <!-- Saldo -->
+        <div
+          class="mt-4 flex items-center justify-between rounded-2xl border border-white bg-white/80 px-4 py-3"
+        >
+          <div>
+            <p
+              class="text-[11px] font-semibold uppercase tracking-wide text-slate-400"
+            >
+              Saldo disponible
+            </p>
+
+            <div class="mt-1 flex items-end gap-1.5">
+              <span
+                class="text-[30px] font-extrabold leading-none text-[#085baf]"
+              >
                 {{
                   gamificationLoading
                     ? "..."
                     : (gamification.available_points ?? 0)
                 }}
+              </span>
+
+              <span class="pb-0.5 text-sm font-semibold text-[#3082e3]">
                 puntos
               </span>
-              disponibles para canjear.
-            </p>
+            </div>
           </div>
 
-          <RouterLink
-            to="/beneficios"
-            class="shrink-0 inline-flex items-center justify-center rounded-xl bg-[#3082E3] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#085BAF] active:scale-95"
+          <div
+            class="rounded-full bg-[#fff1ed] px-3 py-1.5 text-[11px] font-bold text-[#e67661]"
           >
-            Ver beneficios
-          </RouterLink>
+            Canjeables
+          </div>
         </div>
+
+        <!-- Botón -->
+        <RouterLink
+          to="/beneficios"
+          class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#3082E3] px-5 py-3 text-sm font-bold text-white shadow-[0_6px_14px_rgba(48,130,227,0.22)] transition hover:bg-[#085BAF] active:scale-[0.98]"
+        >
+          Explorar beneficios
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2.2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </RouterLink>
       </div>
 
-      
       <!-- MIS REPORTES -->
       <div class="px-4 pb-6">
         <div class="flex items-center justify-between mb-3">
