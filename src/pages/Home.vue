@@ -363,9 +363,9 @@ export default {
             <img :src="safeImage(report)" alt="Imagen del reporte" class="h-24 w-full object-cover" />
 
             <div class="p-3">
-              <h4 class="line-clamp-2 text-[14px] font-bold leading-5 text-[#2a2a2a]">
+              <h3 class="line-clamp-2 text-[14px] font-bold leading-5 text-[#2a2a2a]">
                 {{ report.descripcion }}
-              </h4>
+              </h3>
 
               <div class="mt-2 flex flex-wrap gap-1.5">
                 <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold"
