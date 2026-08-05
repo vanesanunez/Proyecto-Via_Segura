@@ -676,9 +676,9 @@ export default {
           </div>
 
           <div class="min-w-0 flex-1">
-            <p class="text-[16px] font-bold leading-tight text-[#0f172a]">
+            <h2 class="text-[16px] font-bold leading-tight text-[#0f172a]">
               Beneficios Vía Segura
-            </p>
+            </h2>
 
             <p class="mt-1 text-[12px] leading-5 text-slate-500">
               Canjeá tus puntos por descuentos y actividades en espacios
