@@ -170,7 +170,7 @@ onMounted(() => {
 
 <template>
   <section
-    class="min-h-[100dvh] overflow-x-hidden bg-[#F7F9F6] px-4 pb-12 pt-5"
+    class="min-h-dvh overflow-x-hidden bg-[#F7F9F6] px-4 pb-12 pt-5"
   >
     <div class="mx-auto w-full max-w-3xl">
       <!-- Volver -->
@@ -209,7 +209,7 @@ onMounted(() => {
           </div>
 
           <div
-            class="flex h-14 min-w-[56px] shrink-0 items-center justify-center rounded-full bg-white text-xl font-bold text-[#3082E3] shadow-[0_8px_20px_rgba(48,130,227,0.10)]"
+            class="flex h-14 min-w-14 shrink-0 items-center justify-center rounded-full bg-white text-xl font-bold text-[#3082E3] shadow-[0_8px_20px_rgba(48,130,227,0.10)]"
           >
             {{ messages.length }}
           </div>
@@ -275,7 +275,7 @@ onMounted(() => {
       <!-- ESTADO 1: cargando -->
       <div
         v-if="loading"
-        class="mt-5 rounded-[24px] border border-[#D6E8FB] bg-white p-6 shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
+        class="mt-5 rounded-3xl border border-[#D6E8FB] bg-white p-6 shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
       >
         <div class="flex items-center gap-3">
           <div
@@ -289,7 +289,7 @@ onMounted(() => {
       <!-- ESTADO 2: no hay mensajes -->
       <div
         v-else-if="messages.length === 0"
-        class="mt-5 rounded-[24px] border border-[#D6E8FB] bg-white px-5 py-10 text-center shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
+        class="mt-5 rounded-3xl border border-[#D6E8FB] bg-white px-5 py-10 text-center shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
       >
         <div
           class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#EEF4FF] text-[#3082E3]"
@@ -321,7 +321,7 @@ onMounted(() => {
           <article
             v-for="message in paginatedMessages"
             :key="message.id"
-            class="flex h-full flex-col rounded-[24px] border border-[#D6E8FB] bg-white p-4 shadow-[0_10px_24px_rgba(48,130,227,0.07)]"
+            class="flex h-full flex-col rounded-3xl border border-[#D6E8FB] bg-white p-4 shadow-[0_10px_24px_rgba(48,130,227,0.07)]"
           >
             <!-- Usuario -->
             <div class="flex items-start gap-3">
@@ -360,7 +360,7 @@ onMounted(() => {
                 Mensaje
               </p>
 
-              <p class="mt-2 break-words text-sm leading-6 text-slate-700">
+              <p class="mt-2 wrap-break-word text-sm leading-6 text-slate-700">
                 {{ message.body || "Mensaje sin contenido" }}
               </p>
             </div>
@@ -402,7 +402,7 @@ onMounted(() => {
             :key="pageNumber"
             type="button"
             @click="goTo(pageNumber)"
-            class="flex h-10 min-w-[40px] items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
+            class="flex h-10 min-w-10 items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
             :class="
               pageNumber === page
                 ? 'bg-[#3082E3] text-white shadow-[0_6px_14px_rgba(48,130,227,0.22)]'
@@ -465,7 +465,7 @@ onMounted(() => {
             {{ messageToDelete.email || "Usuario sin email" }}
           </p>
 
-          <p class="mt-2 break-words text-sm leading-6 text-slate-600">
+          <p class="mt-2 wrap-break-word text-sm leading-6 text-slate-600">
             {{ messageToDelete.body }}
           </p>
         </div>

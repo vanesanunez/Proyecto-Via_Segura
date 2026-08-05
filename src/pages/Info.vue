@@ -176,7 +176,7 @@ function limpiarMapa() {
   markers.forEach((m) => m.remove()); markers = [];
   markerUsuario?.remove(); markerUsuario = null;
   circuloRadio?.remove(); circuloRadio = null;
-  if (rutaControl) { try { rutaControl.remove(); } catch (_) {} rutaControl = null; }
+  if (rutaControl) { try { rutaControl.remove(); } catch (_) { } rutaControl = null; }
 }
 
 // ── Render de markers (siempre en azul de marca) ────────────────────────────
@@ -190,19 +190,19 @@ function iconUsuario() {
 function iconItem(activo) {
   return activo
     ? L.divIcon({
-        html: `<div style="width:34px;height:34px;border-radius:50%;background:${ACCENT_COLOR};border:3px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(48,130,227,0.35);">
+      html: `<div style="width:34px;height:34px;border-radius:50%;background:${ACCENT_COLOR};border:3px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(48,130,227,0.35);">
                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                    <path d="${categoriaActual.value.icon}"/>
                  </svg></div>`,
-        iconSize: [34, 34], iconAnchor: [17, 17], className: '',
-      })
+      iconSize: [34, 34], iconAnchor: [17, 17], className: '',
+    })
     : L.divIcon({
-        html: `<div style="width:30px;height:30px;border-radius:50%;background:#fff;border:2.5px solid ${ACCENT_COLOR};display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(48,130,227,0.2);">
+      html: `<div style="width:30px;height:30px;border-radius:50%;background:#fff;border:2.5px solid ${ACCENT_COLOR};display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(48,130,227,0.2);">
                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${ACCENT_COLOR}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                    <path d="${categoriaActual.value.icon}"/>
                  </svg></div>`,
-        iconSize: [30, 30], iconAnchor: [15, 15], className: '',
-      });
+      iconSize: [30, 30], iconAnchor: [15, 15], className: '',
+    });
 }
 
 // ── Actualizar mapa completo ───────────────────────────────────────────────
@@ -263,7 +263,7 @@ async function actualizarMapa() {
 // ── Ruta con leaflet-routing-machine (polyline azul) ───────────────────────
 async function trazarRuta(item) {
   if (!mapa || !ubicacionUsuario.value) return;
-  if (rutaControl) { try { rutaControl.remove(); } catch (_) {} rutaControl = null; }
+  if (rutaControl) { try { rutaControl.remove(); } catch (_) { } rutaControl = null; }
 
   const lrmMod = await import('leaflet-routing-machine');
   const LRM = lrmMod.default ?? lrmMod;
@@ -424,7 +424,7 @@ async function buscarCercanos() {
   }
 }
 
-// ── Seleccionar item de la lista (traza ruta) ──────────────────────────────
+// Seleccionar item de la lista (traza ruta) 
 async function seleccionarItem(item) {
   if (itemSeleccionado.value?.raw.id === item.raw.id) {
     itemSeleccionado.value = null;
@@ -445,8 +445,7 @@ async function seleccionarItem(item) {
   }
 }
 
-// ── Watcher: re-buscar al cambiar el radio (con debounce) ──────────────────
-// La categoría ya no se puede cambiar acá — para eso está "Nueva búsqueda".
+// ── Watcher: re-buscar al cambiar el radio (con debounce) 
 watch(radioBusqueda, () => {
   if (!ubicacionUsuario.value) return;
   clearTimeout(debounceRefetch);
@@ -455,7 +454,7 @@ watch(radioBusqueda, () => {
   }, 450);
 });
 
-// ── Cleanup ────────────────────────────────────────────────────────────────
+// Cleanup 
 onUnmounted(() => {
   overpassAbortController?.abort();
   mapa?.remove();
@@ -482,9 +481,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- ══════════════════════════════════════════
-           VISTA A — BÚSQUEDA (sin ubicación aún)
-      ══════════════════════════════════════════ -->
+      <!-- VISTA A — BÚSQUEDA (sin ubicación aún) -->
       <div v-if="!ubicacionUsuario" class="flex-1 flex flex-col overflow-y-auto overflow-x-hidden w-full">
 
         <!-- Ilustración + título -->
@@ -512,15 +509,11 @@ onUnmounted(() => {
           <div class="w-full">
             <p class="text-xs font-semibold mb-2" style="color:#6b7280;">¿Qué estás buscando?</p>
             <div class="grid grid-cols-2 gap-2 w-full">
-              <button
-                v-for="cat in categorias"
-                :key="cat.value"
-                @click="selectedCategory = cat.value"
+              <button v-for="cat in categorias" :key="cat.value" @click="selectedCategory = cat.value"
                 class="flex items-center gap-2.5 rounded-xl border px-3 py-3 text-left transition-all active:scale-95 min-w-0"
                 :style="selectedCategory === cat.value
                   ? `border-color:${ACCENT_COLOR}; background:${ACCENT_BG};`
-                  : 'border-color:#e5e7eb; background:#fff;'"
-              >
+                  : 'border-color:#e5e7eb; background:#fff;'">
                 <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
                   :style="`background:${selectedCategory === cat.value ? ACCENT_COLOR : '#f3f4f6'};`">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
@@ -539,14 +532,15 @@ onUnmounted(() => {
           <!-- Input con botón limpiar -->
           <div class="relative w-full">
             <svg xmlns="http://www.w3.org/2000/svg"
-              class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" fill="none" viewBox="0 0 24 24"
-              stroke="#9ca3af" stroke-width="2">
+              class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" fill="none"
+              viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round"
                 d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z" />
             </svg>
             <input v-model="direccionInput" @input="onInputChange" @keydown.enter="buscarDireccion"
               placeholder="Ej: Av. Corrientes 1200, CABA"
-              class="w-full rounded-xl pl-9 pr-10 py-3 text-sm border focus:outline-none transition-all box-border" :style="`border-color:${inputFocused ? '#3082e3' : '#e5e7eb'};
+              class="w-full rounded-xl pl-9 pr-10 py-3 text-sm border focus:outline-none transition-all box-border"
+              :style="`border-color:${inputFocused ? '#3082e3' : '#e5e7eb'};
                        box-shadow:${inputFocused ? '0 0 0 3px rgba(48,130,227,0.15)' : 'none'};`"
               @focus="inputFocused = true" @blur="inputFocused = false" />
             <button v-if="direccionInput" @click="limpiarBusqueda"
@@ -563,8 +557,8 @@ onUnmounted(() => {
           <ul v-if="sugerencias.length" class="border border-gray-100 rounded-xl overflow-hidden shadow-md w-full">
             <li v-for="s in sugerencias" :key="s.place_id" @click="seleccionarSugerencia(s)"
               class="flex items-start gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-blue-50 active:bg-blue-100 border-b border-gray-50 last:border-0 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24"
-                stroke="#3082e3" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 mt-0.5 shrink-0" fill="none"
+                viewBox="0 0 24 24" stroke="#3082e3" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -588,7 +582,8 @@ onUnmounted(() => {
           <button @click="buscarDireccion" :disabled="cargandoBusqueda || !direccionInput.trim()"
             class="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-50"
             style="background:#3082e3;">
-            {{ cargandoBusqueda ? 'Buscando...' : `Buscar ${categoriaActual.label.toLowerCase()} cerca de esta dirección` }}
+            {{ cargandoBusqueda ? 'Buscando...' : `Buscar ${categoriaActual.label.toLowerCase()} cerca de esta
+            dirección` }}
           </button>
 
           <!-- Separador -->
@@ -657,12 +652,9 @@ onUnmounted(() => {
         <!-- ══════ Resultados: desplegable ══════ -->
         <div class="flex-1 overflow-y-auto overflow-x-hidden w-full">
           <div class="px-4 py-3 w-full">
-            <button
-              type="button"
-              @click="resultsOpen = !resultsOpen"
+            <button type="button" @click="resultsOpen = !resultsOpen"
               class="flex w-full items-center justify-between rounded-xl border px-4 py-3 transition-all active:scale-[0.99]"
-              :style="`border-color:${ACCENT_COLOR}; background:${ACCENT_BG};`"
-            >
+              :style="`border-color:${ACCENT_COLOR}; background:${ACCENT_BG};`">
               <div class="flex items-center gap-2.5 min-w-0 text-left">
                 <div v-if="cargandoBusqueda" class="w-4 h-4 rounded-full border-2 animate-spin shrink-0"
                   :style="`border-color:${ACCENT_COLOR}; border-top-color:transparent;`"></div>
@@ -679,22 +671,24 @@ onUnmounted(() => {
                 </span>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 transition-transform duration-300 ml-2"
-                :class="resultsOpen ? 'rotate-180' : ''"
-                fill="none" viewBox="0 0 24 24" :stroke="ACCENT_COLOR" stroke-width="2.2">
+                :class="resultsOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" :stroke="ACCENT_COLOR"
+                stroke-width="2.2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
             <transition name="accordion">
-              <div v-if="resultsOpen" class="overflow-hidden w-full">
-                <div class="mt-2 max-h-72 overflow-y-auto overflow-x-hidden rounded-xl border border-gray-100 w-full">
+              <div v-if="resultsOpen" class="overflow-hidden w-full resultados-container">
+                <div
+                  class="mt-2 max-h-72 overflow-y-auto overflow-x-hidden rounded-xl border border-gray-100 w-full max-w-full">
 
                   <!-- Sin resultados -->
                   <div v-if="!cargandoBusqueda && resultados.length === 0"
                     class="flex flex-col items-center justify-center py-10 px-8 text-center gap-3">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style="background:#f3f4f6;">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#9ca3af"
-                        stroke-width="1.5">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                      style="background:#f3f4f6;">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        stroke="#9ca3af" stroke-width="1.5">
                         <circle cx="11" cy="11" r="8" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35" />
                       </svg>
@@ -706,28 +700,32 @@ onUnmounted(() => {
                   <!-- Items -->
                   <template v-else>
                     <div v-for="(item, index) in resultados" :key="item.raw.id" @click="seleccionarItem(item)"
-                      class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50 last:border-0 cursor-pointer transition-colors w-full min-w-0"
+                      class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50 last:border-0 cursor-pointer transition-colors w-full min-w-0 overflow-hidden"
                       :style="`background:${itemSeleccionado?.raw.id === item.raw.id ? ACCENT_BG : '#fff'};
                                border-left: ${itemSeleccionado?.raw.id === item.raw.id ? `3px solid ${ACCENT_COLOR}` : '3px solid transparent'};`">
                       <!-- Número -->
-                      <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0" :style="`background:${itemSeleccionado?.raw.id === item.raw.id ? ACCENT_COLOR : ACCENT_BG};
+                      <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                        :style="`background:${itemSeleccionado?.raw.id === item.raw.id ? ACCENT_COLOR : ACCENT_BG};
                                  color:${itemSeleccionado?.raw.id === item.raw.id ? '#fff' : ACCENT_COLOR};`">
                         {{ index + 1 }}
                       </div>
 
                       <!-- Info -->
-                      <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium truncate" style="color:#2a2a2a;">{{ item.name }}</p>
+                      <div class="flex-1 min-w-0 overflow-hidden">
+                        <p class="text-sm font-medium leading-5" style="overflow-wrap:anywhere;word-break:break-word;">
+                          {{ item.name }}</p>
                         <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
                           <span class="text-xs font-semibold px-1.5 py-0.5 rounded-md"
                             :style="`background:${ACCENT_BG}; color:${ACCENT_COLOR};`">
                             {{ isFinite(item.distance) ? formatearDistancia(item.distance) : "—" }}
                           </span>
-                          <span v-if="itemSeleccionado?.raw.id === item.raw.id" class="text-xs font-semibold px-1.5 py-0.5 rounded-md"
+                          <span v-if="itemSeleccionado?.raw.id === item.raw.id"
+                            class="text-xs font-semibold px-1.5 py-0.5 rounded-md"
                             style="background:#fff3f2; color:#3082e3;">
                             Ruta activa
                           </span>
-                          <span v-else-if="item.address" class="text-xs truncate" style="color:#9ca3af;">{{ item.address }}</span>
+                          <span v-else-if="item.address" class="text-xs block"
+                            style="overflow-wrap:anywhere;word-break:break-word;">{{ item.address }}</span>
                         </div>
                       </div>
 
@@ -758,8 +756,8 @@ onUnmounted(() => {
   </div>
 
   <!-- ── Spinner global (dirección/GPS) ── -->
-  <div v-if="cargandoGPS || (cargandoBusqueda && !ubicacionUsuario)" class="fixed inset-0 flex items-center justify-center z-50"
-    style="background:rgba(255,255,255,0.85);">
+  <div v-if="cargandoGPS || (cargandoBusqueda && !ubicacionUsuario)"
+    class="fixed inset-0 flex items-center justify-center z-50" style="background:rgba(255,255,255,0.85);">
     <div class="flex flex-col items-center gap-3">
       <div class="w-10 h-10 rounded-full border-2 animate-spin"
         style="border-color:#3082e3; border-top-color:transparent;"></div>
@@ -777,16 +775,51 @@ onUnmounted(() => {
 .accordion-leave-active {
   transition: all 0.3s ease;
 }
+
 .accordion-enter-from,
 .accordion-leave-to {
   opacity: 0;
   max-height: 0;
   transform: translateY(-6px);
 }
+
 .accordion-enter-to,
 .accordion-leave-from {
   opacity: 1;
   max-height: 420px;
 }
-</style>
 
+.resultados-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+.w-full {
+  max-width: 100%;
+}
+
+p,
+span,
+div {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.leaflet-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+</style>

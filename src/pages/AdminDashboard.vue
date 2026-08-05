@@ -61,7 +61,7 @@ function openModule(route) {
 
 <template>
   <section
-    class="min-h-[100dvh] bg-[#F7F9F6] px-4 pb-28 pt-5"
+    class="min-h-dvh bg-[#F7F9F6] px-4 pb-28 pt-5"
   >
     <div class="mx-auto w-full max-w-5xl">
       <!-- Encabezado -->

@@ -360,7 +360,7 @@ function startNewReport() {
         <!-- PASO 1 -->
         <section
           :class="[
-            'rounded-[24px] border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
+            'rounded-3xl border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
             showOnboarding && onboardingStep === 1
               ? 'ring-2 ring-[#3082e3]'
               : '',
@@ -406,7 +406,7 @@ function startNewReport() {
         <!-- PASO 2 -->
         <section
           :class="[
-            'rounded-[24px] border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
+            'rounded-3xl border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
             showOnboarding && onboardingStep === 2
               ? 'ring-2 ring-[#3082e3]'
               : '',
@@ -473,7 +473,7 @@ function startNewReport() {
         <!-- PASO 3 -->
         <section
           :class="[
-            'rounded-[24px] border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
+            'rounded-3xl border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
             showOnboarding && onboardingStep === 3
               ? 'ring-2 ring-[#3082e3]'
               : '',
@@ -517,7 +517,7 @@ function startNewReport() {
         <!-- PASO 4 -->
         <section
           :class="[
-            'rounded-[24px] border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
+            'rounded-3xl border border-[#e4ebf4] bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all',
             showOnboarding && onboardingStep === 4
               ? 'ring-2 ring-[#3082e3]'
               : '',
@@ -662,7 +662,7 @@ function startNewReport() {
               <button
                 type="button"
                 @click="nextOnboarding"
-                class="inline-flex items-center gap-2 rounded-[16px] bg-[#3082e3] px-6 py-3 text-[16px] font-semibold text-white shadow-[0_10px_22px_rgba(48,130,227,0.28)] transition hover:bg-[#236fcd] active:scale-[0.98]"
+                class="inline-flex items-center gap-2 rounded-2xl bg-[#3082e3] px-6 py-3 text-[16px] font-semibold text-white shadow-[0_10px_22px_rgba(48,130,227,0.28)] transition hover:bg-[#236fcd] active:scale-[0.98]"
               >
                 {{ onboardingContent.button }}
                 <ArrowRightIcon class="h-5 w-5" />
