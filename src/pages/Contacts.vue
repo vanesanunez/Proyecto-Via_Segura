@@ -1,162 +1,3 @@
-<!-- <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { getAllUsers, getTrustedContacts, addTrustedContact, removeTrustedContact } from '../services/contacts';
-import supabase from '../services/supabase';
-import MainLoader from '../components/MainLoader.vue';
-import AppH1 from '../components/AppH1.vue';
-import BottomNavigation from '../components/BottomNavigation.vue';
-
-const loading = ref(true);
-const allUsers = ref([]);
-const trustedContacts = ref([]);
-const filter = ref('');
-const user = ref(null);
-
-onMounted(async () => {
-  try {
-    // Obtener usuario actual (supabase.auth.getUser)
-    const res = await supabase.auth.getUser();
-    // new supabase client returns: { data: { user } }
-    user.value = res?.data?.user || null;
-    if (!user.value) {
-      // si no está logueado, redirigir:
-      loading.value = false;
-      return;
-    }
-
-    await loadData();
-  } catch (e) {
-    console.error('[Contacts.vue onMounted] ', e);
-  } finally {
-    loading.value = false;
-  }
-});
-
-async function loadData() {
-  try {
-    const [users, contacts] = await Promise.all([
-      getAllUsers(),
-      getTrustedContacts(user.value.id),
-    ]);
-
-    // Todos los usuarios menos el que está logueado
-    allUsers.value = users.filter(u => u.id !== user.value.id);
-    trustedContacts.value = contacts || [];
-  } catch (e) {
-    console.error('[Contacts.vue loadData] ', e);
-  }
-}
-
-const filteredUsers = computed(() => {
-  const q = filter.value.trim().toLowerCase();
-  const trustedIds = new Set(trustedContacts.value.map(c => c.id));
-
-  return allUsers.value
-    .filter(u => !trustedIds.has(u.id))
-    .filter(u => {
-      if (!q) return true;
-
-      // concateno name + lastname para buscar por cualquiera de los dos
-      const fullName = `${u.name || ''} ${u.lastname || ''}`.toLowerCase();
-
-      return fullName.includes(q);
-    });
-});
-
-function isTrusted(userId) {
-  return trustedContacts.value.some(c => c.id === userId);
-}
-
-async function toggleTrust(contactId) {
-  try {
-    const existing = trustedContacts.value.find(c => c.id === contactId);
-    if (existing) {
-      // eliminar por relation id
-      await removeTrustedContact(existing.trusted_contact_id);
-    } else {
-      await addTrustedContact(user.value.id, contactId);
-    }
-    await loadData();
-  } catch (e) {
-    console.error('[Contacts.vue toggleTrust] ', e);
-  }
-}
-
-async function removeContact(relationId) {
-  try {
-    if (!relationId) return;
-    await removeTrustedContact(relationId);
-    await loadData();
-  } catch (e) {
-    console.error('[Contacts.vue removeContact] ', e);
-  }
-}
-</script>
-
-<template>
-  <div class="max-w-2xl mx-auto p-4">
-    <AppH1>Contactos</AppH1>
-
-    <div class="mb-4">
-      <input v-model="filter" placeholder="Buscar por nombre o apellido..." class="w-full border rounded px-3 py-2" />
-    </div>
-
-    <div v-if="loading" class="text-gray-500 text-center py-6">
-      <div class="flex justify-center items-center h-full">
-        <MainLoader />
-      </div>
-      Cargando contactos...
-
-    </div>
-
-
-    <div v-else>
-      <div v-if="trustedContacts.length" class="mb-6">
-        <h2 class="text-lg font-medium mb-2">Tus contactos de confianza</h2>
-        <div v-for="c in trustedContacts" :key="c.id"
-          class="flex items-center justify-between bg-blue-50 p-3 rounded-xl shadow-sm border border-blue-100 mb-2">
-          <div class="flex items-center gap-3">
-            <div>
-              <div class="font-medium">{{ c.name }}, {{ c.lastname }}</div>
-
-            </div>
-          </div>
-          <button @click="removeContact(c.trusted_contact_id)"
-            class="px-3 py-1.5 rounded-full text-sm font-medium bg-red-100 text-red-600 hover:bg-red-200">
-            Eliminar
-          </button>
-        </div>
-      </div>
-
-      <div>
-        <h2 class="text-lg font-medium mb-2">Agregar nuevo contacto</h2>
-        <div v-if="filteredUsers.length === 0" class="text-gray-500">No hay usuarios disponibles.</div>
-        <div v-for="u in filteredUsers" :key="u.id"
-          class="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm border border-gray-100 mb-2">
-          <div class="flex items-center gap-3">
-            <div>
-              <div class="font-medium">{{ u.name }}, {{ u.lastname }}</div>
-              <div class="text-sm text-gray-500">{{ u.email }}</div>
-            </div>
-          </div>
-
-          <button @click="toggleTrust(u.id)" class="px-3 py-1.5 rounded-full text-sm font-medium transition"
-            :class="isTrusted(u.id) ? 'bg-red-100 text-red-500 hover:bg-red-200' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'">
-            {{ isTrusted(u.id) ? 'Eliminar' : 'Agregar' }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <BottomNavigation />
-</template>
-
-
-<style scoped>
-input::placeholder {
-  color: #9aa3a8;
-}
-</style> -->
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { getAllUsers, getTrustedContacts, addTrustedContact, removeTrustedContact } from '../services/contacts';
@@ -170,18 +11,18 @@ const trustedContacts = ref([]);
 const filter = ref('');
 const user = ref(null);
 
-// ── Acordeón "Agregar nuevo contacto" ─────────────────────────────────────
+// Acordeón "agregar nuevo contacto" 
 const addSectionOpen = ref(false);
 
-// ── Modal de confirmación al elegir un contacto ───────────────────────────
+// Modal de confirmación al elegir un contacto 
 const pendingAdd = ref(null); // usuario que se está por agregar
 const addingId = ref(null); // id en proceso de guardado (loading en el botón)
 
-// ── Modal de confirmación al quitar un contacto ───────────────────────────
+// Modal de confirmación al quitar un contacto
 const pendingRemove = ref(null);
 const removingId = ref(null);
 
-// ── Toast de éxito con micro-animación ────────────────────────────────────
+// Toast de éxito con micro-animación 
 const toastMessage = ref('');
 let toastTimeout = null;
 
@@ -273,7 +114,7 @@ async function confirmAddContact() {
   }
 }
 
-// ── Quitar contacto (con confirmación) ────────────────────────────────────
+// Quitar contacto (con confirmación)
 function askRemoveContact(c) {
   pendingRemove.value = c;
 }
@@ -352,7 +193,7 @@ async function confirmRemoveContact() {
           />
         </div>
 
-        <!-- ══════════ Mis contactos de confianza ══════════ -->
+        <!-- Mis contactos de confianza -->
         <section class="mt-6">
           <div class="flex items-center justify-between">
             <h2 class="text-[15px] font-bold text-[#2a2a2a]">Tus contactos</h2>
@@ -406,7 +247,7 @@ async function confirmRemoveContact() {
           </TransitionGroup>
         </section>
 
-        <!-- ══════════ Agregar nuevo contacto (acordeón) ══════════ -->
+        <!-- Agregar nuevo contacto (acordeón) -->
         <section class="mt-6">
           <button
             type="button"
@@ -468,7 +309,7 @@ async function confirmRemoveContact() {
       </template>
     </div>
 
-    <!-- ══════════ MODAL: confirmar agregar contacto ══════════ -->
+    <!--  MODAL: confirmar agregar contacto  -->
     <div v-if="pendingAdd" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
       <div class="w-full max-w-sm rounded-[26px] bg-white p-6 shadow-[0_22px_48px_rgba(15,23,42,0.22)] modal-pop">
         <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3] text-xl font-bold">
@@ -502,7 +343,7 @@ async function confirmRemoveContact() {
       </div>
     </div>
 
-    <!-- ══════════ MODAL: confirmar quitar contacto ══════════ -->
+    <!--  MODAL: confirmar quitar contacto -->
     <div v-if="pendingRemove" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
       <div class="w-full max-w-sm rounded-[26px] bg-white p-6 shadow-[0_22px_48px_rgba(15,23,42,0.22)] modal-pop">
         <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1ed] text-[#f2826d]">
@@ -558,7 +399,7 @@ async function confirmRemoveContact() {
   animation: checkPop 0.4s ease-out;
 }
 
-/* Lista de contactos (agregar/quitar con transición) */
+/* Lista de contactos  */
 .contact-list-enter-active,
 .contact-list-leave-active {
   transition: all 0.28s ease;

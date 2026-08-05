@@ -1,21 +1,15 @@
 <template>
-  <main class="min-h-[100dvh] bg-[#F7F9F6] pb-24">
+  <main class="min-h-dvh bg-[#F7F9F6] pb-24">
     <section class="mx-auto w-full max-w-6xl px-4 py-8 md:px-8">
       <!-- Encabezado -->
       <div class="mb-8">
-        <RouterLink
-          to="/mi-perfil"
-          class="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#085BAF] hover:underline"
-        >
+        <RouterLink to="/mi-perfil"
+          class="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#085BAF] hover:underline">
           ← Volver a mi perfil
         </RouterLink>
 
-        <div
-          class="rounded-3xl bg-gradient-to-r from-[#3082E3] to-[#085BAF] p-6 text-white shadow-sm md:p-8"
-        >
-          <p
-            class="mb-2 text-sm font-semibold uppercase tracking-wide opacity-90"
-          >
+        <div class="rounded-3xl bg-linear-to-r from-[#3082E3] to-[#085BAF] p-6 text-white shadow-sm md:p-8">
+          <p class="mb-2 text-sm font-semibold uppercase tracking-wide opacity-90">
             Beneficios Vía Segura
           </p>
 
@@ -23,16 +17,12 @@
             Tus acciones mejoran la comunidad
           </h1>
 
-          <p
-            class="mt-3 max-w-2xl text-sm leading-relaxed text-blue-50 md:text-base"
-          >
+          <p class="mt-3 max-w-2xl text-sm leading-relaxed text-blue-50 md:text-base">
             Usá los puntos que obtenés al crear y apoyar reportes para acceder
             a beneficios de comercios y espacios adheridos.
           </p>
 
-          <div
-            class="mt-6 inline-flex items-center gap-3 rounded-2xl bg-white/15 px-5 py-3 backdrop-blur"
-          >
+          <div class="mt-6 inline-flex items-center gap-3 rounded-2xl bg-white/15 px-5 py-3 backdrop-blur">
             <span class="text-sm text-blue-50">
               Puntos disponibles
             </span>
@@ -45,10 +35,7 @@
       </div>
 
       <!-- Canje realizado -->
-      <div
-        v-if="redeemedCoupon"
-        class="mb-6 rounded-2xl border border-green-200 bg-green-50 px-5 py-4"
-      >
+      <div v-if="redeemedCoupon" class="mb-6 rounded-2xl border border-green-200 bg-green-50 px-5 py-4">
         <p class="font-bold text-green-800">
           ¡Beneficio canjeado correctamente!
         </p>
@@ -69,34 +56,23 @@
       </div>
 
       <!-- Error del canje -->
-      <div
-        v-if="redemptionError"
-        class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700"
-      >
+      <div v-if="redemptionError"
+        class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
         {{ redemptionError }}
       </div>
 
       <!-- Cargando -->
-      <div
-        v-if="loading"
-        class="rounded-2xl border border-[#D6E8FB] bg-white p-8 text-center text-gray-600"
-      >
+      <div v-if="loading" class="rounded-2xl border border-[#D6E8FB] bg-white p-8 text-center text-gray-600">
         Cargando beneficios...
       </div>
 
       <!-- Error al cargar -->
-      <div
-        v-else-if="errorMessage"
-        class="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700"
-      >
+      <div v-else-if="errorMessage" class="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
         {{ errorMessage }}
       </div>
 
       <!-- Sin beneficios -->
-      <div
-        v-else-if="benefits.length === 0"
-        class="rounded-2xl border border-[#D6E8FB] bg-white p-8 text-center"
-      >
+      <div v-else-if="benefits.length === 0" class="rounded-2xl border border-[#D6E8FB] bg-white p-8 text-center">
         <h2 class="font-bold text-[#2A2A2A]">
           Todavía no hay beneficios disponibles
         </h2>
@@ -107,39 +83,23 @@
       </div>
 
       <!-- Listado de beneficios -->
-      <div
-        v-else
-        class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        <article
-          v-for="benefit in benefits"
-          :key="benefit.id"
-          class="flex flex-col overflow-hidden rounded-3xl border border-[#D6E8FB] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-        >
+      <div v-else class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <article v-for="benefit in benefits" :key="benefit.id"
+          class="flex flex-col overflow-hidden rounded-3xl border border-[#D6E8FB] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
           <!-- Imagen o ícono -->
-          <div
-            class="flex min-h-[9rem] items-center justify-center bg-[#EEF4FF] p-6"
-          >
-            <img
-              v-if="benefit.image_url"
-              :src="benefit.image_url"
-              :alt="benefit.title"
-              class="h-28 w-full object-contain"
-            />
+          <div class="flex min-h-36 items-center justify-center bg-[#EEF4FF] p-6">
+            <img v-if="benefit.image_url" :src="benefit.image_url" :alt="benefit.title"
+              class="h-28 w-full object-contain" />
 
-            <div
-              v-else
-              class="flex h-20 w-20 items-center justify-center rounded-full bg-white text-[#3082E3] shadow-[0_8px_18px_rgba(48,130,227,0.12)]"
-            >
+            <div v-else
+              class="flex h-20 w-20 items-center justify-center rounded-full bg-white text-[#3082E3] shadow-[0_8px_18px_rgba(48,130,227,0.12)]">
               <GiftIcon class="h-10 w-10 stroke-[1.8]" />
             </div>
           </div>
 
           <!-- Información -->
           <div class="flex flex-1 flex-col p-5">
-            <p
-              class="text-xs font-bold uppercase tracking-wide text-[#3082E3]"
-            >
+            <p class="text-xs font-bold uppercase tracking-wide text-[#3082E3]">
               {{ benefit.partner_name }}
             </p>
 
@@ -163,21 +123,13 @@
                 </strong>
               </div>
 
-              <button
-                type="button"
-                :disabled="
-                  !canAfford(benefit) ||
-                  redeemingBenefitId !== null
-                "
-                class="w-full rounded-xl px-4 py-3 text-sm font-bold transition active:scale-[0.98]"
-                :class="
-                  canAfford(benefit) &&
-                  redeemingBenefitId === null
+              <button type="button" :disabled="!canAfford(benefit) ||
+                redeemingBenefitId !== null
+                " class="w-full rounded-xl px-4 py-3 text-sm font-bold transition active:scale-[0.98]" :class="canAfford(benefit) &&
+                    redeemingBenefitId === null
                     ? 'bg-[#3082E3] text-white hover:bg-[#085BAF]'
                     : 'cursor-not-allowed bg-gray-100 text-gray-400'
-                "
-                @click="handleRedeem(benefit)"
-              >
+                  " @click="handleRedeem(benefit)">
                 {{ getButtonText(benefit) }}
               </button>
             </div>

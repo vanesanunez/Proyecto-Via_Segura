@@ -251,7 +251,7 @@ watch(
           v-for="p in visiblePages"
           :key="p"
           @click="goTo(p)"
-          class="flex h-10 min-w-[40px] items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
+          class="flex h-10 min-w-10 items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
           :class="
             p === page
               ? 'bg-[#3082e3] text-white shadow-sm'
@@ -288,7 +288,7 @@ watch(
     <!-- Bottom sheet filtros -->
     <div
       v-if="showFilterSheet"
-      class="fixed bottom-0 left-0 z-[60] w-full rounded-t-[28px] bg-[#E0E5EC] p-4 pb-8 shadow-[0_-8px_24px_rgba(15,23,42,0.12)] animate-slide-up"
+      class="fixed bottom-0 left-0 z-60 w-full rounded-t-[28px] bg-[#E0E5EC] p-4 pb-8 shadow-[0_-8px_24px_rgba(15,23,42,0.12)] animate-slide-up"
     >
       <div class="mb-3 flex justify-center">
         <div class="h-1.5 w-14 rounded-full bg-slate-300"></div>
