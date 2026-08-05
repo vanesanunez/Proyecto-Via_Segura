@@ -250,7 +250,7 @@ export default {
 
             <template #title>
               <span class="block">Contactos</span>
-              <span class="block whitespace-nowrap -ml-1">de confianza</span>
+             
             </template>
           </ActionCard>
 
@@ -260,8 +260,7 @@ export default {
             </template>
           </ActionCard>
 
-          <ActionCard title="Chat
-             comunitario" to="/chat" accent="blue-soft">
+          <ActionCard title="Chat" to="/chat" accent="blue-soft">
             <template #icon>
               <ChatBubbleLeftRightIcon class="h-6 w-6 text-[#3082e3]" />
             </template>
