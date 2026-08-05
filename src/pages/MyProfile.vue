@@ -547,9 +547,9 @@ export default {
             <!-- Título -->
             <div class="flex items-center gap-2 mb-4">
               <UserGroupIcon class="w-5 h-5 text-[#3082e3]" />
-              <h3 class="text-[18px] font-bold text-slate-900 leading-tight">
+              <h2 class="text-[18px] font-bold text-slate-900 leading-tight">
                 Impacto en la comunidad
-              </h3>
+              </h2>
             </div>
 
             <!-- Aviso nueva insignia -->
