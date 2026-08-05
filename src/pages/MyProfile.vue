@@ -532,9 +532,9 @@ export default {
 
       <!-- IMPACTO EN LA COMUNIDAD -->
       <div class="px-4 pb-4">
-        <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #9ca3af">
+        <h2 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #9ca3af">
           Impacto en la comunidad
-        </p>
+        </h2>
 
         <div
           class="rounded-[22px] border border-[#edf1f7] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
@@ -545,12 +545,7 @@ export default {
 
           <div v-else>
             <!-- Título -->
-            <div class="flex items-center gap-2 mb-4">
-              <UserGroupIcon class="w-5 h-5 text-[#3082e3]" />
-              <h2 class="text-[18px] font-bold text-slate-900 leading-tight">
-                Impacto en la comunidad
-              </h2>
-            </div>
+           
 
             <!-- Aviso nueva insignia -->
             <transition name="fade-pop">
