@@ -79,8 +79,7 @@
         </div>
 
         <div
-          v-else
-          class="flex h-40 items-center justify-center bg-[#EEF4FF]"
+        
  v-else
           class="flex h-40 items-center justify-center bg-[#EEF4FF]"
         >
