@@ -32,7 +32,7 @@
             </svg>
           </div>
           <div class="text-center">
-            <p class="font-semibold text-base" style="color:#2a2a2a;">Encontrá el punto seguro más cercano</p>
+            <h2 class="font-semibold text-base" style="color:#2a2a2a;">Encontrá el punto seguro más cercano</h2>
             <p class="text-sm mt-1" style="color:#6b7280;">Ingresá tu dirección o usá tu ubicación actual</p>
           </div>
         </div>
