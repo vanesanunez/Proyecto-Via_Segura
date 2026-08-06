@@ -305,7 +305,7 @@ function onInputChange() {
 
 async function buscarSugerencias() {
   try {
-    const url = `/api/nominatim/search?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=4`;
+    const url = `/api/nominatim?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=4`;
     sugerencias.value = await (await fetch(url)).json();
   } catch { sugerencias.value = []; }
 }
