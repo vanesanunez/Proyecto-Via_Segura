@@ -90,6 +90,12 @@ function handleSupport() {
               <span>Apoyos: {{ report.apoyos ?? 0 }}</span>
             </div>
 
+            <RouterLink
+              :to="to"
+              class="mb-3 flex w-full items-center justify-center rounded-xl border border-[#3082e3] px-4 py-2.5 text-sm font-semibold text-[#3082e3] transition hover:bg-[#eef4ff] active:scale-[0.98]">
+              Ver detalle del reporte
+            </RouterLink>
+
             <button
               v-if="showSupportButton"
               type="button"
