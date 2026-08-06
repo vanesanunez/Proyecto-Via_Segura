@@ -139,7 +139,7 @@ export default {
       </RouterLink>
     </div>
 
-    <div class="flex items-center gap-4 relative">
+    <div class=" ml-auto flex items-center gap-4">
       <button
         v-if="user.id"
         @click="openNotifications"
