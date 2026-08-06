@@ -729,9 +729,9 @@ export default {
       <!-- MIS REPORTES -->
       <div class="px-4 pb-6">
         <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-semibold uppercase tracking-wider" style="color: #9ca3af">
+          <h2 class="text-xs font-semibold uppercase tracking-wider" style="color: #9ca3af">
             Mis reportes
-          </p>
+          </h2>
           <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full" style="background: #eff6ff; color: #3082e3">
             {{ myTotal }}
           </span>
