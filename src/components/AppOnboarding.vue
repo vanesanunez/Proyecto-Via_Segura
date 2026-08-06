@@ -119,13 +119,13 @@ export default {
 <template>
   <Teleport to="body">
     <div
-      class="fixed inset-0 z-[100] flex items-center justify-center bg-[#0f2d5c]/55 px-3 py-3 backdrop-blur-[2px]"
+      class="fixed inset-0 z-100 flex items-center justify-center bg-[#0f2d5c]/55 px-3 py-3 backdrop-blur-[2px]"
       role="dialog"
       aria-modal="true"
       aria-labelledby="onboarding-title"
     >
       <section
-        class="relative flex max-h-[calc(100dvh-24px)] min-h-[620px] w-full max-w-[410px] flex-col overflow-hidden rounded-[32px] border border-white/70 bg-white shadow-[0_24px_65px_rgba(15,45,92,0.24)]"
+        class="relative flex max-h-[calc(100dvh-24px)] min-h-[620px] w-full max-w-[410px] flex-col overflow-hidden rounded-4xl border border-white/70 bg-white shadow-[0_24px_65px_rgba(15,45,92,0.24)]"
       >
         <!-- Botón saltar -->
         <div class="flex justify-end px-5 pt-5">

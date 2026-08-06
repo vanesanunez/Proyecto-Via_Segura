@@ -33,13 +33,13 @@ function handleSupport() {
 
 <template>
   <li
-    class="w-full overflow-hidden rounded-[24px] border border-[#C7D9F2] bg-[#E3ECFA] p-4 shadow-[0_10px_24px_rgba(48,130,227,0.12)] transition-all duration-300 ease-out"
+    class="w-full overflow-hidden rounded-3xl border border-[#C7D9F2] bg-[#E3ECFA] p-4 shadow-[0_10px_24px_rgba(48,130,227,0.12)] transition-all duration-300 ease-out"
   >
     <div class="flex items-start gap-4 w-full">
       <img
         :src="report.imagen"
         alt="Imagen del reporte"
-        class="h-16 w-16 shrink-0 rounded-[16px] object-cover bg-slate-100 shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
+        class="h-16 w-16 shrink-0 rounded-2xl object-cover bg-slate-100 shadow-[0_6px_16px_rgba(148,163,184,0.18)]"
       />
 
       <div class="min-w-0 flex-1">
@@ -63,19 +63,19 @@ function handleSupport() {
         </div>
 
         <div class="mt-3">
-          <p class="break-words text-sm font-medium text-slate-700">
+          <p class="wrap-break-word text-sm font-medium text-slate-700">
             {{ report.email }}
           </p>
 
           <p
-            class="mt-1 break-words text-[18px] font-bold leading-snug text-slate-900 line-clamp-2"
+            class="mt-1 wrap-break-word text-[18px] font-bold leading-snug text-slate-900 line-clamp-2"
           >
             {{ report.descripcion }}
           </p>
 
           <div class="mt-2 flex items-start gap-2 text-sm text-slate-500">
             <MapPinIcon class="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-            <p class="break-words line-clamp-2">
+            <p class="wrap-break-word line-clamp-2">
               {{ report.ubicacion }}
             </p>
           </div>

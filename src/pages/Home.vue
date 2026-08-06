@@ -250,7 +250,7 @@ export default {
 
             <template #title>
               <span class="block">Contactos</span>
-             
+
             </template>
           </ActionCard>
 

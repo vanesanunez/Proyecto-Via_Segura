@@ -352,7 +352,7 @@ export default {
               <img v-if="user.photoURL" :src="user.photoURL" alt="Foto de perfil" class="w-full h-full object-cover" />
               <span v-else class="text-2xl font-bold text-white">{{
                 iniciales
-                }}</span>
+              }}</span>
             </div>
 
             <div class="flex-1 min-w-0">
@@ -545,7 +545,7 @@ export default {
 
           <div v-else>
             <!-- Título -->
-           
+
 
             <!-- Aviso nueva insignia -->
             <transition name="fade-pop">
@@ -769,24 +769,24 @@ export default {
         <nav v-if="myTotal > myPageSize" class="flex items-center justify-center gap-2 mt-4">
           <button @click="goToMy(myPage - 1)" :disabled="myPage === 1"
             class="w-9 h-9 rounded-xl border flex items-center justify-center text-sm transition-colors" :style="myPage === 1
-                ? 'border-color:#e5e7eb; color:#d1d5db;'
-                : 'border-color:#3082e3; color:#3082e3;'
+              ? 'border-color:#e5e7eb; color:#d1d5db;'
+              : 'border-color:#3082e3; color:#3082e3;'
               ">
             ‹
           </button>
 
           <button v-for="p in visibleMyPages" :key="p" @click="goToMy(p)"
             class="w-9 h-9 rounded-xl border text-sm font-semibold transition-colors" :style="p === myPage
-                ? 'background:#3082e3; color:#fff; border-color:#3082e3;'
-                : 'border-color:#e5e7eb; color:#6b7280;'
+              ? 'background:#3082e3; color:#fff; border-color:#3082e3;'
+              : 'border-color:#e5e7eb; color:#6b7280;'
               ">
             {{ p }}
           </button>
 
           <button @click="goToMy(myPage + 1)" :disabled="myPage === totalPages"
             class="w-9 h-9 rounded-xl border flex items-center justify-center text-sm transition-colors" :style="myPage === totalPages
-                ? 'border-color:#e5e7eb; color:#d1d5db;'
-                : 'border-color:#3082e3; color:#3082e3;'
+              ? 'border-color:#e5e7eb; color:#d1d5db;'
+              : 'border-color:#3082e3; color:#3082e3;'
               ">
             ›
           </button>

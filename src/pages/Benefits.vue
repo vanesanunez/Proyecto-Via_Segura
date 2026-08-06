@@ -126,9 +126,9 @@
               <button type="button" :disabled="!canAfford(benefit) ||
                 redeemingBenefitId !== null
                 " class="w-full rounded-xl px-4 py-3 text-sm font-bold transition active:scale-[0.98]" :class="canAfford(benefit) &&
-                    redeemingBenefitId === null
-                    ? 'bg-[#3082E3] text-white hover:bg-[#085BAF]'
-                    : 'cursor-not-allowed bg-gray-100 text-gray-400'
+                  redeemingBenefitId === null
+                  ? 'bg-[#3082E3] text-white hover:bg-[#085BAF]'
+                  : 'cursor-not-allowed bg-gray-100 text-gray-400'
                   " @click="handleRedeem(benefit)">
                 {{ getButtonText(benefit) }}
               </button>

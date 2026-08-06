@@ -233,7 +233,7 @@ onMounted(() => {
 
 <template>
   <section
-    class="min-h-[100dvh] overflow-x-hidden bg-[#F7F9F6] px-4 pb-12 pt-5"
+    class="min-h-dvh overflow-x-hidden bg-[#F7F9F6] px-4 pb-12 pt-5"
   >
     <div class="mx-auto w-full max-w-5xl">
       <!-- Volver -->
@@ -292,7 +292,7 @@ onMounted(() => {
       <!-- Cargando panel -->
       <div
         v-if="loading"
-        class="rounded-[24px] border border-[#D6E8FB] bg-white p-6 shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
+        class="rounded-3xl border border-[#D6E8FB] bg-white p-6 shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
       >
         <div class="flex items-center gap-3">
           <div
@@ -526,7 +526,7 @@ onMounted(() => {
             <article
               v-for="report in paginatedReports"
               :key="report.id"
-              class="flex h-full flex-col rounded-[24px] border border-[#D6E8FB] bg-[#EEF4FF] p-4 shadow-[0_8px_22px_rgba(48,130,227,0.07)]"
+              class="flex h-full flex-col rounded-3xl border border-[#D6E8FB] bg-[#EEF4FF] p-4 shadow-[0_8px_22px_rgba(48,130,227,0.07)]"
             >
               <!-- Etiquetas -->
               <div class="flex flex-wrap items-center gap-2">
@@ -553,12 +553,12 @@ onMounted(() => {
                 </p>
 
                 <h3
-                  class="mt-1 break-words text-[18px] font-bold leading-snug text-slate-900"
+                  class="mt-1 wrap-break-word text-[18px] font-bold leading-snug text-slate-900"
                 >
                   {{ report.ubicacion }}
                 </h3>
 
-                <p class="mt-2 break-words text-xs text-slate-500">
+                <p class="mt-2 wrap-break-word text-xs text-slate-500">
                   Creado por {{ report.email || "Usuario sin correo" }}
                 </p>
 
@@ -568,7 +568,7 @@ onMounted(() => {
                   </p>
 
                   <p
-                    class="mt-2 break-words text-sm leading-6 text-slate-700"
+                    class="mt-2 wrap-break-word text-sm leading-6 text-slate-700"
                   >
                     {{ report.descripcion || "Sin descripción" }}
                   </p>
@@ -578,7 +578,7 @@ onMounted(() => {
               <!-- Datos -->
               <div class="mt-4 grid grid-cols-2 gap-3">
                 <div
-                  class="rounded-[16px] border border-white bg-white/70 px-3 py-3"
+                  class="rounded-2xl border border-white bg-white/70 px-3 py-3"
                 >
                   <p class="text-[11px] font-semibold text-slate-400">
                     Apoyos
@@ -590,7 +590,7 @@ onMounted(() => {
                 </div>
 
                 <div
-                  class="rounded-[16px] border border-white bg-white/70 px-3 py-3"
+                  class="rounded-2xl border border-white bg-white/70 px-3 py-3"
                 >
                   <p class="text-[11px] font-semibold text-slate-400">
                     Fecha
@@ -686,7 +686,7 @@ onMounted(() => {
               :key="p"
               type="button"
               @click="goTo(p)"
-              class="flex h-10 min-w-[40px] items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
+              class="flex h-10 min-w-10 items-center justify-center rounded-xl px-3 text-sm font-semibold transition"
               :class="
                 p === page
                   ? 'bg-[#3082E3] text-white shadow-[0_6px_14px_rgba(48,130,227,0.22)]'
@@ -746,11 +746,11 @@ onMounted(() => {
             Reporte seleccionado
           </p>
 
-          <p class="mt-2 break-words text-sm font-bold text-slate-800">
+          <p class="mt-2 wrap-break-word text-sm font-bold text-slate-800">
             {{ reportToDelete.categoria }}
           </p>
 
-          <p class="mt-1 break-words text-sm leading-6 text-slate-600">
+          <p class="mt-1 wrap-break-word text-sm leading-6 text-slate-600">
             {{ reportToDelete.ubicacion }}
           </p>
         </div>

@@ -72,7 +72,7 @@ const titleClasses = computed(() =>
       <div class="min-w-0 flex-1">
         <h3
           :class="titleClasses"
-          class="w-full whitespace-normal !text-left !text-[13px] leading-tight"
+          class="w-full whitespace-normal text-left! text-[13px]! leading-tight"
           style="text-wrap: normal"
         >
           <slot name="title">{{ title }}</slot>

@@ -74,7 +74,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="min-h-[100dvh] bg-[#F7F9F6] px-4 pb-10 pt-5">
+  <section class="min-h-dvh bg-[#F7F9F6] px-4 pb-10 pt-5">
     <div class="mx-auto w-full max-w-2xl">
       <!-- Volver -->
       <button
@@ -116,7 +116,7 @@ onMounted(() => {
       <!-- Cargando -->
       <div
         v-if="loading"
-        class="rounded-[24px] border border-[#D6E8FB] bg-white p-6 shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
+        class="rounded-3xl border border-[#D6E8FB] bg-white p-6 shadow-[0_10px_26px_rgba(48,130,227,0.07)]"
       >
         <div class="flex items-center gap-3">
           <div
