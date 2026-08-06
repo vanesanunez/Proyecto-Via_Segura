@@ -356,9 +356,9 @@ export default {
             </div>
 
             <div class="flex-1 min-w-0">
-              <p class="text-lg font-bold text-white leading-tight truncate">
+              <h2 class="text-lg font-bold text-white leading-tight truncate">
                 {{ nombreCompleto }}
-              </p>
+              </h2>
               <p class="text-xs mt-0.5 truncate" style="color: rgba(255, 255, 255, 0.7)">
                 {{ user.email }}
               </p>
