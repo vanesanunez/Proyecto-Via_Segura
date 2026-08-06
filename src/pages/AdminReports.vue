@@ -637,7 +637,7 @@ onMounted(() => {
               </div>
 
               <!-- Acciones -->
-              <!-- <div class="mt-4 grid grid-cols-2 gap-3">
+              <div class="mt-4 grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   @click="
@@ -657,7 +657,7 @@ onMounted(() => {
                   <TrashIcon class="h-5 w-5" />
                   <span>Eliminar</span>
                 </button>
-              </div> -->
+              </div>
             </article>
           </div>
 
