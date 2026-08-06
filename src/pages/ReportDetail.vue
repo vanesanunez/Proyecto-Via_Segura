@@ -78,7 +78,13 @@
           />
         </div>
 
-        <div
+        <div v-else class="flex h-40 items-center justify-center bg-[#EEF4FF]">
+  <span class="text-sm text-gray-500">
+    Este reporte no tiene una imagen disponible.
+  </span>
+</div>
+
+        <!-- <div
         
  v-else
           class="flex h-40 items-center justify-center bg-[#EEF4FF]"
@@ -86,7 +92,7 @@
           <span class="text-sm text-gray-500">
             Este reporte no tiene una imagen disponible.
           </span>
-        </div>
+        </div> -->
 
         <div class="p-5">
           <!-- Categoría y estado -->
