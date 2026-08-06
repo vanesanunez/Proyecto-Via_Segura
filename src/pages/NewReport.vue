@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import {
   uploadImage,
@@ -51,24 +51,45 @@ const onboardingStep = ref(1);
 const showSimilarHintModal = ref(false);
 
 // --- Datos del usuario ---
-const user = ref({ id: null, email: null });
+const user = ref({
+  id: null,
+  email: null,
+});
 
 const isSubmitting = ref(false);
 
-subscribeToUserState((newUserData) => {
-  user.value = newUserData;
-});
+function onboardingStorageKey(userId) {
+  return `vs_newreport_onboarding_seen_${userId}`;
+}
 
-onMounted(() => {
-  if (localStorage.getItem("vs_newreport_onboarding_seen") !== "1") {
-    showOnboarding.value = true;
-    onboardingStep.value = 1;
+subscribeToUserState((newUserData) => {
+  user.value = newUserData || {
+    id: null,
+    email: null,
+  };
+
+  if (!user.value.id) {
+    showOnboarding.value = false;
+    return;
   }
+
+  const storageKey = onboardingStorageKey(user.value.id);
+
+  const onboardingWasSeen =
+    localStorage.getItem(storageKey) === "1";
+
+  showOnboarding.value = !onboardingWasSeen;
+  onboardingStep.value = 1;
 });
 
 function finishOnboarding() {
   showOnboarding.value = false;
-  localStorage.setItem("vs_newreport_onboarding_seen", "1");
+
+  if (!user.value.id) return;
+
+  const storageKey = onboardingStorageKey(user.value.id);
+
+  localStorage.setItem(storageKey, "1");
 }
 
 function nextOnboarding() {
