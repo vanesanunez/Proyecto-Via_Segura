@@ -381,21 +381,24 @@ export async function fetchActiveReportsWithCoords() {
   return data ?? [];
 }
 
-// export async function fetchReportById(reportId) {
-//   const { data, error } = await supabase
-//     .from("reports")
-//     .select("*")
-//     .eq("id", reportId)
-//     .single();
+/**
+ * Trae un reporte específico usando su id.
+ */
+export async function fetchReportById(reportId) {
+  const { data, error } = await supabase
+    .from("reports")
+    .select("*")
+    .eq("id", reportId)
+    .single();
 
-//   if (error) {
-//     console.error(
-//       "[reports.js] Error al buscar el reporte:",
-//       error,
-//     );
+  if (error) {
+    console.error(
+      "[reports.js fetchReportById] Error al cargar el reporte:",
+      error,
+    );
 
-//     throw error;
-//   }
+    throw error;
+  }
 
-//   return data;
-// }
+  return data;
+}
