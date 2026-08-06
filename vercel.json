@@ -3,6 +3,10 @@
       {
         "source": "/nominatim/:path*",
         "destination": "https://nominatim.openstreetmap.org/:path*"
+      },
+      {
+        "source": "/((?!nominatim).*)",
+        "destination": "/index.html"
       }
     ]
   }
