@@ -316,9 +316,9 @@ const OVERPASS_ENDPOINTS = [
 // evita traer cientos de puntos en zonas densas como CABA.
 function buildOverpassQuery(lat, lon, radius, category) {
   return `
-    [out:json][timeout:10];
+    [out:json][timeout:8];
     node(around:${radius},${lat},${lon})[amenity=${category}];
-    out center 60;
+    out  60;
   `;
 }
 
