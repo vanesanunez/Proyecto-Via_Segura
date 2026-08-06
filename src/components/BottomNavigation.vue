@@ -229,7 +229,7 @@ function goTo(path) {
         @click="goTo('/report/nuevo')"
         aria-label="Crear reporte"
         class="absolute left-1/2 -top-5 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full text-white shadow-[0_10px_22px_rgba(242,130,109,0.45)] transition-transform active:scale-90"
-        :class="isFabActive ? 'bg-[#e2624a] ring-4 ring-[#f2826d]/25' : 'bg-[#f2826d]'"
+        :class="isFabActive ? 'bg-[#3082e3] ring-4 ring-[#f2826d]/25' : 'bg-[#3082e3]'"
       >
         <PlusIcon class="h-7 w-7" />
       </button>
