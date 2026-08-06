@@ -15,6 +15,7 @@ const routes = [
   { path: '/usuario/:id',               component: () => import('../pages/UserProfile.vue'),        meta:{ requiresAuth: true,},}, 
   { path: '/usuario/:id/chat',          component: () => import('../pages/PrivateChat.vue'),        meta:{ requiresAuth: true,},},   
   { path: '/report/nuevo',              component: () => import('../pages/NewReport.vue'),          meta:{ requiresAuth: true,},},
+  { path: "/report/:id", name: "detalle-reporte",component: () => import("../pages/ReportDetail.vue"), meta: {requiresAuth: true,},},
   { path: '/report/confirmado',         component: () => import('../pages/ReportConfirm.vue'),      meta:{ requiresAuth: true,},},
   { path: '/reportes',                  component: () => import('../pages/ViewReports.vue'),        meta:{ requiresAuth: true,},},
   { path: '/contactos',                 component: () => import('../pages/Contacts.vue'),           meta:{ requiresAuth: true,},},
@@ -26,16 +27,9 @@ const routes = [
   { path: '/admin/reportes',            component: () => import('../pages/AdminReports.vue'),       meta: { requiresAuth: true, requiresAdmin: true },},
   { path: '/admin/usuarios',            component: () => import('../pages/AdminUsers.vue'),         meta: { requiresAuth: true, requiresAdmin: true },},
   { path: '/admin/chat',                component: () => import('../pages/AdminChat.vue'),          meta: { requiresAuth: true, requiresAdmin: true },},
-  {  path: '/admin/reportes/:id/editar',  component: () => import('../pages/AdminEditReport.vue'),  meta: { requiresAuth: true, requiresAdmin: true },},
-  {
-  path: "/beneficios",
-  name: "beneficios",
-  component: () => import("../pages/Benefits.vue"),
-  meta: {
-    requiresAuth: true,
-  },
-},
-
+  { path: '/admin/reportes/:id/editar',  component: () => import('../pages/AdminEditReport.vue'),  meta: { requiresAuth: true, requiresAdmin: true },},
+  { path: "/beneficios", name: "beneficios", component: () => import("../pages/Benefits.vue"), meta: {requiresAuth: true,},},
+ 
 
 ];
 
