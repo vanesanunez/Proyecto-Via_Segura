@@ -1,16 +1,8 @@
 {
-    "rewrites": [
-      {
-        "source": "/api/overpass",
-        "destination": "/api/overpass"
-      },
-      {
-        "source": "/api/nominatim",
-        "destination": "/api/nominatim"
-      },
-      {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ]
-  }
+  "rewrites": [
+    {
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
