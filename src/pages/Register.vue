@@ -155,6 +155,12 @@ export default {
         );
 
         this.successMessage = "¡Cuenta creada con éxito!";
+
+        // Espera un momento para que la persona alcance a leer el mensaje
+        await new Promise((resolve) => setTimeout(resolve, 1800));
+
+        // Luego la envía al login
+        this.$router.push("/ingresar");
       } catch (error) {
         console.error("[Register]", error);
 

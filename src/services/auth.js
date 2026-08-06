@@ -19,50 +19,83 @@ let user = {
 //Array para guardar la lista de observers que deben ser notificados de los cambios en "user"
 let observers = [];
 
-//pedimos cargar la data actual del usuario apenas arranca:
+// Primero recuperamos los datos guardados en este dispositivo.
+const storedUser = localStorage.getItem("user");
+
+if (storedUser) {
+  try {
+    user = {
+      ...user,
+      ...JSON.parse(storedUser),
+    };
+  } catch (error) {
+    console.error(
+      "[auth.js] No se pudo leer el usuario guardado:",
+      error,
+    );
+
+    localStorage.removeItem("user");
+  }
+}
+
+// Después comprobamos la sesión real de Supabase.
 loadInitialUserState();
 
-//apenas levanta la aplicación pregunta si hay un usuario en localstorage que figure como autenticado
-if (localStorage.getItem("user")) {
-  user = JSON.parse(localStorage.getItem("user"));
-}
-
-//Carga la información del usuario autenticado,si es que existe alguno
 async function loadInitialUserState() {
-  const { data } = await supabase.auth.getUser();
+  try {
+    const { data, error } = await supabase.auth.getUser();
 
-  if (!data.user) return;
+    if (error) {
+      console.error(
+        "[auth.js loadInitialUserState] Error al recuperar la sesión:",
+        error,
+      );
 
-  updateUser({
-    id: data.user.id,
-    email: data.user.email,
-  });
+      return;
+    }
 
-  loadUserExtendedProfile();
+    if (!data.user) return;
+
+    updateUser({
+      id: data.user.id,
+      email: data.user.email,
+    });
+
+    await loadUserExtendedProfile(data.user.id);
+  } catch (error) {
+    console.error(
+      "[auth.js loadInitialUserState] Error inesperado:",
+      error,
+    );
+  }
 }
 
-async function loadUserExtendedProfile() {
+async function loadUserExtendedProfile(userId) {
   try {
-    const profileData = await getUserProfileById(user.id);
+    if (!userId) return;
+
+    const profileData = await getUserProfileById(userId);
 
     if (!profileData) {
       console.warn(
-        "[auth.js loadUserExtendedProfile] No se encontró perfil para el usuario:",
-        user.id,
+        "[auth.js loadUserExtendedProfile] No se encontró perfil para:",
+        userId,
       );
+
       return;
     }
 
     updateUser({
-      name: profileData.name,
-      lastname: profileData.lastname,
-      dni: profileData.dni,
-      role: profileData.role,
-      photoURL: profileData.photo_url,
+      id: userId,
+      name: profileData.name ?? null,
+      lastname: profileData.lastname ?? null,
+      dni: profileData.dni ?? null,
+      role: profileData.role ?? "user",
+      photoURL: profileData.photo_url ?? null,
     });
   } catch (error) {
     console.error(
-      "[auth.js loadUserExtendedProfile] Error al traer perfil extendido del usuario: ",
+      "[auth.js loadUserExtendedProfile] Error al traer el perfil:",
       error,
     );
   }
@@ -116,22 +149,27 @@ export async function login(email, password) {
   });
 
   if (error) {
-    console.error("[auth.js login] Error al iniciar sesión: ", error);
+    console.error("[auth.js login] Error al iniciar sesión:", error);
     throw error;
   }
 
   updateUser({
     id: data.user.id,
     email: data.user.email,
+    name: null,
+    lastname: null,
+    dni: null,
+    role: null,
+    photoURL: null,
   });
 
-  loadUserExtendedProfile();
+  await loadUserExtendedProfile(data.user.id);
 
   return data.user;
 }
 
 export async function logout() {
-  supabase.auth.signOut();
+ await supabase.auth.signOut();
 
   updateUser({
     id: null,

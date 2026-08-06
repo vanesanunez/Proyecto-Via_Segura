@@ -70,18 +70,22 @@ export async function updateUserProfile(id, data) {
 export async function getUserProfileById(id) {
   const { data, error } = await supabase
     .from("user_profiles")
-    .select()
-    .eq("id", id);
+    .select(
+      "id, email, name, lastname, dni, role, photo_url",
+    )
+    .eq("id", id)
+    .maybeSingle();
 
   if (error) {
     console.error(
-      "[user-profiles.js getUserProfileById] Error al traer el perfil del usuario: ",
-      error
+      "[user-profiles.js getUserProfileById] Error al traer el perfil:",
+      error,
     );
+
     throw error;
   }
 
-  return data[0];
+  return data;
 }
 
 export async function fetchAllUserProfiles() {
