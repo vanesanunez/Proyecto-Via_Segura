@@ -728,7 +728,7 @@ export default {
 
       <!-- MIS REPORTES -->
       <div class="px-4 pb-6">
-        <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center justify-between mb-3 mt-2">
           <h2 class="text-xs font-semibold uppercase tracking-wider" style="color: #9ca3af">
             Mis reportes
           </h2>
