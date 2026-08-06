@@ -87,37 +87,35 @@ import {
   ChatBubbleLeftEllipsisIcon,
   UserIcon,
 } from "@heroicons/vue/24/solid";
-import {
-  HomeIcon as HomeIconOutline,
-  MapPinIcon as MapPinIconOutline,
-  ChatBubbleLeftEllipsisIcon as ChatIconOutline,
-  UserIcon as UserIconOutline,
-} from "@heroicons/vue/24/outline";
 
 const route = useRoute();
 const router = useRouter();
 
-// Los 4 destinos que participan del indicador deslizante (el FAB central
-// del medio queda afuera: es una acción, no una sección de navegación).
+// Los 4 destinos que participan del indicador (el FAB central queda
+// afuera: es una acción — crear reporte —, no una sección de navegación).
 const items = [
-  { label: "Inicio", path: "/", icon: HomeIcon, iconOutline: HomeIconOutline },
-  { label: "Rutas", path: "/compartir", icon: MapPinIcon, iconOutline: MapPinIconOutline },
-  { label: "Chat", path: "/chat", icon: ChatBubbleLeftEllipsisIcon, iconOutline: ChatIconOutline },
-  { label: "Perfil", path: "/mi-perfil", icon: UserIcon, iconOutline: UserIconOutline },
+  { label: "Inicio", path: "/", icon: HomeIcon },
+  { label: "Rutas", path: "/compartir", icon: MapPinIcon },
+  { label: "Chat", path: "/chat", icon: ChatBubbleLeftEllipsisIcon },
+  { label: "Perfil", path: "/mi-perfil", icon: UserIcon },
 ];
 
-// Índice del item activo según la ruta actual. Usamos startsWith para que
+// Índice del item activo según la ruta actual. startsWith para que
 // subrutas (ej. /mi-perfil/editar) también marquen "Perfil" como activo.
 const activeIndex = computed(() => {
-  const path = route.path;
-
-  const exactHome = path === "/";
-  if (exactHome) return 0;
-
-  return items.findIndex((item, i) => i !== 0 && path.startsWith(item.path));
+  if (route.path === "/") return 0;
+  return items.findIndex((item, i) => i !== 0 && route.path.startsWith(item.path));
 });
 
 const isFabActive = computed(() => route.path.startsWith("/report/nuevo"));
+
+// Posición del indicador: saltea la columna del medio (FAB) al calcular
+// el desplazamiento horizontal entre las 5 columnas de la grilla.
+const indicatorOffset = computed(() => {
+  const i = activeIndex.value;
+  if (i === -1) return 0;
+  return i < 2 ? i : i + 1;
+});
 
 function goTo(path) {
   if (route.path !== path) router.push(path);
@@ -125,20 +123,20 @@ function goTo(path) {
 </script>
 
 <template>
-  <nav class="fixed inset-x-0 bottom-0 z-50 pb-[calc(env(safe-area-inset-bottom)+12px)] px-4">
+  <nav class="fixed inset-x-0 bottom-0 z-50 px-4 pb-[calc(env(safe-area-inset-bottom)+12px)]">
     <div class="relative mx-auto max-w-md">
-      <!-- Barra flotante -->
+      <!-- Barra flotante en azul de marca -->
       <div
-        class="relative rounded-[28px] border border-[#e4ebf4] bg-white/95 px-2 shadow-[0_12px_32px_rgba(15,23,42,0.14)] backdrop-blur-sm"
+        class="relative overflow-hidden rounded-[28px] bg-[#3082e3] px-2 shadow-[0_16px_34px_rgba(15,45,92,0.35)]"
       >
-        <div class="relative grid h-16 grid-cols-5 items-center">
-          <!-- Indicador deslizante -->
+        <div class="relative grid h-[74px] grid-cols-5">
+          <!-- Línea de brillo que marca la sección activa -->
           <div
-            class="pointer-events-none absolute top-1.5 bottom-1.5 rounded-[18px] bg-[#eef4ff] transition-all duration-300 ease-out"
+            class="pointer-events-none absolute top-0 h-[3px] rounded-full bg-white shadow-[0_0_10px_2px_rgba(255,255,255,0.65)] transition-all duration-300 ease-out"
             :class="activeIndex === -1 ? 'opacity-0' : 'opacity-100'"
             :style="{
-              width: 'calc(20% - 6px)',
-              left: `calc(${(activeIndex < 2 ? activeIndex : activeIndex + 1) * 20}% + 3px)`,
+              width: 'calc(20% - 20px)',
+              left: `calc(${indicatorOffset * 20}% + 10px)`,
             }"
           ></div>
 
@@ -146,16 +144,16 @@ function goTo(path) {
           <button
             type="button"
             @click="goTo(items[0].path)"
-            class="relative z-10 flex flex-col items-center justify-center gap-0.5 transition-transform active:scale-90"
+            class="relative z-10 flex flex-col items-center justify-center gap-1 pt-1 transition-transform active:scale-90"
           >
             <component
-              :is="activeIndex === 0 ? items[0].icon : items[0].iconOutline"
-              class="h-5.5 w-5.5 transition-colors"
-              :class="activeIndex === 0 ? 'text-[#3082e3]' : 'text-slate-400'"
+              :is="items[0].icon"
+              class="h-5.5 w-5.5 transition-colors duration-200"
+              :class="activeIndex === 0 ? 'text-white' : 'text-white/45'"
             />
             <span
-              class="text-[10px] leading-none transition-colors"
-              :class="activeIndex === 0 ? 'font-bold text-[#3082e3]' : 'font-medium text-slate-400'"
+              class="text-[11px] leading-none transition-colors duration-200"
+              :class="activeIndex === 0 ? 'font-bold text-white' : 'font-medium text-white/45'"
             >
               {{ items[0].label }}
             </span>
@@ -165,16 +163,16 @@ function goTo(path) {
           <button
             type="button"
             @click="goTo(items[1].path)"
-            class="relative z-10 flex flex-col items-center justify-center gap-0.5 transition-transform active:scale-90"
+            class="relative z-10 flex flex-col items-center justify-center gap-1 pt-1 transition-transform active:scale-90"
           >
             <component
-              :is="activeIndex === 1 ? items[1].icon : items[1].iconOutline"
-              class="h-5.5 w-5.5 transition-colors"
-              :class="activeIndex === 1 ? 'text-[#3082e3]' : 'text-slate-400'"
+              :is="items[1].icon"
+              class="h-5.5 w-5.5 transition-colors duration-200"
+              :class="activeIndex === 1 ? 'text-white' : 'text-white/45'"
             />
             <span
-              class="text-[10px] leading-none transition-colors"
-              :class="activeIndex === 1 ? 'font-bold text-[#3082e3]' : 'font-medium text-slate-400'"
+              class="text-[11px] leading-none transition-colors duration-200"
+              :class="activeIndex === 1 ? 'font-bold text-white' : 'font-medium text-white/45'"
             >
               {{ items[1].label }}
             </span>
@@ -187,16 +185,16 @@ function goTo(path) {
           <button
             type="button"
             @click="goTo(items[2].path)"
-            class="relative z-10 flex flex-col items-center justify-center gap-0.5 transition-transform active:scale-90"
+            class="relative z-10 flex flex-col items-center justify-center gap-1 pt-1 transition-transform active:scale-90"
           >
             <component
-              :is="activeIndex === 2 ? items[2].icon : items[2].iconOutline"
-              class="h-5.5 w-5.5 transition-colors"
-              :class="activeIndex === 2 ? 'text-[#3082e3]' : 'text-slate-400'"
+              :is="items[2].icon"
+              class="h-5.5 w-5.5 transition-colors duration-200"
+              :class="activeIndex === 2 ? 'text-white' : 'text-white/45'"
             />
             <span
-              class="text-[10px] leading-none transition-colors"
-              :class="activeIndex === 2 ? 'font-bold text-[#3082e3]' : 'font-medium text-slate-400'"
+              class="text-[11px] leading-none transition-colors duration-200"
+              :class="activeIndex === 2 ? 'font-bold text-white' : 'font-medium text-white/45'"
             >
               {{ items[2].label }}
             </span>
@@ -206,16 +204,16 @@ function goTo(path) {
           <button
             type="button"
             @click="goTo(items[3].path)"
-            class="relative z-10 flex flex-col items-center justify-center gap-0.5 transition-transform active:scale-90"
+            class="relative z-10 flex flex-col items-center justify-center gap-1 pt-1 transition-transform active:scale-90"
           >
             <component
-              :is="activeIndex === 3 ? items[3].icon : items[3].iconOutline"
-              class="h-5.5 w-5.5 transition-colors"
-              :class="activeIndex === 3 ? 'text-[#3082e3]' : 'text-slate-400'"
+              :is="items[3].icon"
+              class="h-5.5 w-5.5 transition-colors duration-200"
+              :class="activeIndex === 3 ? 'text-white' : 'text-white/45'"
             />
             <span
-              class="text-[10px] leading-none transition-colors"
-              :class="activeIndex === 3 ? 'font-bold text-[#3082e3]' : 'font-medium text-slate-400'"
+              class="text-[11px] leading-none transition-colors duration-200"
+              :class="activeIndex === 3 ? 'font-bold text-white' : 'font-medium text-white/45'"
             >
               {{ items[3].label }}
             </span>
@@ -223,13 +221,13 @@ function goTo(path) {
         </div>
       </div>
 
-      <!-- FAB central: crear reporte (acción, no navegación → color coral distintivo) -->
+      <!-- FAB central: crear reporte (acción, no navegación → coral distintivo) -->
       <button
         type="button"
         @click="goTo('/report/nuevo')"
         aria-label="Crear reporte"
-        class="absolute left-1/2 -top-5 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full text-white shadow-[0_10px_22px_rgba(242,130,109,0.45)] transition-transform active:scale-90"
-        :class="isFabActive ? 'bg-[#3082e3] ' : 'bg-[#3082e3]'"
+        class="absolute left-1/2 -top-5 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full text-white shadow-[0_10px_22px_rgba(242,130,109,0.45)] ring-4 ring-[#f7f9f6] transition-transform active:scale-90"
+        :class="isFabActive ? 'bg-[#e2624a]' : 'bg-[#f2826d]'"
       >
         <PlusIcon class="h-7 w-7" />
       </button>
