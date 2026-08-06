@@ -171,7 +171,7 @@ watch(
           @click="showFilterSheet = true"
           class="inline-flex w-fit items-center gap-2 rounded-full bg-[#E0E5EC] px-4 py-2.5 text-sm font-medium text-slate-700
                  shadow-[0_6px_16px_rgba(148,163,184,0.18)]
-                 transition hover:text-[#3082e3] active:scale-[0.97]"
+                 transition hover:text-[#3082e3] active:scale-[0.97] mb-6"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
