@@ -152,7 +152,7 @@ watch(
   <section class="min-h-screen overflow-x-hidden bg-white px-4 pt-6 pb-24">
     <div class="mx-auto w-full max-w-[390px]">
       <!-- Header -->
-       <div class="flex items-center gap-3 mt-4 px-4 py-3 border-b border-gray-100">
+       <div class="flex items-center gap-3  px-4 py-3 border-b border-gray-100">
         <button @click="$router.back()"
           class="flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200 shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#2a2a2a"
@@ -166,7 +166,7 @@ watch(
         </div>
       </div>
 
-        <button
+          <button
           type="button"
           @click="showFilterSheet = true"
           class="inline-flex w-fit items-center gap-2 rounded-full bg-[#E0E5EC] px-4 py-2.5 text-sm font-medium text-slate-700
@@ -189,7 +189,7 @@ watch(
           </svg>
           <span>Filtros</span>
         </button>
-      </div>
+
 
       <!-- Mensajes -->
       <div
