@@ -408,9 +408,9 @@ export default {
 
       <!-- DATOS PERSONALES -->
       <div class="px-4 pb-4">
-        <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #9ca3af">
+        <h2 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #9ca3af">
           Datos personales
-        </p>
+        </h2>
 
         <div class="rounded-2xl border border-gray-100 overflow-hidden bg-white">
           <div class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50">
@@ -478,9 +478,9 @@ export default {
       <!-- CONTACTOS DE CONFIANZA -->
       <div class="px-4 pb-4">
         <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-semibold uppercase tracking-wider" style="color: #9ca3af">
+          <h2 class="text-xs font-semibold uppercase tracking-wider" style="color: #9ca3af">
             Contactos de confianza
-          </p>
+          </h2>
           <RouterLink to="/contactos" class="text-xs font-semibold" style="color: #3082e3">
             {{ trustedContacts.length ? "Ver todos" : "Agregar" }}
           </RouterLink>
