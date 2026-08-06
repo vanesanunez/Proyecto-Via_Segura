@@ -356,9 +356,9 @@ export default {
             </div>
 
             <div class="flex-1 min-w-0">
-              <p class="text-lg font-bold text-white leading-tight truncate">
+              <h2 class="text-lg font-bold text-white leading-tight truncate">
                 {{ nombreCompleto }}
-              </p>
+              </h2>
               <p class="text-xs mt-0.5 truncate" style="color: rgba(255, 255, 255, 0.7)">
                 {{ user.email }}
               </p>
@@ -408,9 +408,9 @@ export default {
 
       <!-- DATOS PERSONALES -->
       <div class="px-4 pb-4">
-        <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #9ca3af">
+        <h2 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #9ca3af">
           Datos personales
-        </p>
+        </h2>
 
         <div class="rounded-2xl border border-gray-100 overflow-hidden bg-white">
           <div class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50">
@@ -422,9 +422,9 @@ export default {
               </svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-xs mb-0.5" style="color: #9ca3af">
+              <h3 class="text-xs mb-0.5" style="color: #9ca3af">
                 Correo electrónico
-              </p>
+              </h3>
               <p class="text-sm font-medium truncate">
                 {{ user.email || "—" }}
               </p>
@@ -440,7 +440,7 @@ export default {
               </svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-xs mb-0.5" style="color: #9ca3af">Nombre</p>
+              <h3 class="text-xs mb-0.5" style="color: #9ca3af">Nombre</h3>
               <p class="text-sm font-medium">{{ user.name || "—" }}</p>
             </div>
           </div>
@@ -454,7 +454,7 @@ export default {
               </svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-xs mb-0.5" style="color: #9ca3af">Apellido</p>
+              <h3 class="text-xs mb-0.5" style="color: #9ca3af">Apellido</h3>
               <p class="text-sm font-medium">{{ user.lastname || "—" }}</p>
             </div>
           </div>
@@ -468,7 +468,7 @@ export default {
               </svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-xs mb-0.5" style="color: #9ca3af">DNI</p>
+              <h3 class="text-xs mb-0.5" style="color: #9ca3af">DNI</h3>
               <p class="text-sm font-medium">{{ user.dni || "—" }}</p>
             </div>
           </div>
@@ -478,9 +478,9 @@ export default {
       <!-- CONTACTOS DE CONFIANZA -->
       <div class="px-4 pb-4">
         <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-semibold uppercase tracking-wider" style="color: #9ca3af">
+          <h2 class="text-xs font-semibold uppercase tracking-wider" style="color: #9ca3af">
             Contactos de confianza
-          </p>
+          </h2>
           <RouterLink to="/contactos" class="text-xs font-semibold" style="color: #3082e3">
             {{ trustedContacts.length ? "Ver todos" : "Agregar" }}
           </RouterLink>
@@ -532,9 +532,9 @@ export default {
 
       <!-- IMPACTO EN LA COMUNIDAD -->
       <div class="px-4 pb-4">
-        <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #9ca3af">
+        <h2 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #9ca3af">
           Impacto en la comunidad
-        </p>
+        </h2>
 
         <div
           class="rounded-[22px] border border-[#edf1f7] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
@@ -545,12 +545,7 @@ export default {
 
           <div v-else>
             <!-- Título -->
-            <div class="flex items-center gap-2 mb-4">
-              <UserGroupIcon class="w-5 h-5 text-[#3082e3]" />
-              <h3 class="text-[18px] font-bold text-slate-900 leading-tight">
-                Impacto en la comunidad
-              </h3>
-            </div>
+           
 
             <!-- Aviso nueva insignia -->
             <transition name="fade-pop">
@@ -681,9 +676,9 @@ export default {
           </div>
 
           <div class="min-w-0 flex-1">
-            <p class="text-[16px] font-bold leading-tight text-[#0f172a]">
+            <h2 class="text-[16px] font-bold leading-tight text-[#0f172a]">
               Beneficios Vía Segura
-            </p>
+            </h2>
 
             <p class="mt-1 text-[12px] leading-5 text-slate-500">
               Canjeá tus puntos por descuentos y actividades en espacios
@@ -733,10 +728,10 @@ export default {
 
       <!-- MIS REPORTES -->
       <div class="px-4 pb-6">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-semibold uppercase tracking-wider" style="color: #9ca3af">
+        <div class="flex items-center justify-between mb-3 mt-2">
+          <h2 class="text-xs font-semibold uppercase tracking-wider" style="color: #9ca3af">
             Mis reportes
-          </p>
+          </h2>
           <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full" style="background: #eff6ff; color: #3082e3">
             {{ myTotal }}
           </span>

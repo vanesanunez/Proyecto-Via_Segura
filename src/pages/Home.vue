@@ -250,7 +250,7 @@ export default {
 
             <template #title>
               <span class="block">Contactos</span>
-              <span class="block whitespace-nowrap -ml-1">de confianza</span>
+             
             </template>
           </ActionCard>
 
@@ -260,8 +260,7 @@ export default {
             </template>
           </ActionCard>
 
-          <ActionCard title="Chat
-             comunitario" to="/chat" accent="blue-soft">
+          <ActionCard title="Chat" to="/chat" accent="blue-soft">
             <template #icon>
               <ChatBubbleLeftRightIcon class="h-6 w-6 text-[#3082e3]" />
             </template>
@@ -364,9 +363,9 @@ export default {
             <img :src="safeImage(report)" alt="Imagen del reporte" class="h-24 w-full object-cover" />
 
             <div class="p-3">
-              <h4 class="line-clamp-2 text-[14px] font-bold leading-5 text-[#2a2a2a]">
+              <h3 class="line-clamp-2 text-[14px] font-bold leading-5 text-[#2a2a2a]">
                 {{ report.descripcion }}
-              </h4>
+              </h3>
 
               <div class="mt-2 flex flex-wrap gap-1.5">
                 <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold"

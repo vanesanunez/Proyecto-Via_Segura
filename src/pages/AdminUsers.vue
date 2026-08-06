@@ -224,7 +224,7 @@ onMounted(() => {
           class="rounded-[20px] border border-[#D6E8FB] bg-white p-3 shadow-[0_8px_20px_rgba(48,130,227,0.06)]"
         >
           <p class="break-words text-[11px] font-semibold text-slate-500">
-            Administradores
+            Admin
           </p>
 
           <p class="mt-2 text-2xl font-bold text-[#3082E3]">

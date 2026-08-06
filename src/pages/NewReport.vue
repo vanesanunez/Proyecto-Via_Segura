@@ -377,9 +377,9 @@ function startNewReport() {
             </span>
           </div>
 
-          <label class="mt-3 block text-[18px] font-bold text-slate-900">
+          <h2 class="mt-3 block text-[18px] font-bold text-slate-900">
             Elegí el lugar del problema
-          </label>
+          </h2>
 
           <p class="mt-1 text-sm leading-6 text-slate-500">
             Marcá el punto exacto para que otras personas puedan ubicarlo
@@ -423,9 +423,9 @@ function startNewReport() {
             </span>
           </div>
 
-          <label class="mt-3 block text-[18px] font-bold text-slate-900">
+          <h2 class="mt-3 block text-[18px] font-bold text-slate-900">
             Elegí una categoría
-          </label>
+          </h2>
 
           <p class="mt-1 text-sm leading-6 text-slate-500">
             Esto ayuda a ordenar el reclamo y detectar si ya existe uno
@@ -490,9 +490,9 @@ function startNewReport() {
             </span>
           </div>
 
-          <label class="mt-3 block text-[18px] font-bold text-slate-900">
+          <h2 class="mt-3 block text-[18px] font-bold text-slate-900">
             Describí el problema
-          </label>
+          </h2>
 
           <p class="mt-1 text-sm leading-6 text-slate-500">
             Contalo claro y breve. No hace falta escribir mucho.
@@ -534,9 +534,9 @@ function startNewReport() {
             </span>
           </div>
 
-          <label class="mt-3 block text-[18px] font-bold text-slate-900">
+          <h2 class="mt-3 block text-[18px] font-bold text-slate-900">
             Subí una foto del lugar
-          </label>
+          </h2>
 
           <p class="mt-1 text-sm leading-6 text-slate-500">
             La imagen es obligatoria porque ayuda a validar mejor el reporte.

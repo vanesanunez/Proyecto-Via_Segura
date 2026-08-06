@@ -152,22 +152,26 @@ watch(
   <section class="min-h-screen overflow-x-hidden bg-white px-4 pt-6 pb-24">
     <div class="mx-auto w-full max-w-[390px]">
       <!-- Header -->
-      <div class="mb-6 flex flex-col gap-4">
-        <div>
-          <h1 class="text-[30px] font-bold leading-tight text-slate-900">
-            Reportes
-          </h1>
-          <p class="mt-2 max-w-[18rem] text-sm leading-6 text-slate-500">
-            Consultá reclamos de la comunidad y sumate a los que también te preocupan.
-          </p>
+       <div class="flex items-center gap-3  px-4 py-3 border-b border-gray-100">
+        <button @click="$router.back()"
+          class="flex items-center justify-center w-9 h-9 rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200 shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#2a2a2a"
+            stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div class="min-w-0">
+          <h1 class="text-base font-semibold leading-tight" -translate-y-1 style="color:#2a2a2a;">Reportes</h1>
+          <p class="text-xs" style="color:#6b7280;"> Consultá reclamos de la comunidad y sumate a los que también te preocupan.</p>
         </div>
+      </div>
 
-        <button
+          <button
           type="button"
           @click="showFilterSheet = true"
           class="inline-flex w-fit items-center gap-2 rounded-full bg-[#E0E5EC] px-4 py-2.5 text-sm font-medium text-slate-700
                  shadow-[0_6px_16px_rgba(148,163,184,0.18)]
-                 transition hover:text-[#3082e3] active:scale-[0.97]"
+                 transition hover:text-[#3082e3] active:scale-[0.97] mb-6"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -185,7 +189,7 @@ watch(
           </svg>
           <span>Filtros</span>
         </button>
-      </div>
+
 
       <!-- Mensajes -->
       <div
