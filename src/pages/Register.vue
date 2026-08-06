@@ -64,9 +64,7 @@ export default {
 
     // Elimina letras, símbolos y cualquier cosa que no sea un número.
     sanitizeDni() {
-      this.user.dni = this.user.dni
-        .replace(/\D/g, "")
-        .slice(0, 8);
+      this.user.dni = this.user.dni.replace(/\D/g, "").slice(0, 8);
 
       this.fieldErrors.dni = "";
     },
@@ -88,8 +86,7 @@ export default {
 
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      const namePattern =
-        /^[\p{L}]+(?:[ '-][\p{L}]+)*$/u;
+      const namePattern = /^[\p{L}]+(?:[ '-][\p{L}]+)*$/u;
 
       // Email
       if (!email) {
@@ -102,17 +99,13 @@ export default {
       if (!name) {
         this.fieldErrors.name = "Ingresá tu nombre.";
       } else if (name.length < 2 || !namePattern.test(name)) {
-        this.fieldErrors.name =
-          "El nombre debe contener solamente letras.";
+        this.fieldErrors.name = "El nombre debe contener solamente letras.";
       }
 
       // Apellido
       if (!lastname) {
         this.fieldErrors.lastname = "Ingresá tu apellido.";
-      } else if (
-        lastname.length < 2 ||
-        !namePattern.test(lastname)
-      ) {
+      } else if (lastname.length < 2 || !namePattern.test(lastname)) {
         this.fieldErrors.lastname =
           "El apellido debe contener solamente letras.";
       }
@@ -121,18 +114,15 @@ export default {
       if (!dni) {
         this.fieldErrors.dni = "Ingresá tu DNI.";
       } else if (!/^\d{7,8}$/.test(dni)) {
-        this.fieldErrors.dni =
-          "El DNI debe tener entre 7 y 8 números.";
+        this.fieldErrors.dni = "El DNI debe tener entre 7 y 8 números.";
       }
 
-      // Contraseña: letras, números o símbolos.
-      // Debe tener exactamente 6 caracteres y no admite espacios.
+      // Contraseña: mínimo 6 caracteres y sin espacios.
       if (!password) {
+        this.fieldErrors.password = "Ingresá una contraseña.";
+      } else if (!/^\S{6,}$/.test(password)) {
         this.fieldErrors.password =
-          "Ingresá una contraseña.";
-      } else if (!/^\S{6}$/.test(password)) {
-        this.fieldErrors.password =
-          "La contraseña debe tener exactamente 6 caracteres, sin espacios.";
+          "La contraseña debe tener al menos 6 caracteres, sin espacios.";
       }
 
       // Guardamos los valores sin espacios accidentales
@@ -142,9 +132,7 @@ export default {
       this.user.lastname = lastname;
       this.user.dni = dni;
 
-      return !Object.values(this.fieldErrors).some(
-        (message) => message !== "",
-      );
+      return !Object.values(this.fieldErrors).some((message) => message !== "");
     },
 
     async handleSubmit() {
@@ -187,24 +175,36 @@ export default {
 <template>
   <div class="min-h-screen overflow-x-hidden bg-[#f7f9f6]">
     <!-- HERO -->
-    <section class="relative min-h-92.5 overflow-hidden bg-[#3082e3] text-white">
+    <section
+      class="relative min-h-92.5 overflow-hidden bg-[#3082e3] text-white"
+    >
       <!-- Ilustración decorativa -->
-      <img src="/hero-login.png" alt="" aria-hidden="true"
-        class="pointer-events-none absolute inset-0 h-full w-full object-cover object-right" />
+      <img
+        src="/hero-login.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 h-full w-full object-cover object-right"
+      />
 
       <!-- Logo -->
       <div class="relative z-10 mx-auto w-full max-w-md px-5 pt-7">
-        <img src="/icono2.png" alt="Vía Segura" class="h-auto w-[125px] object-contain" />
+        <img
+          src="/icono2.png"
+          alt="Vía Segura"
+          class="h-auto w-[125px] object-contain"
+        />
       </div>
     </section>
 
     <!-- TARJETA -->
     <section class="relative z-20 -mt-12 px-4 pb-10">
       <div
-        class="mx-auto w-full max-w-md rounded-[30px] border border-[#edf1f6] bg-white px-5 pb-7 pt-6 shadow-[0_18px_45px_rgba(15,45,92,0.12)]">
+        class="mx-auto w-full max-w-md rounded-[30px] border border-[#edf1f6] bg-white px-5 pb-7 pt-6 shadow-[0_18px_45px_rgba(15,45,92,0.12)]"
+      >
         <!-- Ícono superior -->
         <div
-          class="mx-auto -mt-14 flex h-[72px] w-[72px] items-center justify-center rounded-3xl border-[6px] border-white bg-[#eef4ff] text-[#3082e3] shadow-[0_10px_24px_rgba(48,130,227,0.16)]">
+          class="mx-auto -mt-14 flex h-[72px] w-[72px] items-center justify-center rounded-3xl border-[6px] border-white bg-[#eef4ff] text-[#3082e3] shadow-[0_10px_24px_rgba(48,130,227,0.16)]"
+        >
           <UserPlusIcon class="h-8 w-8" />
         </div>
 
@@ -214,14 +214,18 @@ export default {
             Crear una cuenta
           </h1>
 
-          <p class="mx-auto mt-2 max-w-[290px] text-sm leading-6 text-slate-500">
+          <p
+            class="mx-auto mt-2 max-w-[290px] text-sm leading-6 text-slate-500"
+          >
             Sumate a Vía Segura y ayudá a construir una comunidad más conectada.
           </p>
         </div>
 
         <!-- REGISTRO EXITOSO -->
         <div v-if="successMessage" class="mt-7 text-center">
-          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3]">
+          <div
+            class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3]"
+          >
             <CheckCircleIcon class="h-10 w-10" />
           </div>
 
@@ -229,163 +233,268 @@ export default {
             {{ successMessage }}
           </h2>
 
-          <p class="mx-auto mt-2 max-w-[280px] text-sm leading-6 text-slate-500">
+          <p
+            class="mx-auto mt-2 max-w-[280px] text-sm leading-6 text-slate-500"
+          >
             Tu registro se completó correctamente.
           </p>
 
-          <button type="button"
+          <button
+            type="button"
             class="mt-6 flex h-[54px] w-full items-center justify-center rounded-2xl bg-[#3082e3] px-5 text-base font-semibold text-white shadow-[0_10px_24px_rgba(48,130,227,0.25)] transition hover:bg-[#085baf] active:scale-[0.98]"
-            @click="goToLogin">
+            @click="goToLogin"
+          >
             Iniciar sesión
           </button>
         </div>
 
         <!-- FORMULARIO -->
-        <form v-else class="mt-7 space-y-5" action="#" novalidate @submit.prevent="handleSubmit">
+        <form
+          v-else
+          class="mt-7 space-y-5"
+          action="#"
+          novalidate
+          @submit.prevent="handleSubmit"
+        >
           <!-- EMAIL -->
           <div>
-            <label for="email" class="mb-2 block text-sm font-semibold text-[#2a2a2a]">
+            <label
+              for="email"
+              class="mb-2 block text-sm font-semibold text-[#2a2a2a]"
+            >
               Email
             </label>
 
             <div class="relative">
               <EnvelopeIcon
-                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+              />
 
-              <input id="email" v-model="user.email" type="email" autocomplete="email" autocapitalize="none"
-                spellcheck="false" required placeholder="nombre@email.com"
+              <input
+                id="email"
+                v-model="user.email"
+                type="email"
+                autocomplete="email"
+                autocapitalize="none"
+                spellcheck="false"
+                required
+                placeholder="nombre@email.com"
                 class="h-[54px] w-full rounded-2xl border bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
-                :class="fieldErrors.email
-                  ? 'border-[#f2826d] focus:border-[#f2826d]'
-                  : 'border-[#dbe5f0] focus:border-[#3082e3]'
-                  " @input="fieldErrors.email = ''" />
+                :class="
+                  fieldErrors.email
+                    ? 'border-[#f2826d] focus:border-[#f2826d]'
+                    : 'border-[#dbe5f0] focus:border-[#3082e3]'
+                "
+                @input="fieldErrors.email = ''"
+              />
             </div>
 
-            <p v-if="fieldErrors.email" class="mt-2 text-xs font-medium text-[#d96651]">
+            <p
+              v-if="fieldErrors.email"
+              class="mt-2 text-xs font-medium text-[#d96651]"
+            >
               {{ fieldErrors.email }}
             </p>
           </div>
 
           <!-- NOMBRE -->
           <div>
-            <label for="name" class="mb-2 block text-sm font-semibold text-[#2a2a2a]">
+            <label
+              for="name"
+              class="mb-2 block text-sm font-semibold text-[#2a2a2a]"
+            >
               Nombre
             </label>
 
             <div class="relative">
-              <UserIcon class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+              <UserIcon
+                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+              />
 
-              <input id="name" v-model="user.name" type="text" autocomplete="given-name" autocapitalize="words"
-                maxlength="40" required placeholder="Ingresá tu nombre"
+              <input
+                id="name"
+                v-model="user.name"
+                type="text"
+                autocomplete="given-name"
+                autocapitalize="words"
+                maxlength="40"
+                required
+                placeholder="Ingresá tu nombre"
                 class="h-[54px] w-full rounded-2xl border bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
-                :class="fieldErrors.name
-                  ? 'border-[#f2826d] focus:border-[#f2826d]'
-                  : 'border-[#dbe5f0] focus:border-[#3082e3]'
-                  " @input="sanitizePersonName('name')" />
+                :class="
+                  fieldErrors.name
+                    ? 'border-[#f2826d] focus:border-[#f2826d]'
+                    : 'border-[#dbe5f0] focus:border-[#3082e3]'
+                "
+                @input="sanitizePersonName('name')"
+              />
             </div>
 
-            <p v-if="fieldErrors.name" class="mt-2 text-xs font-medium text-[#d96651]">
+            <p
+              v-if="fieldErrors.name"
+              class="mt-2 text-xs font-medium text-[#d96651]"
+            >
               {{ fieldErrors.name }}
             </p>
           </div>
 
           <!-- APELLIDO -->
           <div>
-            <label for="lastname" class="mb-2 block text-sm font-semibold text-[#2a2a2a]">
+            <label
+              for="lastname"
+              class="mb-2 block text-sm font-semibold text-[#2a2a2a]"
+            >
               Apellido
             </label>
 
             <div class="relative">
-              <UserIcon class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+              <UserIcon
+                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+              />
 
-              <input id="lastname" v-model="user.lastname" type="text" autocomplete="family-name" autocapitalize="words"
-                maxlength="40" required placeholder="Ingresá tu apellido"
+              <input
+                id="lastname"
+                v-model="user.lastname"
+                type="text"
+                autocomplete="family-name"
+                autocapitalize="words"
+                maxlength="40"
+                required
+                placeholder="Ingresá tu apellido"
                 class="h-[54px] w-full rounded-2xl border bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
-                :class="fieldErrors.lastname
-                  ? 'border-[#f2826d] focus:border-[#f2826d]'
-                  : 'border-[#dbe5f0] focus:border-[#3082e3]'
-                  " @input="sanitizePersonName('lastname')" />
+                :class="
+                  fieldErrors.lastname
+                    ? 'border-[#f2826d] focus:border-[#f2826d]'
+                    : 'border-[#dbe5f0] focus:border-[#3082e3]'
+                "
+                @input="sanitizePersonName('lastname')"
+              />
             </div>
 
-            <p v-if="fieldErrors.lastname" class="mt-2 text-xs font-medium text-[#d96651]">
+            <p
+              v-if="fieldErrors.lastname"
+              class="mt-2 text-xs font-medium text-[#d96651]"
+            >
               {{ fieldErrors.lastname }}
             </p>
           </div>
 
           <!-- DNI -->
           <div>
-            <label for="dni" class="mb-2 block text-sm font-semibold text-[#2a2a2a]">
+            <label
+              for="dni"
+              class="mb-2 block text-sm font-semibold text-[#2a2a2a]"
+            >
               DNI
             </label>
 
             <div class="relative">
               <IdentificationIcon
-                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+              />
 
-              <input id="dni" v-model="user.dni" type="text" inputmode="numeric" autocomplete="off" maxlength="8"
-                required placeholder="Ingresá tu DNI"
+              <input
+                id="dni"
+                v-model="user.dni"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                maxlength="8"
+                required
+                placeholder="Ingresá tu DNI"
                 class="h-[54px] w-full rounded-2xl border bg-[#fbfcfd] pl-12 pr-4 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
-                :class="fieldErrors.dni
-                  ? 'border-[#f2826d] focus:border-[#f2826d]'
-                  : 'border-[#dbe5f0] focus:border-[#3082e3]'
-                  " @input="sanitizeDni" />
+                :class="
+                  fieldErrors.dni
+                    ? 'border-[#f2826d] focus:border-[#f2826d]'
+                    : 'border-[#dbe5f0] focus:border-[#3082e3]'
+                "
+                @input="sanitizeDni"
+              />
             </div>
 
-            <p v-if="fieldErrors.dni" class="mt-2 text-xs font-medium text-[#d96651]">
+            <p
+              v-if="fieldErrors.dni"
+              class="mt-2 text-xs font-medium text-[#d96651]"
+            >
               {{ fieldErrors.dni }}
             </p>
           </div>
 
           <!-- CONTRASEÑA -->
           <div>
-            <label for="password" class="mb-2 block text-sm font-semibold text-[#2a2a2a]">
+            <label
+              for="password"
+              class="mb-2 block text-sm font-semibold text-[#2a2a2a]"
+            >
               Contraseña
             </label>
 
             <div class="relative">
               <LockClosedIcon
-                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+              />
 
-              <input id="password" v-model="user.password" :type="showPassword ? 'text' : 'password'"
-                autocomplete="new-password" minlength="6" maxlength="6" required placeholder="Ingresá 6 caracteres"
+              <input
+                id="password"
+                v-model="user.password"
+                :type="showPassword ? 'text' : 'password'"
+                autocomplete="new-password"
+                minlength="6"
+                required
+                placeholder="Ingresá al menos 6 caracteres"
                 class="h-[54px] w-full rounded-2xl border bg-[#fbfcfd] pl-12 pr-12 text-[15px] text-[#2a2a2a] outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-[#3082e3]/10"
-                :class="fieldErrors.password
-                  ? 'border-[#f2826d] focus:border-[#f2826d]'
-                  : 'border-[#dbe5f0] focus:border-[#3082e3]'
-                  " @input="fieldErrors.password = ''" />
+                :class="
+                  fieldErrors.password
+                    ? 'border-[#f2826d] focus:border-[#f2826d]'
+                    : 'border-[#dbe5f0] focus:border-[#3082e3]'
+                "
+                @input="fieldErrors.password = ''"
+              />
 
-              <button type="button"
+              <button
+                type="button"
                 class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-[#3082e3]"
-                :aria-label="showPassword
-                  ? 'Ocultar contraseña'
-                  : 'Mostrar contraseña'
-                  " @click="showPassword = !showPassword">
+                :aria-label="
+                  showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
+                "
+                @click="showPassword = !showPassword"
+              >
                 <EyeSlashIcon v-if="showPassword" class="h-5 w-5" />
                 <EyeIcon v-else class="h-5 w-5" />
               </button>
             </div>
 
-            <p v-if="fieldErrors.password" class="mt-2 text-xs font-medium text-[#d96651]">
+            <p
+              v-if="fieldErrors.password"
+              class="mt-2 text-xs font-medium text-[#d96651]"
+            >
               {{ fieldErrors.password }}
             </p>
 
             <p v-else class="mt-2 text-xs leading-5 text-slate-400">
-              Debe tener exactamente 6 caracteres. Podés usar letras, números o
+              Debe tener al menos 6 caracteres. Podés usar letras, números o
               símbolos.
             </p>
           </div>
 
           <!-- ERROR GENERAL -->
-          <div v-if="errorMessage"
-            class="rounded-2xl border border-[#f8dfd9] bg-[#fff1ed] px-4 py-3 text-sm leading-5 text-[#d96651]">
+          <div
+            v-if="errorMessage"
+            class="rounded-2xl border border-[#f8dfd9] bg-[#fff1ed] px-4 py-3 text-sm leading-5 text-[#d96651]"
+          >
             {{ errorMessage }}
           </div>
 
           <!-- BOTÓN -->
-          <button type="submit" :disabled="loading"
-            class="flex h-[54px] w-full items-center justify-center gap-3 rounded-2xl bg-[#3082e3] px-5 text-base font-semibold text-white shadow-[0_10px_24px_rgba(48,130,227,0.25)] transition hover:bg-[#085baf] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70">
-            <span v-if="loading"
-              class="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
+          <button
+            type="submit"
+            :disabled="loading"
+            class="flex h-[54px] w-full items-center justify-center gap-3 rounded-2xl bg-[#3082e3] px-5 text-base font-semibold text-white shadow-[0_10px_24px_rgba(48,130,227,0.25)] transition hover:bg-[#085baf] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            <span
+              v-if="loading"
+              class="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white"
+            ></span>
 
             <span>
               {{ loading ? "Creando cuenta..." : "Crear cuenta" }}
@@ -398,7 +507,9 @@ export default {
           <div class="my-6 flex items-center gap-3">
             <div class="h-px flex-1 bg-slate-200"></div>
 
-            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3]">
+            <div
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-[#eef4ff] text-[#3082e3]"
+            >
               <LockClosedIcon class="h-4 w-4" />
             </div>
 
@@ -408,7 +519,10 @@ export default {
           <p class="text-center text-sm text-slate-600">
             ¿Ya tenés una cuenta?
 
-            <RouterLink to="/ingresar" class="ml-1 font-semibold text-[#3082e3] transition hover:text-[#085baf]">
+            <RouterLink
+              to="/ingresar"
+              class="ml-1 font-semibold text-[#3082e3] transition hover:text-[#085baf]"
+            >
               Ingresar
             </RouterLink>
           </p>
