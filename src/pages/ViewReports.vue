@@ -161,7 +161,7 @@ watch(
           </svg>
         </button>
         <div class="min-w-0">
-          <h1 class="text-base font-semibold leading-tight" style="color:#2a2a2a;">Reportes</h1>
+          <h1 class="text-base font-semibold leading-tight" -translate-y-1 style="color:#2a2a2a;">Reportes</h1>
           <p class="text-xs" style="color:#6b7280;"> Consultá reclamos de la comunidad y sumate a los que también te preocupan.</p>
         </div>
       </div>
