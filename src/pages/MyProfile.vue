@@ -422,9 +422,9 @@ export default {
               </svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-xs mb-0.5" style="color: #9ca3af">
+              <h3 class="text-xs mb-0.5" style="color: #9ca3af">
                 Correo electrónico
-              </p>
+              </h3>
               <p class="text-sm font-medium truncate">
                 {{ user.email || "—" }}
               </p>
@@ -440,7 +440,7 @@ export default {
               </svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-xs mb-0.5" style="color: #9ca3af">Nombre</p>
+              <h3 class="text-xs mb-0.5" style="color: #9ca3af">Nombre</h3>
               <p class="text-sm font-medium">{{ user.name || "—" }}</p>
             </div>
           </div>
@@ -454,7 +454,7 @@ export default {
               </svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-xs mb-0.5" style="color: #9ca3af">Apellido</p>
+              <h3 class="text-xs mb-0.5" style="color: #9ca3af">Apellido</h3>
               <p class="text-sm font-medium">{{ user.lastname || "—" }}</p>
             </div>
           </div>
@@ -468,7 +468,7 @@ export default {
               </svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-xs mb-0.5" style="color: #9ca3af">DNI</p>
+              <h3 class="text-xs mb-0.5" style="color: #9ca3af">DNI</h3>
               <p class="text-sm font-medium">{{ user.dni || "—" }}</p>
             </div>
           </div>
