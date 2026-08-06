@@ -108,7 +108,8 @@ function onInputChange() {
 
 async function buscarSugerencias() {
   try {
-    const url = `/nominatim/search?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=4`;
+    // const url = `/nominatim/search?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=4`;
+    const url = `/api/nominatim?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=4`;
     sugerencias.value = await (await fetch(url)).json();
   } catch { sugerencias.value = []; }
 }
@@ -126,7 +127,8 @@ async function buscarDireccion() {
   error.value = '';
   sugerencias.value = [];
   try {
-    const url = `/nominatim/search?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=1`;
+    // const url = `/nominatim/search?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=1`;
+    const url = `/api/nominatim?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=1`;
     const data = await (await fetch(url)).json();
     if (!data.length) { error.value = 'No se encontró la dirección. Intentá con otra.'; cargandoBusqueda.value = false; return; }
     ubicacionUsuario.value = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
@@ -353,28 +355,45 @@ function parseOverpass(json, category) {
   });
 }
 
+// async function consultarOverpass(query, signal) {
+//   let lastError = null;
+
+//   for (const endpoint of OVERPASS_ENDPOINTS) {
+//     try {
+//       const res = await fetch(endpoint, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+//         body: 'data=' + encodeURIComponent(query),
+//         signal,
+//       });
+
+//       if (!res.ok) throw new Error(`Error del servidor: ${res.status}`);
+//       return await res.json();
+//     } catch (err) {
+//       if (err.name === 'AbortError') throw err;
+//       lastError = err;
+//       // probamos el siguiente endpoint disponible
+//     }
+//   }
+
+//   throw lastError || new Error('No se pudo conectar con el servicio de búsqueda.');
+// }
 async function consultarOverpass(query, signal) {
-  let lastError = null;
+  const res = await fetch('/api/overpass', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    },
+    body: 'data=' + encodeURIComponent(query),
+    signal,
+  });
 
-  for (const endpoint of OVERPASS_ENDPOINTS) {
-    try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-        body: 'data=' + encodeURIComponent(query),
-        signal,
-      });
-
-      if (!res.ok) throw new Error(`Error del servidor: ${res.status}`);
-      return await res.json();
-    } catch (err) {
-      if (err.name === 'AbortError') throw err;
-      lastError = err;
-      // probamos el siguiente endpoint disponible
-    }
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || 'No fue posible consultar Overpass.');
   }
 
-  throw lastError || new Error('No se pudo conectar con el servicio de búsqueda.');
+  return await res.json();
 }
 
 async function buscarCercanos() {

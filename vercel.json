@@ -1,11 +1,15 @@
 {
     "rewrites": [
       {
-        "source": "/nominatim/:path*",
-        "destination": "https://nominatim.openstreetmap.org/:path*"
+        "source": "/api/overpass",
+        "destination": "/api/overpass"
       },
       {
-        "source": "/((?!nominatim).*)",
+        "source": "/api/nominatim",
+        "destination": "/api/nominatim"
+      },
+      {
+        "source": "/(.*)",
         "destination": "/index.html"
       }
     ]
