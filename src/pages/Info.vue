@@ -495,7 +495,7 @@ onUnmounted(() => {
             </svg>
           </div>
           <div class="text-center px-2">
-            <p class="font-semibold text-base" style="color:#2a2a2a;">Encontrá ayuda cerca tuyo</p>
+            <h2 class="font-semibold text-base" style="color:#2a2a2a;">Encontrá ayuda cerca tuyo</h2>
             <p class="text-sm mt-1 max-w-xs mx-auto" style="color:#6b7280;">
               Elegí qué buscás e ingresá tu dirección o usá tu ubicación actual
             </p>
