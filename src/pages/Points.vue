@@ -305,7 +305,7 @@ function onInputChange() {
 
 async function buscarSugerencias() {
   try {
-    const url = `/nominatim/search?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=4`;
+    const url = `/api/nominatim/search?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=4`;
     sugerencias.value = await (await fetch(url)).json();
   } catch { sugerencias.value = []; }
 }
@@ -323,7 +323,8 @@ async function buscarDireccion() {
   error.value = '';
   sugerencias.value = [];
   try {
-    const url = `/nominatim/search?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=1`;
+    // const url = `/nominatim/search?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=1`;
+    const url = `/api/nominatim?format=json&q=${encodeURIComponent(direccionInput.value)}&countrycodes=ar&limit=1`;
     const data = await (await fetch(url)).json();
     if (!data.length) { error.value = 'No se encontró la dirección. Intentá con otra.'; return; }
     ubicacionUsuario.value = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
