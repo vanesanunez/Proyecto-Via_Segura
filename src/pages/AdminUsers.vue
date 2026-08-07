@@ -150,8 +150,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="min-h-dvh overflow-x-hidden bg-[#F7F9F6] px-4 pb-12 pt-5">
-    <div class="mx-auto w-full max-w-5xl">
+  <section
+  class="box-border min-h-dvh w-full max-w-full overflow-x-hidden bg-[#F7F9F6] px-3 pb-12 pt-5 sm:px-4">
+  <div class="mx-auto w-full min-w-0 max-w-5xl">
       <!-- Volver -->
       <button type="button" @click="router.push('/admin/dashboard')"
         class="group mb-5 inline-flex items-center gap-2 rounded-full border border-[#D6E8FB] bg-[#EEF4FF] px-3 py-2 text-sm font-semibold text-[#3082E3] transition hover:border-[#3082E3] hover:bg-white active:scale-[0.98]">
@@ -165,8 +166,7 @@ onMounted(() => {
 
       <!-- Encabezado -->
       <header
-        class="rounded-[28px] border border-[#D6E8FB] bg-[#EEF4FF] p-5 shadow-[0_12px_28px_rgba(48,130,227,0.08)] sm:p-6">
-        <div class="flex items-start justify-between gap-4">
+        <div class="flex min-w-0 items-start justify-between gap-3">
           <div class="min-w-0 flex-1">
             <div
               class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-[#3082E3]">
@@ -175,7 +175,7 @@ onMounted(() => {
               <span>Gestión de usuarios</span>
             </div>
 
-            <h1 class="mt-4 text-[28px] font-bold leading-tight text-slate-900 sm:text-[34px]">
+            <h1   class="mt-4 break-words text-[26px] font-bold leading-tight text-slate-900 sm:text-[34px]">
               Usuarios registrados
             </h1>
 
@@ -183,7 +183,7 @@ onMounted(() => {
           </div>
 
           <div
-            class="flex h-14 min-w-14 shrink-0 items-center justify-center rounded-full bg-white text-xl font-bold text-[#3082E3] shadow-[0_8px_20px_rgba(48,130,227,0.10)]">
+            class="hidden h-14 min-w-14 shrink-0 items-center justify-center rounded-full bg-white text-xl font-bold text-[#3082E3] shadow-[0_8px_20px_rgba(48,130,227,0.10)]">
             {{ users.length }}
           </div>
         </div>
@@ -195,8 +195,8 @@ onMounted(() => {
       </header>
 
       <!-- Métricas -->
-      <section class="mt-5 grid grid-cols-3 gap-3">
-        <article class="rounded-[20px] border border-[#D6E8FB] bg-white p-3 shadow-[0_8px_20px_rgba(48,130,227,0.06)]">
+      <section class="mt-5 grid w-full min-w-0 grid-cols-2 gap-3 sm:grid-cols-3">
+        <article class="min-w-0 rounded-[20px] border border-[#D6E8FB] bg-white p-3 shadow-[0_8px_20px_rgba(48,130,227,0.06)]">
           <p class="text-[11px] font-semibold text-slate-500">
             Total
           </p>
@@ -206,8 +206,8 @@ onMounted(() => {
           </p>
         </article>
 
-        <article class="rounded-[20px] border border-[#D6E8FB] bg-white p-3 shadow-[0_8px_20px_rgba(48,130,227,0.06)]">
-          <p class="wrap-break-word text-[11px] font-semibold text-slate-500">
+        <article class="min-w-0 rounded-[20px] border border-[#D6E8FB] bg-white p-3 shadow-[0_8px_20px_rgba(48,130,227,0.06)]">
+          <p class="break-words text-[11px] font-semibold text-slate-500">
             Admin
           </p>
 
@@ -216,7 +216,7 @@ onMounted(() => {
           </p>
         </article>
 
-        <article class="rounded-[20px] border border-[#F7CBC2] bg-white p-3 shadow-[0_8px_20px_rgba(242,130,109,0.06)]">
+        <article class="col-span-2 min-w-0 rounded-[20px] border border-[#F7CBC2] bg-white p-3 shadow-[0_8px_20px_rgba(242,130,109,0.06)] sm:col-span-1">
           <p class="text-[11px] font-semibold text-slate-500">
             Usuarios
           </p>
@@ -299,9 +299,9 @@ onMounted(() => {
         </div>
 
         <!-- Vista celular -->
-        <div class="space-y-4 md:hidden">
-          <article v-for="user in paginatedUsers" :key="user.id"
-            class="rounded-3xl border border-[#D6E8FB] bg-white p-4 shadow-[0_10px_24px_rgba(48,130,227,0.07)]">
+       <div class="w-full min-w-0 space-y-4 overflow-hidden md:hidden">
+          <article  v-for="user in paginatedUsers" :key="user.id"
+           class="box-border w-full min-w-0 max-w-full overflow-hidden rounded-3xl border border-[#D6E8FB] bg-white p-4 shadow-[0_10px_24px_rgba(48,130,227,0.07)]">
             <!-- Información principal -->
             <div class="flex items-start gap-3">
               <div
@@ -319,7 +319,7 @@ onMounted(() => {
                   }}
                 </span>
 
-                <h3 class="mt-2 wrap-break-word text-[18px] font-bold leading-snug text-slate-900">
+                <h3 class="mt-2 break-words text-[18px] font-bold leading-snug text-slate-900">
                   {{ user.name || "Sin nombre" }}
                   {{ user.lastname || "" }}
                 </h3>
@@ -337,7 +337,7 @@ onMounted(() => {
                   DNI
                 </p>
 
-                <p class="mt-1 wrap-break-word text-sm font-bold text-slate-700">
+                <p class="mt-1 break-words text-sm font-bold text-slate-700">
                   {{ user.dni || "Sin dato" }}
                 </p>
               </div>
