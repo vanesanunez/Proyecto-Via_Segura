@@ -150,7 +150,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="box-border min-h-dvh w-full overflow-x-hidden bg-[#F7F9F6] px-3 pb-12 pt-5 sm:px-4">
+  <section class="min-h-dvh overflow-x-hidden bg-[#F7F9F6] px-4 pb-12 pt-5">
     <div class="mx-auto w-full min-w-0 max-w-5xl">
       <!-- Volver -->
       <button type="button" @click="router.push('/admin/dashboard')"
