@@ -151,7 +151,7 @@ onMounted(() => {
 
 <template>
   <section class="min-h-dvh overflow-x-hidden bg-[#F7F9F6] px-4 pb-12 pt-5">
-    <div class="mx-auto w-full min-w-0 max-w-5xl">
+    <div class="mx-auto w-full max-w-5xl">
       <!-- Volver -->
       <button type="button" @click="router.push('/admin/dashboard')"
         class="group mb-5 inline-flex items-center gap-2 rounded-full border border-[#D6E8FB] bg-[#EEF4FF] px-3 py-2 text-sm font-semibold text-[#3082E3] transition hover:border-[#3082E3] hover:bg-white active:scale-[0.98]">
